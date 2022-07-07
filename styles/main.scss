@@ -1,0 +1,19 @@
+$bp-mid: 800px;
+
+@mixin small-phones {
+  @media (max-width: 390px) {
+    @content;
+  }
+}
+
+@mixin phones {
+  @media (max-width: 599px) {
+    @content;
+  }
+}
+
+@mixin landscape-tablet-up {
+  @media (max-width: 800px) {
+    @content;
+  }
+}
