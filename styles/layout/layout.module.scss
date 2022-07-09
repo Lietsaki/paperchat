@@ -28,10 +28,31 @@
 
 .screen {
   aspect-ratio: 4 / 3;
-  border: 1px solid #333;
+  border: 4px solid #333;
   max-height: 42vh;
+  border-radius: 4px;
+  box-shadow: 2px 3px 6px #222;
+}
 
-  &:first-child {
-    margin-bottom: 40px;
+.screen.top {
+  margin-bottom: 40px;
+  background-image: url('../../public/top_home_bg.png');
+  background-position: bottom;
+  background-size: 21%;
+  background-position: 3% 0%;
+
+  @include landscape-tablet-up {
+    background-size: 21.5%;
+    background-position: 2% 0%;
+  }
+}
+
+.screen.bottom {
+  background-image: url('../../public/bottom_home_bg.png');
+  background-size: 85%;
+  background-position: 50% 25%;
+
+  @include standard-laptop {
+    background-position: 50% 20%;
   }
 }

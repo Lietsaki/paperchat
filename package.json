@@ -1,6 +1,7 @@
 {
   "name": "paperchat",
   "version": "0.1.0",
+  "author": "Ricardo Sandez",
   "private": true,
   "scripts": {
     "dev": "next dev",

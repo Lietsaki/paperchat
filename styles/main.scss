@@ -17,3 +17,9 @@ $bp-mid: 800px;
     @content;
   }
 }
+
+@mixin standard-laptop {
+  @media (max-width: 1200px) {
+    @content;
+  }
+}
