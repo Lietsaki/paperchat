@@ -1,0 +1,46 @@
+.button_outer {
+  height: 35px;
+  width: 150px;
+
+  font-family: 'nds', roboto, sans-serif;
+  font-size: 25px;
+  color: #111;
+  padding: 0 2px;
+  position: relative;
+  border: 2px solid $dark-gray;
+  background-color: $clear-bg;
+  transition: all 0.2s ease-in-out;
+
+  clip-path: polygon(
+    0px 2px,
+    2px 2px,
+    2px 0px,
+    calc(100% - 2px) 0px,
+    calc(100% - 2px) 2px,
+    100% 2px,
+    100% calc(100% - 2px),
+    calc(100% - 2px) calc(100% - 2px),
+    calc(100% - 2px) 100%,
+    2px 100%,
+    2px calc(100% - 2px),
+    0px calc(100% - 2px)
+  );
+
+  .button_inner {
+    background-image: url('../../public/btn-gradient.png');
+    background-size: contain;
+    border-top: 2px solid #cdcdcd;
+    border-left: 2px solid #cdcdcd70;
+    border-right: 2px solid #cdcdcd70;
+    height: 85%;
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: #acacac;
+  }
+
+  &:active {
+    top: 1px;
+  }
+}

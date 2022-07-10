@@ -1,13 +1,13 @@
-import styles from '../styles/layout/layout.module.scss';
+import styles from 'styles/home/home.module.scss';
 
-const { main, main_section, screen, top, bottom } = styles;
+const { top, bottom } = styles;
 
 const Home = () => {
   return (
-    <div className={main}>
-      <div className={main_section}>
-        <div className={`${screen} ${top}`}></div>
-        <div className={`${screen} ${bottom}`}></div>
+    <div className="main">
+      <div className="main_section">
+        <div className={`screen ${top}`}></div>
+        <div className={`screen ${bottom}`}></div>
       </div>
     </div>
   );

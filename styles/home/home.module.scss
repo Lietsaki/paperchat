@@ -1,0 +1,21 @@
+.top {
+  background-image: url('../../public/top_home_bg.png');
+  background-position: bottom;
+  background-size: 21%;
+  background-position: 3% 0%;
+
+  @include landscape-tablet-up {
+    background-size: 21.5%;
+    background-position: 2% 0%;
+  }
+}
+
+.bottom {
+  background-image: url('../../public/bottom_home_bg.png');
+  background-size: 85%;
+  background-position: 50% 25%;
+
+  @include standard-laptop {
+    background-position: 50% 20%;
+  }
+}

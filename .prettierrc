@@ -1,5 +1,5 @@
 {
   "jsxSingleQuote": false,
   "singleQuote": true,
-  "semi": true
+  "semi": false
 }

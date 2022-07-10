@@ -1,0 +1,61 @@
+.top {
+  background-color: teal;
+  display: grid;
+  grid-template-columns: 8% 92%;
+
+  .left_column {
+    background-color: $clear-bg;
+    box-shadow: 1px 0px 1px $clear-bg;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 12% auto 12%;
+
+    .top_section {
+      position: relative;
+
+      @include left-column-dotted-border {
+        position: absolute;
+        bottom: 1px;
+      }
+    }
+
+    // .mid_section {}
+
+    .bottom_section {
+      @include left-column-dotted-border;
+    }
+  }
+
+  .right_column {
+    @include options-bg;
+
+    display: flex;
+    align-items: flex-end;
+  }
+}
+
+.bottom {
+  @include options-bg;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 12% auto 12%;
+
+  .bottom_top {
+    background-image: url('../../public/options-gradient-top.png');
+    background-size: contain;
+    border-bottom: 3px solid #333;
+    @include flexcenter;
+  }
+
+  // .bottom_center {
+  // }
+
+  .bottom_bottom {
+    background-image: url('../../public/options-gradient-bottom.png');
+    background-size: contain;
+    border-top: 3px solid #333;
+    @include flexcenter;
+  }
+}
