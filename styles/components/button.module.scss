@@ -2,7 +2,7 @@
   height: 35px;
   width: 150px;
 
-  font-family: 'nds', roboto, sans-serif;
+  @include ds-font;
   font-size: 25px;
   color: #111;
   padding: 0 2px;

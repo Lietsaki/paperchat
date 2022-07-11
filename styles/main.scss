@@ -62,6 +62,10 @@ $dim-beige: #d6d2cb;
   }
 }
 
+@mixin ds-font {
+  font-family: 'nds', roboto, sans-serif;
+}
+
 @mixin pixelated-rectangle {
   clip-path: polygon(
     0px 8px,
