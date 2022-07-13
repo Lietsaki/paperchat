@@ -17,7 +17,7 @@ const {
 const Home = () => {
   return (
     <div className="main">
-      <div className="main_section">
+      <div className="screens_section">
         <div className={`screen ${top}`}>
           <div className={left_column}>
             <div className={top_section}></div>

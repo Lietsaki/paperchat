@@ -5,7 +5,7 @@ const { top, bottom } = styles
 const Home = () => {
   return (
     <div className="main">
-      <div className="main_section">
+      <div className="screens_section">
         <div className={`screen ${top}`}></div>
         <div className={`screen ${bottom}`}>
           <div>Find Rooms</div>
