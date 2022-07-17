@@ -5,7 +5,7 @@
   @include ds-font;
   font-size: 25px;
   color: #111;
-  padding: 0 2px;
+  padding: 0 1px;
   position: relative;
   border: 2px solid $dark-gray;
   background-color: $clear-bg;
@@ -27,12 +27,13 @@
   );
 
   .button_inner {
+    @include flexcenter;
     background-image: url('../../public/btn-gradient.png');
     background-size: contain;
     border-top: 2px solid #cdcdcd;
     border-left: 2px solid #cdcdcd70;
     border-right: 2px solid #cdcdcd70;
-    height: 85%;
+    height: 93%;
   }
 
   &:hover {
@@ -42,5 +43,11 @@
 
   &:active {
     top: 1px;
+  }
+
+  @include phones {
+    height: 25px;
+    width: 120px;
+    font-size: 20px;
   }
 }

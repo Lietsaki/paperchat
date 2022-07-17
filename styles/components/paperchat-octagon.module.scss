@@ -13,7 +13,7 @@
     background-color: $clear-bg;
     @include pixelated-rectangle;
     @include flexcenter;
-    width: 99.3%;
+    width: 99%;
     height: 90%;
 
     @include phones {

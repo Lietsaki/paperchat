@@ -13,21 +13,40 @@
 .bottom {
   background-image: url('../../public/bottom-home-bg.png');
   background-size: 85%;
-  background-position: 50% 25%;
+  background-position: 50% 20%;
   display: grid;
-  grid-template-rows: 13% 23% 23% 22% 19%;
+  grid-template-rows: 17% 22% 22% 21% 18%;
   grid-template-columns: 18% 16% 16% 16% 16% 18%;
 
-  @include large-monitor {
-    grid-template-rows: 14% 21% 22% 21% 22%;
-  }
-
   @include standard-laptop {
-    background-position: 50% 20%;
-    grid-template-rows: 17% 22% 21% 21% 19%;
+    grid-template-rows: 17% 22% 22% 22% 17%;
   }
 
   @include phones {
     grid-template-rows: 18% 21% 22% 21% 18%;
+  }
+
+  div[class^='home_btn_'] {
+    padding: 6px;
+    filter: blur(0.3px);
+  }
+
+  .btn_search_rooms {
+    grid-row: 2 / 3;
+    grid-column: 2 / 6;
+  }
+  .btn_create_room {
+    grid-row: 3 / 4;
+    grid-column: 2 / 6;
+  }
+  .btn_join {
+    grid-row: 4 / 5;
+    grid-column: 2 / 6;
+  }
+  .username_input {
+    grid-row: 5 / 6;
+    grid-column: 1 / 3;
+    display: flex;
+    align-items: flex-end;
   }
 }

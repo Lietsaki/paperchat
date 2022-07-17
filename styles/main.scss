@@ -30,8 +30,8 @@ $dim-beige: #d6d2cb;
   }
 }
 
-@mixin small-height-laptop {
-  @media (max-width: 1440px) and (max-height: 1000px) {
+@mixin small-height-devices {
+  @media (min-width: 1200px) and (max-width: 1536px) and (max-height: 1020px) {
     @content;
   }
 }
@@ -156,6 +156,88 @@ $dim-beige: #d6d2cb;
       1px calc(100% - 3px),
       1px calc(100% - 4px),
       0px calc(100% - 4px)
+    );
+  }
+}
+
+@mixin pixelated-rectangle-except-left {
+  clip-path: polygon(
+    0px 8px,
+    0px 8px,
+    0px 6px,
+    0px 6px,
+    0px 4px,
+    0px 4px,
+    0px 2px,
+    0px 0px,
+    8px 0px,
+    calc(100% - 8px) 0px,
+    calc(100% - 8px) 2px,
+    calc(100% - 6px) 2px,
+    calc(100% - 6px) 4px,
+    calc(100% - 4px) 4px,
+    calc(100% - 4px) 6px,
+    calc(100% - 2px) 6px,
+    calc(100% - 2px) 8px,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 2px) calc(100% - 8px),
+    calc(100% - 2px) calc(100% - 6px),
+    calc(100% - 4px) calc(100% - 6px),
+    calc(100% - 4px) calc(100% - 4px),
+    calc(100% - 6px) calc(100% - 4px),
+    calc(100% - 6px) calc(100% - 2px),
+    calc(100% - 8px) calc(100% - 2px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    8px calc(100% - 0px),
+    6px calc(100% - 0px),
+    6px calc(100% - 0px),
+    4px calc(100% - 0px),
+    0px calc(100% - 0px),
+    2px calc(100% - 0px),
+    0px calc(100% - 0px),
+    0px calc(100% - 0px)
+  );
+
+  @include phones {
+    clip-path: polygon(
+      0px 4px,
+      0px 4px,
+      0px 3px,
+      0px 3px,
+      0px 2px,
+      0px 2px,
+      0px 1px,
+      0px 1px,
+      4px 0px,
+      calc(100% - 4px) 0px,
+      calc(100% - 4px) 1px,
+      calc(100% - 3px) 1px,
+      calc(100% - 3px) 2px,
+      calc(100% - 2px) 2px,
+      calc(100% - 2px) 3px,
+      calc(100% - 1px) 3px,
+      calc(100% - 1px) 4px,
+      100% 4px,
+      100% calc(100% - 4px),
+      calc(100% - 1px) calc(100% - 4px),
+      calc(100% - 1px) calc(100% - 3px),
+      calc(100% - 2px) calc(100% - 3px),
+      calc(100% - 2px) calc(100% - 2px),
+      calc(100% - 3px) calc(100% - 2px),
+      calc(100% - 3px) calc(100% - 1px),
+      calc(100% - 4px) calc(100% - 1px),
+      calc(100% - 4px) 100%,
+      4px 100%,
+      4px calc(100% - 0px),
+      3px calc(100% - 0px),
+      3px calc(100% - 0px),
+      2px calc(100% - 0px),
+      2px calc(100% - 0px),
+      1px calc(100% - 0px),
+      1px calc(100% - 0px),
+      0px calc(100% - 0px)
     );
   }
 }
