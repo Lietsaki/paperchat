@@ -63,3 +63,12 @@ a {
     margin-bottom: 40px;
   }
 }
+
+.modal_cover {
+  background-color: rgba(34, 34, 34, 0.6);
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: 1;
+  transition: all 0.2s ease-in-out;
+}

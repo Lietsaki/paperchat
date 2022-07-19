@@ -1,6 +1,7 @@
 import styles from 'styles/home/home.module.scss'
 import MenuButton from 'components/MenuButton'
 import UsernameInput from 'components/UsernameInput'
+import { useState } from 'react'
 
 const {
   top,
@@ -9,9 +10,24 @@ const {
   btn_create_room,
   btn_join,
   username_input,
+  editing_username,
 } = styles
 
 const Home = () => {
+  const [editingUsername, setEditingUsername] = useState(false)
+  const editUsername = () => (editingUsername ? '' : setEditingUsername(true))
+
+  const editingUsernameModalCover = () => {
+    return editingUsername ? (
+      <div onClick={() => setEditingUsername(false)} className="modal_cover" />
+    ) : (
+      ''
+    )
+  }
+  const getUsernameAreaClasses = () => {
+    return `${username_input} ${editingUsername ? editing_username : ''}`
+  }
+
   return (
     <div className="main">
       <div className="screens_section">
@@ -27,9 +43,11 @@ const Home = () => {
             <MenuButton text="Join with a code" />
           </div>
 
-          <div className={username_input}>
-            <UsernameInput />
+          <div onClick={editUsername} className={getUsernameAreaClasses()}>
+            <UsernameInput editing={editingUsername} />
           </div>
+
+          {editingUsernameModalCover()}
         </div>
       </div>
     </div>

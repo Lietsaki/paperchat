@@ -46,6 +46,10 @@
       background: #111;
     }
 
+    .title {
+      color: $strong-yellow;
+    }
+
     .username_input {
       width: 98%;
       height: 67%;
@@ -62,6 +66,19 @@
 
     .username_input {
       font-size: 22px;
+    }
+  }
+}
+
+.make_complete_rectangle {
+  @include pixelated-rectangle;
+  .username_input {
+    @include pixelated-rectangle;
+    &:focus-within {
+      &::after {
+        @include pixelated-rectangle;
+        background: red;
+      }
     }
   }
 }

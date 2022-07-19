@@ -5,6 +5,7 @@ $clear-bg: #fbfbfb;
 $green-border: #5a8d5a;
 $dark-gray: #696969;
 $dim-beige: #d6d2cb;
+$strong-yellow: #f9ed71;
 
 @font-face {
   font-family: 'nds';
@@ -116,7 +117,7 @@ $dim-beige: #d6d2cb;
     2px calc(100% - 6px),
     2px calc(100% - 8px),
     0px calc(100% - 8px)
-  );
+  ) !important;
 
   @include phones {
     clip-path: polygon(
@@ -156,7 +157,7 @@ $dim-beige: #d6d2cb;
       1px calc(100% - 3px),
       1px calc(100% - 4px),
       0px calc(100% - 4px)
-    );
+    ) !important;
   }
 }
 

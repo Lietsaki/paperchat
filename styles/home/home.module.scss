@@ -17,6 +17,7 @@
   display: grid;
   grid-template-rows: 17% 22% 22% 21% 18%;
   grid-template-columns: 18% 16% 16% 16% 16% 18%;
+  position: relative;
 
   @include standard-laptop {
     grid-template-rows: 17% 22% 22% 22% 17%;
@@ -48,9 +49,32 @@
     grid-column: 1 / 3;
     display: flex;
     align-items: flex-end;
+    z-index: 10;
+    cursor: pointer;
 
     @include small-phones {
       grid-column: 1 / 4;
+    }
+
+    input {
+      cursor: pointer;
+    }
+
+    &.editing_username {
+      grid-row: unset;
+      grid-column: unset;
+      position: absolute;
+      filter: drop-shadow(18px 2px 49px rgba(0, 0, 0, 0.6))
+        drop-shadow(-9px 15px 31px rgba(0, 0, 0, 0.5));
+
+      // Center an absolutely positioned element
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+
+      input {
+        cursor: text;
+      }
     }
   }
 }
