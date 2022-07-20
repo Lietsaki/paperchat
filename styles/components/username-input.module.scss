@@ -42,7 +42,7 @@
       width: 100%;
       height: 75%;
       position: relative;
-      bottom: 71%;
+      bottom: 64%;
       background: #111;
     }
 
@@ -51,8 +51,10 @@
     }
 
     .username_input {
-      width: 98%;
-      height: 67%;
+      width: 96%;
+      height: 62%;
+      left: 2%;
+      top: 4%;
     }
   }
 
@@ -72,13 +74,14 @@
 
 .make_complete_rectangle {
   @include pixelated-rectangle;
+
   .username_input {
     @include pixelated-rectangle;
-    &:focus-within {
-      &::after {
-        @include pixelated-rectangle;
-        background: red;
-      }
+  }
+
+  &:focus-within {
+    &::after {
+      @include pixelated-rectangle;
     }
   }
 }
