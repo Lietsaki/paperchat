@@ -64,8 +64,8 @@
       grid-row: unset;
       grid-column: unset;
       position: absolute;
-      filter: drop-shadow(18px 2px 49px rgba(0, 0, 0, 0.6))
-        drop-shadow(-9px 15px 31px rgba(0, 0, 0, 0.5));
+      filter: drop-shadow(-12px -10px 0.5px rgba(0, 0, 0, 0.6));
+      animation: moveToCenter 0.2s ease-out;
 
       // Center an absolutely positioned element
       left: 50%;
@@ -74,6 +74,23 @@
 
       input {
         cursor: text;
+      }
+
+      @include phones {
+        width: 200px;
+      }
+    }
+
+    @keyframes moveToCenter {
+      0% {
+        left: 0%;
+        top: 90%;
+        transform: translate(-0%, -0%);
+      }
+      100% {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
       }
     }
   }

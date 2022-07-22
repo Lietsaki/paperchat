@@ -51,15 +51,15 @@
     }
 
     .username_input {
-      width: 96%;
+      width: 97%;
       height: 62%;
-      left: 2%;
+      left: 1.5%;
       top: 4%;
     }
   }
 
   @include phones {
-    height: 40px;
+    height: 42px;
 
     .title {
       font-size: 12px;
@@ -68,6 +68,19 @@
 
     .username_input {
       font-size: 22px;
+    }
+
+    &:focus-within {
+      .username_input {
+        height: 56%;
+        top: 4%;
+        padding: 0 0 2px 10px;
+      }
+
+      &::after {
+        height: 70%;
+        bottom: 57%;
+      }
     }
   }
 }
