@@ -1,7 +1,9 @@
-import styles from 'styles/options-screen/options.module.scss'
+import general_styles from 'styles/options-screen/options.module.scss'
 import PaperchatOctagon from 'components/PaperchatOctagon'
 import Button from 'components/Button'
 import { useRouter } from 'next/router'
+import JoinRoomInput from 'components/JoinRoomInput'
+import styles_page from 'styles/join-room/join-room.module.scss'
 
 const {
   top,
@@ -11,12 +13,16 @@ const {
   top_section,
   bottom_section,
   bottom_top,
-  bottom_content,
   bottom_bottom,
-} = styles
+} = general_styles
 
-const FindRooms = () => {
+const { midsection } = styles_page
+
+const JoinWithACode = () => {
   const router = useRouter()
+  const join = (code: string) => {
+    console.log('we want to join with this code ', code)
+  }
 
   return (
     <div className="main">
@@ -32,8 +38,12 @@ const FindRooms = () => {
           </div>
         </div>
         <div className={`screen ${bottom}`}>
-          <div className={bottom_top}></div>
-          <div className={bottom_content}></div>
+          <div className={bottom_top}>
+            <p>Join a private room with an invitation code</p>
+          </div>
+          <div className={midsection}>
+            <JoinRoomInput handleCodeSubmit={join} />
+          </div>
           <div className={bottom_bottom}>
             <Button is_small onClick={() => router.push('/')} text="Cancel" />
           </div>
@@ -43,4 +53,4 @@ const FindRooms = () => {
   )
 }
 
-export default FindRooms
+export default JoinWithACode

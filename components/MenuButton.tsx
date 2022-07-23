@@ -4,11 +4,12 @@ const { menu_button } = styles
 
 type MenuButtonProps = {
   text: string
+  onClick: () => void
 }
 
-const MenuButton = ({ text }: MenuButtonProps) => {
+const MenuButton = ({ text, onClick }: MenuButtonProps) => {
   return (
-    <button className={menu_button}>
+    <button onClick={onClick} className={menu_button}>
       <div className="">{text}</div>
     </button>
   )

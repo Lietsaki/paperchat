@@ -42,10 +42,22 @@
   grid-template-rows: 12% auto 12%;
 
   .bottom_top {
+    @include flexcenter;
     background-image: url('../../public/options-gradient-top.png');
     background-size: contain;
     border-bottom: 3px solid #333;
-    @include flexcenter;
+
+    p {
+      font-size: 25px;
+      filter: blur(0.3px);
+
+      @include phones {
+        font-size: 20px;
+      }
+      @include small-phones {
+        font-size: 16px;
+      }
+    }
   }
 
   // .bottom_center {

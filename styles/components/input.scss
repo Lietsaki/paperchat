@@ -15,7 +15,7 @@
     letter-spacing: 3px;
   }
 
-  .username_input {
+  input {
     @include pixelated-rectangle-except-left;
     @include ds-font;
     height: 72%;
@@ -51,7 +51,7 @@
       color: $strong-yellow;
     }
 
-    .username_input {
+    input {
       width: 97%;
       height: 62%;
       left: 1.5%;
@@ -67,12 +67,12 @@
       padding: 2px 0 2px 5px;
     }
 
-    .username_input {
+    input {
       font-size: 22px;
     }
 
     &:focus-within {
-      .username_input {
+      input {
         height: 56%;
         top: 4%;
         padding: 0 0 2px 10px;
@@ -84,12 +84,20 @@
       }
     }
   }
+
+  &.simple_width {
+    width: 250px;
+
+    @include phones {
+      width: 55vw;
+    }
+  }
 }
 
 .make_complete_rectangle {
   @include pixelated-rectangle;
 
-  .username_input {
+  input {
     @include pixelated-rectangle;
   }
 

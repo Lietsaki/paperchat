@@ -49,5 +49,20 @@
     height: 25px;
     width: 120px;
     font-size: 20px;
+
+    .button_inner {
+      padding-bottom: 2px;
+    }
+  }
+
+  @include small-phones {
+    &.smaller {
+      height: 18px;
+      font-size: 16px;
+
+      .button_inner {
+        padding-bottom: 3px;
+      }
+    }
   }
 }

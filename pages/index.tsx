@@ -3,6 +3,7 @@ import MenuButton from 'components/MenuButton'
 import Button from 'components/Button'
 import UsernameInput from 'components/UsernameInput'
 import { useState } from 'react'
+import { useRouter } from 'next/router'
 
 const {
   top,
@@ -18,6 +19,7 @@ const {
 const Home = () => {
   const [editingUsername, setEditingUsername] = useState(false)
   const [usernameAreaClasses, setUsernameAreaClasses] = useState(username_input)
+  const router = useRouter()
 
   const editUsername = () => {
     setEditingUsername(true)
@@ -44,13 +46,22 @@ const Home = () => {
         <div className={`screen ${top}`}></div>
         <div className={`screen ${bottom}`}>
           <div className={btn_search_rooms}>
-            <MenuButton text="Search rooms" />
+            <MenuButton
+              onClick={() => router.push('/find-rooms')}
+              text="Search rooms"
+            />
           </div>
           <div className={btn_create_room}>
-            <MenuButton text="Create a room" />
+            <MenuButton
+              onClick={() => router.push('/create-room')}
+              text="Create a room"
+            />
           </div>
           <div className={btn_join}>
-            <MenuButton text="Join with a code" />
+            <MenuButton
+              onClick={() => router.push('/join-room')}
+              text="Join with a code"
+            />
           </div>
 
           <div onClick={editUsername} className={usernameAreaClasses}>

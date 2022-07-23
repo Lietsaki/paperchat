@@ -54,6 +54,7 @@ a {
   max-height: 500px;
   border-radius: 4px;
   box-shadow: 2px 3px 6px #222;
+  @include ds-font;
 
   @include standard-laptop {
     max-height: 42vh;
