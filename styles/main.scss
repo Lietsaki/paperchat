@@ -242,3 +242,11 @@ $strong-yellow: #f9ed71;
     );
   }
 }
+
+div.main {
+  --backToCornerWidth: 35%;
+
+  @include small-phones() {
+    --backToCornerWidth: 50%;
+  }
+}

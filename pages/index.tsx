@@ -1,5 +1,6 @@
 import styles from 'styles/home/home.module.scss'
 import MenuButton from 'components/MenuButton'
+import Button from 'components/Button'
 import UsernameInput from 'components/UsernameInput'
 import { useState } from 'react'
 
@@ -11,21 +12,30 @@ const {
   btn_join,
   username_input,
   editing_username,
+  back_to_corner,
 } = styles
 
 const Home = () => {
   const [editingUsername, setEditingUsername] = useState(false)
-  const editUsername = () => (editingUsername ? '' : setEditingUsername(true))
+  const [usernameAreaClasses, setUsernameAreaClasses] = useState(username_input)
+
+  const editUsername = () => {
+    setEditingUsername(true)
+    setUsernameAreaClasses(`${username_input} ${editing_username}`)
+  }
+  const finishEditingUsername = () => {
+    setEditingUsername(false)
+    setUsernameAreaClasses(`${username_input} ${back_to_corner}`)
+  }
 
   const editingUsernameModalCover = () => {
     return editingUsername ? (
-      <div onClick={() => setEditingUsername(false)} className="modal_cover" />
-    ) : (
-      ''
-    )
+      <div onClick={() => finishEditingUsername()} className="modal_cover" />
+    ) : null
   }
-  const getUsernameAreaClasses = () => {
-    return `${username_input} ${editingUsername ? editing_username : ''}`
+
+  const saveUsername = () => {
+    console.log('save username!')
   }
 
   return (
@@ -43,8 +53,11 @@ const Home = () => {
             <MenuButton text="Join with a code" />
           </div>
 
-          <div onClick={editUsername} className={getUsernameAreaClasses()}>
+          <div onClick={editUsername} className={usernameAreaClasses}>
             <UsernameInput editing={editingUsername} />
+            {editingUsername ? (
+              <Button onClick={saveUsername} text="Save" />
+            ) : null}
           </div>
 
           {editingUsernameModalCover()}
