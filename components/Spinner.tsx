@@ -1,112 +1,32 @@
-import { useEffect } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 
 type SpinnerProps = {
   speed?: number
 }
 
-const Spinner = ({ speed = 70 }: SpinnerProps) => {
+const Spinner = ({ speed = 80 }: SpinnerProps) => {
   const spin = () => {
-    const hiddenSquares = document.querySelectorAll('.bg-transparent')
-    const hiddenOne = hiddenSquares[0].classList[0]
-    const hiddenTwo = hiddenSquares[1].classList[0]
-    const hiddenThree = hiddenSquares[2].classList[0]
-
-    const leftPyramid =
-      hiddenOne === 'top-mid' &&
-      hiddenTwo === 'top-right' &&
-      hiddenThree === 'mid-right'
-
-    const leftColumn =
-      hiddenOne === 'top-right' &&
-      hiddenTwo === 'mid-right' &&
-      hiddenThree === 'bot-right'
-
-    const leftPyramidInverse =
-      hiddenOne === 'mid-right' &&
-      hiddenTwo === 'bot-mid' &&
-      hiddenThree === 'bot-right'
-
-    const topRow =
-      hiddenOne === 'bot-left' &&
-      hiddenTwo === 'bot-mid' &&
-      hiddenThree === 'bot-right'
-
-    const rightPyramidInverse =
-      hiddenOne === 'mid-left' &&
-      hiddenTwo === 'bot-left' &&
-      hiddenThree === 'bot-mid'
-
-    const rightColumn =
-      hiddenOne === 'top-left' &&
-      hiddenTwo === 'mid-left' &&
-      hiddenThree === 'bot-left'
-
-    const rightPyramid =
-      hiddenOne === 'top-left' &&
-      hiddenTwo === 'top-mid' &&
-      hiddenThree === 'mid-left'
-
-    const bottomRow =
-      hiddenOne === 'top-left' &&
-      hiddenTwo === 'top-mid' &&
-      hiddenThree === 'top-right'
-
-    if (leftPyramid) {
-      document.querySelector('.top-mid')?.classList.remove('bg-transparent')
-      document.querySelector('.bot-right')?.classList.add('bg-transparent')
-    }
-
-    if (leftColumn) {
-      document.querySelector('.top-right')?.classList.remove('bg-transparent')
-      document.querySelector('.mid-right')?.classList.add('bg-transparent')
-      document.querySelector('.bot-right')?.classList.add('bg-transparent')
-      document.querySelector('.bot-mid')?.classList.add('bg-transparent')
-    }
-
-    if (leftPyramidInverse) {
-      document.querySelector('.bot-left')?.classList.add('bg-transparent')
-      document.querySelector('.mid-right')?.classList.remove('bg-transparent')
-    }
-
-    if (topRow) {
-      document.querySelector('.mid-left')?.classList.add('bg-transparent')
-      document.querySelector('.bot-left')?.classList.add('bg-transparent')
-      document.querySelector('.bot-right')?.classList.remove('bg-transparent')
-    }
-
-    if (rightPyramidInverse) {
-      document.querySelector('.top-left')?.classList.add('bg-transparent')
-      document.querySelector('.bot-mid')?.classList.remove('bg-transparent')
-    }
-
-    if (rightColumn) {
-      document.querySelector('.top-mid')?.classList.add('bg-transparent')
-      document.querySelector('.bot-left')?.classList.remove('bg-transparent')
-    }
-
-    if (rightPyramid) {
-      document.querySelector('.mid-left')?.classList.remove('bg-transparent')
-      document.querySelector('.top-right')?.classList.add('bg-transparent')
-    }
-
-    if (bottomRow) {
-      document.querySelector('.mid-right')?.classList.add('bg-transparent')
-      document.querySelector('.top-left')?.classList.remove('bg-transparent')
+    if (displayingGrid === 'leftPyramid') {
+      setDisplayingGrid('leftColumn')
+    } else if (displayingGrid === 'leftColumn') {
+      setDisplayingGrid('leftPyramidInverse')
+    } else if (displayingGrid === 'leftPyramidInverse') {
+      setDisplayingGrid('topRow')
+    } else if (displayingGrid === 'topRow') {
+      setDisplayingGrid('rightPyramidInverse')
+    } else if (displayingGrid === 'rightPyramidInverse') {
+      setDisplayingGrid('rightColumn')
+    } else if (displayingGrid === 'rightColumn') {
+      setDisplayingGrid('rightPyramid')
+    } else if (displayingGrid === 'rightPyramid') {
+      setDisplayingGrid('bottomRow')
+    } else if (displayingGrid === 'bottomRow') {
+      setDisplayingGrid('leftPyramid')
     }
   }
 
-  useEffect(() => {
-    let interval = setInterval(() => {
-      spin()
-    }, speed)
-
-    return () => {
-      clearInterval(interval)
-    }
-  }, [])
-
-  return (
-    <div className="spinner-grid">
+  const leftPyramid = (
+    <Fragment>
       <div className="top-left"></div>
       <div className="top-mid bg-transparent"></div>
       <div className="top-right bg-transparent"></div>
@@ -118,8 +38,141 @@ const Spinner = ({ speed = 70 }: SpinnerProps) => {
       <div className="bot-left"></div>
       <div className="bot-mid"></div>
       <div className="bot-right"></div>
-    </div>
+    </Fragment>
   )
+
+  const leftColumn = (
+    <Fragment>
+      <div className="top-left"></div>
+      <div className="top-mid"></div>
+      <div className="top-right bg-transparent"></div>
+
+      <div className="mid-left"></div>
+      <div className="mid-mid"></div>
+      <div className="mid-right bg-transparent"></div>
+
+      <div className="bot-left"></div>
+      <div className="bot-mid"></div>
+      <div className="bot-right bg-transparent"></div>
+    </Fragment>
+  )
+
+  const leftPyramidInverse = (
+    <Fragment>
+      <div className="top-left"></div>
+      <div className="top-mid"></div>
+      <div className="top-right"></div>
+
+      <div className="mid-left"></div>
+      <div className="mid-mid"></div>
+      <div className="mid-right bg-transparent"></div>
+
+      <div className="bot-left"></div>
+      <div className="bot-mid bg-transparent"></div>
+      <div className="bot-right bg-transparent"></div>
+    </Fragment>
+  )
+
+  const topRow = (
+    <Fragment>
+      <div className="top-left"></div>
+      <div className="top-mid"></div>
+      <div className="top-right"></div>
+
+      <div className="mid-left"></div>
+      <div className="mid-mid"></div>
+      <div className="mid-right"></div>
+
+      <div className="bot-left bg-transparent"></div>
+      <div className="bot-mid bg-transparent"></div>
+      <div className="bot-right bg-transparent"></div>
+    </Fragment>
+  )
+
+  const rightPyramidInverse = (
+    <Fragment>
+      <div className="top-left"></div>
+      <div className="top-mid"></div>
+      <div className="top-right"></div>
+
+      <div className="mid-left bg-transparent"></div>
+      <div className="mid-mid"></div>
+      <div className="mid-right"></div>
+
+      <div className="bot-left bg-transparent"></div>
+      <div className="bot-mid bg-transparent"></div>
+      <div className="bot-right"></div>
+    </Fragment>
+  )
+
+  const rightColumn = (
+    <Fragment>
+      <div className="top-left bg-transparent"></div>
+      <div className="top-mid"></div>
+      <div className="top-right"></div>
+
+      <div className="mid-left bg-transparent"></div>
+      <div className="mid-mid"></div>
+      <div className="mid-right"></div>
+
+      <div className="bot-left bg-transparent"></div>
+      <div className="bot-mid"></div>
+      <div className="bot-right"></div>
+    </Fragment>
+  )
+
+  const rightPyramid = (
+    <Fragment>
+      <div className="top-left bg-transparent"></div>
+      <div className="top-mid bg-transparent"></div>
+      <div className="top-right"></div>
+
+      <div className="mid-left bg-transparent"></div>
+      <div className="mid-mid"></div>
+      <div className="mid-right"></div>
+
+      <div className="bot-left"></div>
+      <div className="bot-mid"></div>
+      <div className="bot-right"></div>
+    </Fragment>
+  )
+
+  const bottomRow = (
+    <Fragment>
+      <div className="top-left bg-transparent"></div>
+      <div className="top-mid bg-transparent"></div>
+      <div className="top-right bg-transparent"></div>
+
+      <div className="mid-left"></div>
+      <div className="mid-mid"></div>
+      <div className="mid-right"></div>
+
+      <div className="bot-left"></div>
+      <div className="bot-mid"></div>
+      <div className="bot-right"></div>
+    </Fragment>
+  )
+
+  const grids = {
+    leftPyramid,
+    leftColumn,
+    leftPyramidInverse,
+    topRow,
+    rightPyramidInverse,
+    rightColumn,
+    rightPyramid,
+    bottomRow,
+  }
+
+  const [displayingGrid, setDisplayingGrid] =
+    useState<keyof typeof grids>('leftPyramid')
+
+  useEffect(() => {
+    const timer = setTimeout(() => spin(), speed)
+    return () => clearTimeout(timer)
+  }, [displayingGrid])
+
+  return <div className="spinner-grid">{grids[displayingGrid]}</div>
 }
 
 export default Spinner

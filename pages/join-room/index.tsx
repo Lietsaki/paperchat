@@ -4,7 +4,7 @@ import Button from 'components/Button'
 import { useRouter } from 'next/router'
 import JoinRoomInput from 'components/JoinRoomInput'
 import styles_page from 'styles/join-room/join-room.module.scss'
-import Spinner from 'components/Spinner'
+import Dialog from 'components/Dialog'
 
 const {
   top,
@@ -43,8 +43,8 @@ const JoinWithACode = () => {
             <p>Join a private room with an invitation code</p>
           </div>
           <div className={midsection}>
-            <JoinRoomInput handleCodeSubmit={join} />
-            <Spinner />
+            {/* <JoinRoomInput handleCodeSubmit={join} /> */}
+            <Dialog />
           </div>
           <div className={bottom_bottom}>
             <Button is_small onClick={() => router.push('/')} text="Cancel" />
