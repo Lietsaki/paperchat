@@ -1,0 +1,21 @@
+.spinner-grid {
+  margin-left: 20px;
+  width: 50px;
+  height: 50px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 2px;
+
+  div {
+    background-color: $strong-yellow;
+    box-shadow: 2px 1px 2px #111;
+    filter: blur(0.4px);
+  }
+
+  div.bg-transparent {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
