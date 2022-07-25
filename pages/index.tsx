@@ -14,6 +14,7 @@ const {
   username_input,
   editing_username,
   back_to_corner,
+  save_username_btn_container,
 } = styles
 
 const Home = () => {
@@ -67,7 +68,9 @@ const Home = () => {
           <div onClick={editUsername} className={usernameAreaClasses}>
             <UsernameInput editing={editingUsername} />
             {editingUsername ? (
-              <Button onClick={saveUsername} text="Save" />
+              <div className={save_username_btn_container}>
+                <Button onClick={saveUsername} text="Save" />
+              </div>
             ) : null}
           </div>
 

@@ -9,16 +9,17 @@
   @include flexcenter;
   @include pixelated-rectangle;
 
+  @include small-phones {
+    width: 280px;
+    height: 90px;
+  }
+
   .dialog_layer_2 {
     background-color: $strong-orange;
     @include pixelated-rectangle;
     @include flexcenter;
     width: 97%;
     height: 90%;
-
-    @include phones {
-      width: 98.8%;
-    }
 
     .dialog_content {
       @include pixelated-rectangle;
@@ -37,12 +38,15 @@
         display: flex;
         align-items: center;
         padding: 0 3%;
+
+        @include small-phones {
+          font-size: 18px;
+        }
       }
 
       width: 97.5%;
       height: 92%;
       color: $clear-bg;
-      font-size: 40px;
 
       .spinner-area-left,
       .spinner-area-right {
@@ -51,11 +55,31 @@
         margin-left: 20%;
       }
 
-      @include phones {
-        width: 99%;
-        height: 89%;
-        font-size: 20px;
-        padding-bottom: 1px;
+      .options {
+        height: 24px;
+        display: flex;
+        grid-column: 2 / 4;
+        justify-content: space-between;
+
+        div {
+          width: 100px;
+
+          button {
+            font-size: 20px;
+          }
+        }
+
+        @include small-phones {
+          grid-column: 1/5;
+
+          div {
+            height: 20px;
+
+            button {
+              font-size: 18px;
+            }
+          }
+        }
       }
     }
   }

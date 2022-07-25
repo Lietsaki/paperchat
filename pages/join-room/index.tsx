@@ -15,6 +15,7 @@ const {
   bottom_section,
   bottom_top,
   bottom_bottom,
+  bottom_btn_container,
 } = general_styles
 
 const { midsection } = styles_page
@@ -47,7 +48,9 @@ const JoinWithACode = () => {
             <Dialog />
           </div>
           <div className={bottom_bottom}>
-            <Button is_small onClick={() => router.push('/')} text="Cancel" />
+            <div className={bottom_btn_container}>
+              <Button onClick={() => router.push('/')} text="Cancel" />
+            </div>
           </div>
         </div>
       </div>

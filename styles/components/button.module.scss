@@ -1,6 +1,8 @@
 .button_outer {
-  height: 35px;
-  width: 150px;
+  // height: 35px;
+  // width: 150px;
+  height: 100%;
+  width: 100%;
 
   @include ds-font;
   font-size: 25px;
@@ -46,8 +48,6 @@
   }
 
   @include phones {
-    height: 25px;
-    width: 120px;
     font-size: 20px;
 
     .button_inner {
@@ -56,13 +56,10 @@
   }
 
   @include small-phones {
-    &.smaller {
-      height: 18px;
-      font-size: 16px;
+    font-size: 16px;
 
-      .button_inner {
-        padding-bottom: 3px;
-      }
+    .button_inner {
+      padding-bottom: 3px;
     }
   }
 }

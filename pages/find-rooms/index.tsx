@@ -13,6 +13,7 @@ const {
   bottom_top,
   bottom_content,
   bottom_bottom,
+  bottom_btn_container,
 } = styles
 
 const FindRooms = () => {
@@ -35,7 +36,9 @@ const FindRooms = () => {
           <div className={bottom_top}></div>
           <div className={bottom_content}></div>
           <div className={bottom_bottom}>
-            <Button is_small onClick={() => router.push('/')} text="Cancel" />
+            <div className={bottom_btn_container}>
+              <Button onClick={() => router.push('/')} text="Cancel" />
+            </div>
           </div>
         </div>
       </div>

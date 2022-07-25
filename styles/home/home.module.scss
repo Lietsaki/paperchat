@@ -91,9 +91,18 @@
         width: 200px;
       }
 
-      button {
+      .save_username_btn_container {
         margin-top: 20px;
         animation: moveDown 0.5s ease-in-out;
+        width: 150px;
+        height: 32px;
+
+        button {
+          font-size: 22px;
+          @include phones {
+            font-size: 20px;
+          }
+        }
       }
     }
 
