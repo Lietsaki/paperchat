@@ -40,6 +40,7 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 12% auto 12%;
+  overflow: hidden;
 
   .bottom_top {
     @include flexcenter;
@@ -67,6 +68,8 @@
     background-image: url('../../public/options-gradient-bottom.png');
     background-size: contain;
     border-top: 3px solid #333;
+    position: relative;
+    z-index: 100;
     @include flexcenter;
 
     .bottom_btn_container {

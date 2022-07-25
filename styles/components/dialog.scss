@@ -84,3 +84,28 @@
     }
   }
 }
+
+.go_up {
+  animation: goUp 0.3s linear;
+}
+
+.go_down {
+  animation: goDown 0.3s linear;
+}
+
+@keyframes goUp {
+  from {
+    transform: translateY(230px);
+  }
+  to {
+    transform: translateY(0px);
+  }
+}
+@keyframes goDown {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(230px);
+  }
+}

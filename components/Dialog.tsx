@@ -13,9 +13,11 @@ const MenuButton = ({
 }: DialogProps) => {
   const cancel = () => {
     console.log('user hit cancel')
+    document.querySelector('.dialog_layer_1')?.classList.add('go_down')
   }
   const accept = () => {
     console.log('user accepted')
+    document.querySelector('.dialog_layer_1')?.classList.add('go_down')
   }
 
   const getOptions = () => {
@@ -34,7 +36,7 @@ const MenuButton = ({
   }
 
   return (
-    <div className="dialog_layer_1">
+    <div className="dialog_layer_1 go_up">
       <div className="dialog_layer_2">
         <div className="dialog_content">
           <div className="spinner-area-left">
