@@ -77,12 +77,12 @@
       width: 150px;
 
       @include phones {
-        height: 25px;
+        height: 23px;
         width: 120px;
       }
 
       @include small-phones {
-        height: 18px;
+        height: 20px;
       }
     }
   }

@@ -3,7 +3,7 @@ import PaperchatOctagon from 'components/PaperchatOctagon'
 import Button from 'components/Button'
 import { useRouter } from 'next/router'
 import JoinRoomInput from 'components/JoinRoomInput'
-import styles_page from 'styles/join-room/join-room.module.scss'
+import page_styles from 'styles/join-room/join-room.module.scss'
 import Dialog from 'components/Dialog'
 
 const {
@@ -18,7 +18,7 @@ const {
   bottom_btn_container,
 } = general_styles
 
-const { midsection } = styles_page
+const { midsection } = page_styles
 
 const JoinWithACode = () => {
   const router = useRouter()

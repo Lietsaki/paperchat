@@ -1,0 +1,92 @@
+.option_cards {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  justify-content: space-evenly;
+  align-items: center;
+
+  .card {
+    width: 95%;
+    height: 42%;
+    background-color: $dark-gray;
+    position: relative;
+    @include pixelated-rectangle;
+    @include flexcenter;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    &:active {
+      top: 1px;
+      filter: brightness(85%);
+    }
+
+    .card__inner {
+      @include pixelated-rectangle;
+      width: 98%;
+      height: 90%;
+      background-color: $dim-beige;
+      transition: all 0.2s ease-in-out;
+      position: relative;
+
+      .title_row {
+        display: flex;
+
+        .title {
+          position: absolute;
+          left: 3%;
+          top: 5%;
+          font-size: 600%;
+          color: $dark-gray;
+          transform: rotate(355deg);
+          filter: blur(0.3px);
+        }
+
+        .icon {
+          position: absolute;
+          right: 4%;
+          top: 5%;
+          width: 20%;
+
+          svg {
+            fill: $dark-gray;
+            height: 100%;
+            width: 100%;
+            filter: blur(0.3px);
+          }
+        }
+
+        @include phones {
+          .title {
+            top: 2%;
+            font-size: 400%;
+          }
+        }
+
+        @include small-phones {
+          .title {
+            font-size: 350%;
+          }
+        }
+      }
+
+      .description {
+        font-size: 20px;
+        position: absolute;
+        bottom: 1px;
+        padding: 1px 1px 5px 10px;
+        color: $dark-gray;
+
+        @include phones {
+          font-size: 16px;
+        }
+        @include small-phones {
+          font-size: 12px;
+          bottom: -1px;
+        }
+      }
+    }
+  }
+}
