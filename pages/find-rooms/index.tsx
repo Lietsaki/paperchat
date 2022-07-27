@@ -1,4 +1,5 @@
-import styles from 'styles/options-screen/options.module.scss'
+import general_styles from 'styles/options-screen/options.module.scss'
+import RoomItem from 'components/RoomItem'
 import PaperchatOctagon from 'components/PaperchatOctagon'
 import Button from 'components/Button'
 import { useRouter } from 'next/router'
@@ -14,7 +15,7 @@ const {
   bottom_content,
   bottom_bottom,
   bottom_btn_container,
-} = styles
+} = general_styles
 
 const FindRooms = () => {
   const router = useRouter()
@@ -33,8 +34,21 @@ const FindRooms = () => {
           </div>
         </div>
         <div className={`screen ${bottom}`}>
-          <div className={bottom_top}></div>
-          <div className={bottom_content}></div>
+          <div className={bottom_top}>
+            <p>Choose a Chat Room to join</p>
+          </div>
+          <div className={bottom_content}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+              }}
+            >
+              <RoomItem />
+            </div>
+          </div>
           <div className={bottom_bottom}>
             <div className={bottom_btn_container}>
               <Button onClick={() => router.push('/')} text="Cancel" />

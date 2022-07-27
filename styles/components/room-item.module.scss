@@ -1,0 +1,67 @@
+.room_item {
+  background-color: $dim-beige;
+  background-image: url('../../public/room-item-bg.png');
+  background-size: contain;
+  border: 2px solid $dark-gray;
+  height: 75px;
+  width: 80%;
+  display: grid;
+  grid-template-columns: 20% 40% 40%;
+  filter: blur(0.3px);
+  position: relative;
+  @include ds-font;
+  font-size: 30px;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:active {
+    top: 1px;
+    filter: brightness(85%);
+  }
+
+  .letter_segment {
+  }
+
+  .name_segment {
+    display: flex;
+    align-items: center;
+
+    color: $dark-gray;
+  }
+
+  .users_segment {
+    display: flex;
+    align-items: center;
+
+    .user_number_box {
+      border: 2px solid $dark-gray;
+      background-color: transparent;
+      width: 90px;
+      height: 32px;
+      display: flex;
+      box-shadow: inset 0px 0px 5px 1px $transparent-gray;
+      border-radius: 1.5px;
+
+      .user_icon {
+        width: 24px;
+        height: 28px;
+        align-self: center;
+        margin-right: 15%;
+        margin-left: -2%;
+        margin-bottom: -2%;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      .users_number {
+        color: #111;
+        align-self: center;
+      }
+    }
+  }
+}

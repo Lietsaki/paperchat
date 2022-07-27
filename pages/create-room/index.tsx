@@ -3,7 +3,6 @@ import PaperchatOctagon from 'components/PaperchatOctagon'
 import Button from 'components/Button'
 import { useRouter } from 'next/router'
 import page_styles from 'styles/create-room/create-room.module.scss'
-// import lock_icon from 'public/'
 
 const {
   top,

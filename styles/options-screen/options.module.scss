@@ -73,11 +73,10 @@
     @include flexcenter;
 
     .bottom_btn_container {
-      height: 35px;
+      height: 70%;
       width: 150px;
 
       @include phones {
-        height: 23px;
         width: 120px;
       }
 
