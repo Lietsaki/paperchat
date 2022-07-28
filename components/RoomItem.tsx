@@ -8,6 +8,12 @@ const {
   user_number_box,
   user_icon,
   users_number,
+  letter,
+  pencil,
+  pencil_body,
+  pencil_neck_line,
+  pencil_head,
+  pencil_dots,
 } = styles
 
 type RoomItemProps = {
@@ -18,7 +24,16 @@ type RoomItemProps = {
 const Button = ({ name, users }: RoomItemProps) => {
   return (
     <div className={room_item}>
-      <div className={letter_segment}></div>
+      <div className={letter_segment}>
+        <div className={letter}>A</div>
+        <div className={pencil}>
+          <div className={pencil_body}>
+            <div className={pencil_neck_line}></div>
+            <div className={pencil_head}></div>
+            <div className={pencil_dots}></div>
+          </div>
+        </div>
+      </div>
 
       <div className={name_segment}>Chat Room A999</div>
 

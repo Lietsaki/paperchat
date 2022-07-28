@@ -6,11 +6,12 @@
   height: 75px;
   width: 80%;
   display: grid;
-  grid-template-columns: 20% 40% 40%;
+  grid-template-columns: 20% 50% 30%;
   filter: blur(0.3px);
   position: relative;
   @include ds-font;
   font-size: 30px;
+  overflow: hidden;
 
   &:hover {
     cursor: pointer;
@@ -22,11 +23,84 @@
   }
 
   .letter_segment {
+    background-color: $clear-bg;
+    border-right: 2px solid $dark-gray;
+    position: relative;
+    bottom: 1px;
+    height: 102%;
+    @include flexcenter;
+
+    .letter {
+      font-size: 95px;
+      position: absolute;
+      left: 10%;
+      bottom: -2%;
+      color: $clear-bg;
+      text-shadow: 2px 0 $dark-gray, -2px 0 $dark-gray, 0 2px $dark-gray,
+        0 -2px $dark-gray, 1px 1px $dark-gray, -1px -1px $dark-gray,
+        1px -1px $dark-gray, -1px 1px $dark-gray;
+    }
+
+    .pencil {
+      position: absolute;
+      right: 10%;
+
+      .pencil_body {
+        width: 10px;
+        height: 45px;
+        border: 2px solid $dark-gray;
+        border-bottom: none;
+        position: relative;
+        box-shadow: inset -4px 0px 1px 0px rgba(105, 105, 105, 0.37);
+
+        .pencil_neck_line {
+          position: absolute;
+          bottom: 3px;
+          background-color: $dark-gray;
+          height: 2px;
+          width: 8px;
+        }
+
+        $pencil_head_dot: 2px;
+
+        .pencil_head {
+          position: absolute;
+          bottom: -2px;
+          background-color: $dark-gray;
+          width: $pencil_head_dot;
+          height: $pencil_head_dot;
+
+          &::after {
+            content: '';
+            display: block;
+            position: absolute;
+            background-color: $dark-gray;
+            width: $pencil_head_dot;
+            height: $pencil_head_dot;
+            bottom: 0px;
+            left: 4px;
+          }
+          &::before {
+            content: '';
+            display: block;
+            position: absolute;
+            background-color: $dark-gray;
+            width: $pencil_head_dot;
+            height: $pencil_head_dot;
+            bottom: -2px;
+            left: 2px;
+          }
+        }
+      }
+      .pencil_head {
+      }
+      .pencil_dots {
+      }
+    }
   }
 
   .name_segment {
-    display: flex;
-    align-items: center;
+    @include flexcenter;
 
     color: $dark-gray;
   }
