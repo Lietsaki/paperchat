@@ -118,7 +118,10 @@
   }
 
   .name_segment {
-    @include flexcenter;
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 5%;
+    align-items: center;
 
     color: $dark-gray;
   }
@@ -153,6 +156,94 @@
       .users_number {
         color: #111;
         align-self: center;
+      }
+    }
+  }
+
+  @include phones {
+    width: 90%;
+    height: 60px;
+    grid-template-columns: 18% 50% 32%;
+
+    .letter_segment {
+      .letter {
+        font-size: 80px;
+      }
+
+      .pencil {
+        .pencil_body {
+          height: 38px;
+
+          .pencil_neck_line {
+            width: 7px;
+          }
+
+          .pencil_dots {
+            bottom: -6px;
+          }
+        }
+      }
+    }
+
+    .name_segment {
+      font-size: 25px;
+    }
+
+    .users_segment {
+      .user_number_box {
+        width: 80px;
+        height: 28px;
+
+        .user_icon {
+          width: 22px;
+          height: 25px;
+          margin-right: 12%;
+        }
+      }
+    }
+  }
+
+  @include small-phones {
+    height: 52px;
+    grid-template-columns: 20% 50% 30%;
+
+    .letter_segment {
+      .letter {
+        font-size: 65px;
+      }
+
+      .pencil {
+        .pencil_body {
+          height: 32px;
+          width: 9px;
+          box-shadow: inset -3px 0px 1px 0px rgba(105, 105, 105, 0.37),
+            3px 0px 2px 0px rgba(105, 105, 105, 0.37);
+
+          .pencil_dots {
+            bottom: -5px;
+          }
+        }
+      }
+    }
+
+    .name_segment {
+      font-size: 22px;
+    }
+
+    .users_segment {
+      .user_number_box {
+        width: 80%;
+        height: 28px;
+
+        .user_icon {
+          width: 18px;
+          height: 22px;
+          margin-right: 10%;
+        }
+
+        .users_number {
+          font-size: 26px;
+        }
       }
     }
   }
