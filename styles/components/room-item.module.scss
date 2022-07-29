@@ -6,7 +6,7 @@
   height: 75px;
   width: 80%;
   display: grid;
-  grid-template-columns: 20% 50% 30%;
+  grid-template-columns: 16% 50% 34%;
   filter: blur(0.3px);
   position: relative;
   @include ds-font;
@@ -36,6 +36,7 @@
       left: 10%;
       bottom: -2%;
       color: $clear-bg;
+      filter: drop-shadow(3px 3px 2px $transparent-gray);
       text-shadow: 2px 0 $dark-gray, -2px 0 $dark-gray, 0 2px $dark-gray,
         0 -2px $dark-gray, 1px 1px $dark-gray, -1px -1px $dark-gray,
         1px -1px $dark-gray, -1px 1px $dark-gray;
@@ -51,7 +52,8 @@
         border: 2px solid $dark-gray;
         border-bottom: none;
         position: relative;
-        box-shadow: inset -4px 0px 1px 0px rgba(105, 105, 105, 0.37);
+        box-shadow: inset -4px 0px 1px 0px rgba(105, 105, 105, 0.37),
+          3px 0px 2px 0px rgba(105, 105, 105, 0.37);
 
         .pencil_neck_line {
           position: absolute;
@@ -61,22 +63,22 @@
           width: 8px;
         }
 
-        $pencil_head_dot: 2px;
+        $pencil_dot: 2px;
 
         .pencil_head {
           position: absolute;
           bottom: -2px;
           background-color: $dark-gray;
-          width: $pencil_head_dot;
-          height: $pencil_head_dot;
+          width: $pencil_dot;
+          height: $pencil_dot;
 
           &::after {
             content: '';
             display: block;
             position: absolute;
             background-color: $dark-gray;
-            width: $pencil_head_dot;
-            height: $pencil_head_dot;
+            width: $pencil_dot;
+            height: $pencil_dot;
             bottom: 0px;
             left: 4px;
           }
@@ -85,16 +87,32 @@
             display: block;
             position: absolute;
             background-color: $dark-gray;
-            width: $pencil_head_dot;
-            height: $pencil_head_dot;
+            width: $pencil_dot;
+            height: $pencil_dot;
             bottom: -2px;
             left: 2px;
           }
         }
-      }
-      .pencil_head {
-      }
-      .pencil_dots {
+
+        .pencil_dots {
+          position: absolute;
+          bottom: -8px;
+          left: -3px;
+          width: $pencil_dot;
+          height: $pencil_dot;
+          background-color: $dark-gray;
+          box-shadow: -2px 0px 4px 0.5px $dark-gray;
+
+          &::after {
+            content: '';
+            display: block;
+            position: absolute;
+            background-color: $dark-gray;
+            width: $pencil_dot;
+            height: $pencil_dot;
+            left: -4px;
+          }
+        }
       }
     }
   }

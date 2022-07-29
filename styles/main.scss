@@ -28,6 +28,12 @@ $strong-orange: #fb6900;
   }
 }
 
+@mixin small-tablet {
+  @media (max-width: 800px) {
+    @content;
+  }
+}
+
 @mixin landscape-tablet-up {
   @media (max-width: 800px) {
     @content;
