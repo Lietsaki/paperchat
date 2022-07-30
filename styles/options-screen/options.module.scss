@@ -44,7 +44,7 @@
 
   .bottom_top {
     @include flexcenter;
-    background-image: url('../../public/options-gradient-top.png');
+    background-image: url('/backgrounds/options-gradient-top.png');
     background-size: contain;
     border-bottom: 3px solid #333;
 
@@ -65,7 +65,7 @@
   // }
 
   .bottom_bottom {
-    background-image: url('../../public/options-gradient-bottom.png');
+    background-image: url('/backgrounds/options-gradient-bottom.png');
     background-size: contain;
     border-top: 3px solid #333;
     position: relative;

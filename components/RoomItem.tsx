@@ -40,7 +40,7 @@ const Button = ({ name, users }: RoomItemProps) => {
       <div className={users_segment}>
         <div className={user_number_box}>
           <div className={user_icon}>
-            <img src="/room-item-user.png" alt="user icon" />
+            <img src="/icons/room-item-user.png" alt="user icon" />
           </div>
           <div className={users_number}>0/16</div>
         </div>

@@ -24,7 +24,7 @@
     .dialog_content {
       @include pixelated-rectangle;
       background-color: $dark-gray;
-      background-image: url('../../public/dialog-bg.png');
+      background-image: url('/backgrounds/dialog-bg.png');
       background-size: contain;
       font-family: 'nds', roboto, sans-serif;
       display: grid;

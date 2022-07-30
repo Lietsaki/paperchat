@@ -1,5 +1,5 @@
 .top {
-  background-image: url('../../public/top-home-bg.png');
+  background-image: url('/backgrounds/top-home-bg.png');
   background-position: bottom;
   background-size: 21%;
   background-position: 3% 0%;
@@ -11,7 +11,7 @@
 }
 
 .bottom {
-  background-image: url('../../public/bottom-home-bg.png');
+  background-image: url('/backgrounds/bottom-home-bg.png');
   background-size: 85%;
   background-position: 50% 20%;
   display: grid;

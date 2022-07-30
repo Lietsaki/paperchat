@@ -12,7 +12,7 @@ $strong-orange: #fb6900;
 
 @font-face {
   font-family: 'nds';
-  src: url('../public/nds.ttf') format('truetype');
+  src: url('/fonts/nds.ttf') format('truetype');
 }
 
 // MIXINS
@@ -59,7 +59,7 @@ $strong-orange: #fb6900;
 }
 
 @mixin options-bg {
-  background-image: url('../public/options-bg.png');
+  background-image: url('/backgrounds/options-bg.png');
   background-size: cover;
 }
 

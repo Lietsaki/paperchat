@@ -30,7 +30,7 @@
 
   .button_inner {
     @include flexcenter;
-    background-image: url('../../public/btn-gradient.png');
+    background-image: url('/backgrounds/btn-gradient.png');
     background-size: contain;
     border-top: 2px solid #cdcdcd;
     border-left: 2px solid #cdcdcd70;
