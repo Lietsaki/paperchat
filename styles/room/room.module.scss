@@ -28,12 +28,16 @@
     }
 
     div {
-      margin: 10px 10px;
+      margin: 4px 10px;
+    }
+
+    .pixelated_top_left {
+      @include pixelated-top-left;
     }
 
     .tool_container {
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
       position: relative;
     }
   }
