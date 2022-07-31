@@ -14,6 +14,8 @@ const {
   active,
   active_on_click,
   pixelated_top_left,
+  arrows_section,
+  pencil_section,
 } = page_styles
 
 type keyboard = 'alphanumeric' | 'accents' | 'symbols' | 'smileys'
@@ -43,29 +45,31 @@ const FindRooms = () => {
 
         <div className={`screen ${bottom}`}>
           <div className={tools_column}>
-            <div className={tool_container}>
-              <img
-                src="/tool-buttons/top-arrow.png"
-                alt="arrow top button"
-                className={active_on_click}
-              />
-              <img
-                src="/tool-buttons/active/top-arrow.png"
-                alt="arrow top button active"
-                className={active}
-              />
-            </div>
-            <div className={tool_container}>
-              <img
-                src="/tool-buttons/down-arrow.png"
-                alt="arrow down button"
-                className={active_on_click}
-              />
-              <img
-                src="/tool-buttons/active/down-arrow.png"
-                alt="arrow down button active"
-                className={active}
-              />
+            <div className={arrows_section}>
+              <div className={tool_container}>
+                <img
+                  src="/tool-buttons/top-arrow.png"
+                  alt="arrow top button"
+                  className={active_on_click}
+                />
+                <img
+                  src="/tool-buttons/active/top-arrow.png"
+                  alt="arrow top button active"
+                  className={active}
+                />
+              </div>
+              <div className={tool_container}>
+                <img
+                  src="/tool-buttons/down-arrow.png"
+                  alt="arrow down button"
+                  className={active_on_click}
+                />
+                <img
+                  src="/tool-buttons/active/down-arrow.png"
+                  alt="arrow down button active"
+                  className={active}
+                />
+              </div>
             </div>
             <div className={tool_container} onClick={() => setUsingPencil(true)}>
               <img src={getButton(usingPencil, 'pencil')} alt="pencil button" />

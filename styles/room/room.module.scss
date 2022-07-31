@@ -1,9 +1,15 @@
 .bottom {
   background-color: $clear-bg;
   display: grid;
-  grid-template-columns: 8% 92%;
+  grid-template-columns: 9% 91%;
 
   .tools_column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px 0px;
+    position: relative;
+
     img {
       width: 100%;
       height: 100%;
@@ -27,10 +33,6 @@
       }
     }
 
-    div {
-      margin: 4px 10px;
-    }
-
     .pixelated_top_left {
       @include pixelated-top-left;
     }
@@ -39,6 +41,25 @@
       width: 30px;
       height: 30px;
       position: relative;
+    }
+
+    .arrows_section {
+      :first-child {
+        margin-bottom: 2px;
+      }
+
+      &::after {
+        content: '';
+        display: block;
+        border-top: dotted 3px $dark-gray;
+        width: 100%;
+        filter: blur(0.6px);
+        margin: 4px 0 8px 0;
+
+        @include phones {
+          border-width: 2px;
+        }
+      }
     }
   }
 
