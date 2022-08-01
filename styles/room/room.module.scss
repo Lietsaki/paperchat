@@ -1,45 +1,49 @@
 .bottom {
   background-color: $clear-bg;
   display: grid;
-  grid-template-columns: 7% 93%;
+  grid-template-columns: 7.5% 1fr;
+  grid-template-rows: 6.5% 1fr;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    position: relative;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    &.active_on_click {
+      &:active {
+        opacity: 0;
+      }
+    }
+
+    &.active {
+      position: absolute;
+      left: 0px;
+      z-index: 1;
+    }
+  }
 
   .tools_column {
+    grid-row: 1 / -1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 4px 0px;
+    justify-content: center;
     position: relative;
-
-    img {
-      width: 100%;
-      height: 100%;
-      z-index: 2;
-      position: relative;
-
-      &:hover {
-        cursor: pointer;
-      }
-
-      &.active_on_click {
-        &:active {
-          opacity: 0;
-        }
-      }
-
-      &.active {
-        position: absolute;
-        left: 0px;
-        z-index: 1;
-      }
-    }
+    margin-top: 5px;
 
     .pixelated_top_left {
       @include pixelated-top-left;
     }
 
     .tool_container {
-      width: 30px;
-      height: 30px;
+      width: 33px;
+      height: 33px;
       position: relative;
     }
 
@@ -66,7 +70,7 @@
 
     .pencil_section {
       .pencil_and_eraser {
-        margin-bottom: 10px;
+        margin-bottom: 12px;
 
         :first-child {
           margin-bottom: 2px;
@@ -104,6 +108,15 @@
         }
       }
     }
+  }
+
+  .close_btn {
+    position: relative;
+    justify-self: end;
+    align-self: center;
+    margin-right: 3px;
+    width: 22px;
+    height: 22px;
   }
 
   .canvas_column {

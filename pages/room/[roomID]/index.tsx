@@ -19,6 +19,7 @@ const {
   pencil_and_eraser,
   strokes,
   keyboards_section,
+  close_btn,
 } = page_styles
 
 type keyboard = 'alphanumeric' | 'accents' | 'symbols' | 'smileys'
@@ -134,6 +135,14 @@ const FindRooms = () => {
                 />
               </div>
             </div>
+          </div>
+          <div className={close_btn}>
+            <img src="/tool-buttons/close.png" alt="arrow top button" className={active_on_click} />
+            <img
+              src="/tool-buttons/active/close.png"
+              alt="arrow top button active"
+              className={active}
+            />
           </div>
           <div className={canvas_column}></div>
         </div>
