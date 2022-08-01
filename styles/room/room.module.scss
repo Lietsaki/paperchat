@@ -1,7 +1,7 @@
 .bottom {
   background-color: $clear-bg;
   display: grid;
-  grid-template-columns: 9% 91%;
+  grid-template-columns: 7% 93%;
 
   .tools_column {
     display: flex;
@@ -51,13 +51,56 @@
       &::after {
         content: '';
         display: block;
-        border-top: dotted 3px $dark-gray;
-        width: 100%;
+        border-top: dotted 2.5px $dark-gray;
+        width: 120%;
+        position: relative;
+        right: 3px;
         filter: blur(0.6px);
-        margin: 4px 0 8px 0;
+        margin: 4px 0 6px 0;
 
         @include phones {
           border-width: 2px;
+        }
+      }
+    }
+
+    .pencil_section {
+      .pencil_and_eraser {
+        margin-bottom: 10px;
+
+        :first-child {
+          margin-bottom: 2px;
+        }
+      }
+
+      .strokes {
+        :first-child {
+          margin-bottom: 2px;
+        }
+      }
+
+      &::after {
+        content: '';
+        display: block;
+        border-top: dotted 2.5px $dark-gray;
+        width: 120%;
+        position: relative;
+        right: 3px;
+        filter: blur(0.6px);
+        margin: 6px 0px;
+
+        @include phones {
+          border-width: 2px;
+        }
+      }
+    }
+
+    .keyboards_section {
+      div {
+        margin: 5px 0;
+
+        &:first-child {
+          margin-top: 0px;
         }
       }
     }

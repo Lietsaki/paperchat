@@ -28,6 +28,11 @@
     grid-template-rows: 18% 21% 22% 21% 18%;
   }
 
+  @include small-phones {
+    background-position: 50% 28%;
+    grid-template-rows: 12% 21% 22% 21% 24%;
+  }
+
   div[class^='home_btn_'] {
     padding: 6px;
     filter: blur(0.3px);
