@@ -140,20 +140,32 @@
 
       .canvas_bg {
         grid-column: 1 / 3;
-        background-color: antiquewhite;
+        width: 99%;
+        height: 96%;
+        background-color: $clear-bg;
+        @include pixelated-rectangle;
+        @include flexcenter;
 
         .canvas_outline {
+          background-color: #748591;
+          width: 99.4%;
+          height: 98%;
+          @include pixelated-rectangle;
+          @include flexcenter;
+
           .canvas_content {
+            width: 99%;
+            height: 97.6%;
+            background-color: $clear-bg;
+            @include pixelated-rectangle;
+            @include flexcenter;
           }
         }
       }
 
       .keyboard_area {
         grid-row: 2 / 3;
-        background-color: yellow;
-
-        .keyboard_bg {
-        }
+        width: 98.5%;
       }
 
       .send_buttons {

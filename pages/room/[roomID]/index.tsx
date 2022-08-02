@@ -1,6 +1,7 @@
 import general_styles from 'styles/options-screen/options.module.scss'
 import page_styles from 'styles/room/room.module.scss'
 import PaperchatOctagon from 'components/PaperchatOctagon'
+import Keyboard from 'components/Keyboard'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 
@@ -160,9 +161,7 @@ const FindRooms = () => {
               </div>
 
               <div className={keyboard_area}>
-                <div className={keyboard_bg}>
-                  <div></div>
-                </div>
+                <Keyboard />
               </div>
 
               <div className={send_buttons}></div>

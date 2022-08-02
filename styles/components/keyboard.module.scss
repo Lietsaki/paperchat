@@ -1,0 +1,14 @@
+.keyboard_bg {
+  @include pixelated-rectangle;
+  @include flexcenter;
+  background-color: $dark-gray;
+  width: 100%;
+  height: 100%;
+
+  .keyboard_content {
+    @include pixelated-rectangle;
+    background-color: $clear-bg;
+    width: 99%;
+    height: 97%;
+  }
+}
