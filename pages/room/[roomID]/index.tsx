@@ -10,6 +10,13 @@ const {
   bottom,
   tools_column,
   canvas_column,
+  canvas_area,
+  canvas_bg,
+  canvas_outline,
+  canvas_content,
+  keyboard_area,
+  keyboard_bg,
+  send_buttons,
   tool_container,
   active,
   active_on_click,
@@ -144,7 +151,23 @@ const FindRooms = () => {
               className={active}
             />
           </div>
-          <div className={canvas_column}></div>
+          <div className={canvas_column}>
+            <div className={canvas_area}>
+              <div className={canvas_bg}>
+                <div className={canvas_outline}>
+                  <div className={canvas_content}></div>
+                </div>
+              </div>
+
+              <div className={keyboard_area}>
+                <div className={keyboard_bg}>
+                  <div></div>
+                </div>
+              </div>
+
+              <div className={send_buttons}></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

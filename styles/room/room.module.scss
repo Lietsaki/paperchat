@@ -120,5 +120,45 @@
   }
 
   .canvas_column {
+    background-color: $dark-gray;
+    position: relative;
+    @include pixelated-rectangle-except-right;
+
+    .canvas_area {
+      background-image: url('/backgrounds/options-bg.png');
+      width: 99.5%;
+      height: 98.5%;
+      position: relative;
+      left: 3px;
+      top: 3px;
+      @include pixelated-rectangle-except-right;
+
+      display: grid;
+      grid-template-columns: 85% 15%;
+      grid-template-rows: 52% 48%;
+      padding: 5px 0 5px 5px;
+
+      .canvas_bg {
+        grid-column: 1 / 3;
+        background-color: antiquewhite;
+
+        .canvas_outline {
+          .canvas_content {
+          }
+        }
+      }
+
+      .keyboard_area {
+        grid-row: 2 / 3;
+        background-color: yellow;
+
+        .keyboard_bg {
+        }
+      }
+
+      .send_buttons {
+        background-color: pink;
+      }
+    }
   }
 }

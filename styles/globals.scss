@@ -46,6 +46,9 @@ a {
   @include small-phones {
     width: 85vw;
   }
+  @include usually-short-height {
+    min-height: 720px;
+  }
 }
 
 .screen {
@@ -55,10 +58,6 @@ a {
   border-radius: 4px;
   box-shadow: 2px 3px 6px #222;
   @include ds-font;
-
-  @include standard-laptop {
-    max-height: 42vh;
-  }
 
   &:first-child {
     margin-bottom: 40px;
