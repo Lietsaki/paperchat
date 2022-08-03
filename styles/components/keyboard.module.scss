@@ -17,41 +17,96 @@
   width: 100%;
   height: 100%;
   user-select: none;
+  padding: 1.2px;
 
   .key_row {
     display: flex;
 
     &:first-child {
-      margin-left: 7px;
+      margin: 0px 7px;
+    }
+
+    &:nth-child(2) {
+      margin: 0px 0px 0px 22px;
+
+      .DEL {
+        width: 56px;
+
+        img {
+          width: 65%;
+          height: 55%;
+          object-fit: contain;
+        }
+      }
+    }
+
+    &:nth-child(3) {
+      .CAPS {
+        width: 38px;
+
+        img {
+          width: 80%;
+          height: 35%;
+        }
+      }
+
+      .ENTER {
+        width: 72px;
+
+        img {
+          width: 90%;
+          height: 65%;
+          object-fit: contain;
+        }
+      }
+    }
+
+    &:nth-child(4) {
+      .SHIFT {
+        width: 54px;
+
+        img {
+          width: 60%;
+          height: 35%;
+        }
+      }
+    }
+
+    &:nth-child(5) {
+      margin: 0px 0px 0px 69px;
+
+      .SPACE {
+        width: 175px;
+        position: relative;
+
+        img {
+          width: 25%;
+          height: 35%;
+          object-fit: contain;
+          position: relative;
+          top: 3px;
+        }
+      }
     }
 
     div {
-      height: 33px;
+      height: 33.2px;
       width: 33px;
       @include flexcenter;
       background-color: $key-bg;
       color: $key-color;
       font-size: 25px;
+      border: 1.5px solid $clear-bg;
     }
 
     .special_key {
       background-color: $special-key-bg;
+      filter: none;
     }
   }
 
   img {
     width: 15px;
     height: 8px;
-  }
-
-  .DEL {
-  }
-  .CAPS {
-  }
-  .ENTER {
-  }
-  .SHIFT {
-  }
-  .SPACE {
   }
 }

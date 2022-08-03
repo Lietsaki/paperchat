@@ -185,18 +185,21 @@ const keys = [
 ]
 
 const getKeys = () => {
-  return keys.map((row) => {
+  return keys.map((row, i) => {
     return (
-      <div className={key_row}>
+      <div className={key_row} key={i}>
         {row.map((key) => {
           if (key.special_key) {
             return (
-              <div className={`${styles.special_key} ${styles[key.special_key]}`}>
+              <div
+                key={key.special_key}
+                className={`${styles.special_key} ${styles[key.special_key]}`}
+              >
                 <img src={`/special-keys/${key.special_key}.png`} alt={key.special_key} />
               </div>
             )
           } else {
-            return <div>{key.text}</div>
+            return <div key={key.text}>{key.text}</div>
           }
         })}
       </div>
