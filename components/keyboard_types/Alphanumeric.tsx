@@ -1,56 +1,78 @@
 import styles from 'styles/components/keyboard.module.scss'
+import room_styles from 'styles/room/room.module.scss'
+import { useState } from 'react'
 
-const { alphanumeric, key_row } = styles
+const { alphanumeric, key_row, active } = styles
 
-const keys = [
+type specialKeys = 'DEL' | 'CAPS' | 'ENTER' | 'SHIFT' | 'SPACE'
+type regularKey =
+  | {
+      text: string
+      specialkey?: undefined
+      shiftText?: undefined
+    }
+  | {
+      text: string
+      shiftText: string
+      specialkey?: undefined
+    }
+type specialkey = {
+  specialkey: specialKeys
+  text?: undefined
+  shiftText?: undefined
+}
+
+type keys = (specialkey | regularKey)[][]
+
+const keys: keys = [
   [
     {
       text: '1',
-      shift_text: '!'
+      shiftText: '!'
     },
     {
       text: '2',
-      shift_text: '@'
+      shiftText: '@'
     },
     {
       text: '3',
-      shift_text: '#'
+      shiftText: '#'
     },
     {
       text: '4',
-      shift_text: '$'
+      shiftText: '$'
     },
     {
       text: '5',
-      shift_text: '%'
+      shiftText: '%'
     },
     {
       text: '6',
-      shift_text: '^'
+      shiftText: '^'
     },
     {
       text: '7',
-      shift_text: '&'
+      shiftText: '&'
     },
     {
       text: '8',
-      shift_text: '*'
+      shiftText: '*'
     },
     {
       text: '9',
-      shift_text: '('
+      shiftText: '('
     },
     {
       text: '0',
-      shift_text: ')'
+      shiftText: ')'
     },
     {
       text: '-',
-      shift_text: '_'
+      shiftText: '_'
     },
     {
       text: '=',
-      shift_text: '+'
+      shiftText: '+'
     }
   ],
   [
@@ -85,12 +107,12 @@ const keys = [
       text: 'p'
     },
     {
-      special_key: 'DEL'
+      specialkey: 'DEL'
     }
   ],
   [
     {
-      special_key: 'CAPS'
+      specialkey: 'CAPS'
     },
     {
       text: 'a'
@@ -120,12 +142,12 @@ const keys = [
       text: 'l'
     },
     {
-      special_key: 'ENTER'
+      specialkey: 'ENTER'
     }
   ],
   [
     {
-      special_key: 'SHIFT'
+      specialkey: 'SHIFT'
     },
     {
       text: 'z'
@@ -150,64 +172,108 @@ const keys = [
     },
     {
       text: ',',
-      shift_text: '<'
+      shiftText: '<'
     },
     {
       text: '.',
-      shift_text: '>'
+      shiftText: '>'
     },
     {
       text: '/',
-      shift_text: '?'
+      shiftText: '?'
     }
   ],
   [
     {
       text: ';',
-      shift_text: ':'
+      shiftText: ':'
     },
     {
       text: '´',
-      shift_text: '~'
+      shiftText: '~'
     },
     {
-      special_key: 'SPACE'
+      specialkey: 'SPACE'
     },
     {
       text: '[',
-      shift_text: '{'
+      shiftText: '{'
     },
     {
       text: ']',
-      shift_text: '}'
+      shiftText: '}'
     }
   ]
 ]
 
-const getKeys = () => {
-  return keys.map((row, i) => {
-    return (
-      <div className={key_row} key={i}>
-        {row.map((key) => {
-          if (key.special_key) {
-            return (
-              <div
-                key={key.special_key}
-                className={`${styles.special_key} ${styles[key.special_key]}`}
-              >
-                <img src={`/special-keys/${key.special_key}.png`} alt={key.special_key} />
-              </div>
-            )
-          } else {
-            return <div key={key.text}>{key.text}</div>
-          }
-        })}
-      </div>
-    )
-  })
-}
-
 const Keyboard = () => {
+  const [usingCaps, setCaps] = useState(false)
+  const [usingShift, setShift] = useState(false)
+  type keysWithMethods = 'CAPS' | 'SHIFT'
+
+  const specialKeyMethods = {
+    DEL: () => {
+      return ''
+    },
+    CAPS: () => {
+      setCaps(!usingCaps)
+      setShift(false)
+    },
+    ENTER: () => {
+      return ''
+    },
+    SHIFT: () => {
+      setShift(!usingShift)
+      setCaps(false)
+    },
+    SPACE: () => {
+      return ''
+    }
+  }
+
+  const isKeyActive = (key: string) => {
+    if (key === 'CAPS' && usingCaps) return styles.selected
+    if (key === 'SHIFT' && usingShift) return styles.selected
+    return ''
+  }
+
+  const getText = (key: regularKey) => {
+    if (usingCaps) return key.text.toUpperCase()
+    if (usingShift) return key.shiftText || key.text.toUpperCase()
+    return key.text
+  }
+
+  const getKeys = () => {
+    return keys.map((row, i) => {
+      return (
+        <div className={key_row} key={i}>
+          {row.map((key) => {
+            if (key.specialkey) {
+              return (
+                <div
+                  onClick={specialKeyMethods[key.specialkey]}
+                  key={key.specialkey}
+                  className={`${styles.special_key} ${styles[key.specialkey]} ${isKeyActive(
+                    key.specialkey
+                  )}`}
+                >
+                  <img src={`/special-keys/${key.specialkey}.png`} alt={key.specialkey} />
+                  <img
+                    src={`/special-keys/active/${key.specialkey}.png`}
+                    className={active}
+                    alt={key.specialkey}
+                  />
+                </div>
+              )
+            } else {
+              return <div key={key.text}>{getText(key)}</div>
+            }
+          })}
+        </div>
+      )
+    })
+  }
+
   return <div className={alphanumeric}>{getKeys()}</div>
 }
 

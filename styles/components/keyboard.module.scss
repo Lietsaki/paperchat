@@ -33,8 +33,8 @@
         width: 56px;
 
         img {
-          width: 65%;
-          height: 55%;
+          width: 50%;
+          height: 50%;
           object-fit: contain;
         }
       }
@@ -45,8 +45,9 @@
         width: 38px;
 
         img {
-          width: 80%;
-          height: 35%;
+          width: 85%;
+          height: 60%;
+          object-fit: contain;
         }
       }
 
@@ -55,7 +56,7 @@
 
         img {
           width: 90%;
-          height: 65%;
+          height: 70%;
           object-fit: contain;
         }
       }
@@ -66,8 +67,9 @@
         width: 54px;
 
         img {
-          width: 60%;
-          height: 35%;
+          width: 65%;
+          height: 45%;
+          object-fit: contain;
         }
       }
     }
@@ -81,32 +83,62 @@
 
         img {
           width: 25%;
-          height: 35%;
+          height: 40%;
           object-fit: contain;
           position: relative;
           top: 3px;
+
+          &.active {
+            top: 12px;
+          }
         }
       }
     }
 
     div {
-      height: 33.2px;
+      height: 32.6px;
       width: 33px;
       @include flexcenter;
       background-color: $key-bg;
       color: $key-color;
-      font-size: 25px;
+      font-size: 28px;
       border: 1.5px solid $clear-bg;
+      position: relative;
+
+      &:hover {
+        cursor: pointer;
+      }
+      &:active {
+        background-color: $key-active-bg;
+        color: $key-active-color;
+      }
     }
 
     .special_key {
       background-color: $special-key-bg;
       filter: none;
+
+      &:active,
+      &.selected {
+        background-color: $key-special-active-bg;
+
+        img:first-child {
+          opacity: 0;
+        }
+        img.active {
+          opacity: 1;
+        }
+      }
     }
   }
 
   img {
-    width: 15px;
-    height: 8px;
+    -webkit-user-drag: none;
+
+    &.active {
+      position: absolute !important;
+      z-index: 1;
+      opacity: 0;
+    }
   }
 }

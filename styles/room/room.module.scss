@@ -2,7 +2,7 @@
   background-color: $clear-bg;
   display: grid;
   grid-template-columns: 7.5% 1fr;
-  grid-template-rows: 6.5% 1fr;
+  grid-template-rows: 6.5% 1fr 2%;
   overflow: hidden;
 
   img {
@@ -10,21 +10,13 @@
     height: 100%;
     z-index: 2;
     position: relative;
-
-    &:hover {
-      cursor: pointer;
-    }
-
-    &.active_on_click {
-      &:active {
-        opacity: 0;
-      }
-    }
+    -webkit-user-drag: none;
 
     &.active {
       position: absolute;
       left: 0px;
       z-index: 1;
+      opacity: 0;
     }
   }
 
@@ -45,6 +37,20 @@
       width: 33px;
       height: 33px;
       position: relative;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      &.active_on_click:active {
+        img:first-child {
+          opacity: 0;
+        }
+
+        img.active {
+          opacity: 1;
+        }
+      }
     }
 
     .arrows_section {

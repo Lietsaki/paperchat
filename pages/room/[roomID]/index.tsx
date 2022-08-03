@@ -27,7 +27,7 @@ const {
   pencil_and_eraser,
   strokes,
   keyboards_section,
-  close_btn,
+  close_btn
 } = page_styles
 
 type keyboard = 'alphanumeric' | 'accents' | 'symbols' | 'smileys'
@@ -58,19 +58,15 @@ const FindRooms = () => {
         <div className={`screen ${bottom}`}>
           <div className={tools_column}>
             <div className={arrows_section}>
-              <div className={tool_container}>
-                <img
-                  src="/tool-buttons/top-arrow.png"
-                  alt="arrow top button"
-                  className={active_on_click}
-                />
+              <div className={`${tool_container} ${active_on_click}`}>
+                <img src="/tool-buttons/top-arrow.png" alt="arrow top button" />
                 <img
                   src="/tool-buttons/active/top-arrow.png"
                   alt="arrow top button active"
                   className={active}
                 />
               </div>
-              <div className={tool_container}>
+              <div className={`${tool_container} ${active_on_click}`}>
                 <img
                   src="/tool-buttons/down-arrow.png"
                   alt="arrow down button"
