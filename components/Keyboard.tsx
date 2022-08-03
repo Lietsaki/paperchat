@@ -1,4 +1,5 @@
 import styles from 'styles/components/keyboard.module.scss'
+import Alphanumeric from './keyboard_types/Alphanumeric'
 
 const { keyboard_bg, keyboard_content } = styles
 
@@ -8,7 +9,9 @@ const { keyboard_bg, keyboard_content } = styles
 const Keyboard = () => {
   return (
     <div className={keyboard_bg}>
-      <div className={keyboard_content}></div>
+      <div className={keyboard_content}>
+        <Alphanumeric />
+      </div>
     </div>
   )
 }

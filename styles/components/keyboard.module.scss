@@ -12,3 +12,46 @@
     height: 97%;
   }
 }
+
+.alphanumeric {
+  width: 100%;
+  height: 100%;
+  user-select: none;
+
+  .key_row {
+    display: flex;
+
+    &:first-child {
+      margin-left: 7px;
+    }
+
+    div {
+      height: 33px;
+      width: 33px;
+      @include flexcenter;
+      background-color: $key-bg;
+      color: $key-color;
+      font-size: 25px;
+    }
+
+    .special_key {
+      background-color: $special-key-bg;
+    }
+  }
+
+  img {
+    width: 15px;
+    height: 8px;
+  }
+
+  .DEL {
+  }
+  .CAPS {
+  }
+  .ENTER {
+  }
+  .SHIFT {
+  }
+  .SPACE {
+  }
+}
