@@ -1,28 +1,23 @@
 import styles from 'styles/components/keyboard.module.scss'
-import room_styles from 'styles/room/room.module.scss'
 import { useState } from 'react'
 
 const { alphanumeric, key_row, active } = styles
 
 type specialKeys = 'DEL' | 'CAPS' | 'ENTER' | 'SHIFT' | 'SPACE'
+type specialKey = { specialKey: specialKeys }
 type regularKey =
   | {
       text: string
-      specialkey?: undefined
-      shiftText?: undefined
+      specialKey?: specialKeys
+      shiftText?: string
     }
   | {
       text: string
       shiftText: string
-      specialkey?: undefined
+      specialKey?: specialKeys
     }
-type specialkey = {
-  specialkey: specialKeys
-  text?: undefined
-  shiftText?: undefined
-}
 
-type keys = (specialkey | regularKey)[][]
+type keys = (specialKey | regularKey)[][]
 
 const keys: keys = [
   [
@@ -107,12 +102,12 @@ const keys: keys = [
       text: 'p'
     },
     {
-      specialkey: 'DEL'
+      specialKey: 'DEL'
     }
   ],
   [
     {
-      specialkey: 'CAPS'
+      specialKey: 'CAPS'
     },
     {
       text: 'a'
@@ -142,12 +137,12 @@ const keys: keys = [
       text: 'l'
     },
     {
-      specialkey: 'ENTER'
+      specialKey: 'ENTER'
     }
   ],
   [
     {
-      specialkey: 'SHIFT'
+      specialKey: 'SHIFT'
     },
     {
       text: 'z'
@@ -193,7 +188,7 @@ const keys: keys = [
       shiftText: '~'
     },
     {
-      specialkey: 'SPACE'
+      specialKey: 'SPACE'
     },
     {
       text: '[',
@@ -209,7 +204,6 @@ const keys: keys = [
 const Keyboard = () => {
   const [usingCaps, setCaps] = useState(false)
   const [usingShift, setShift] = useState(false)
-  type keysWithMethods = 'CAPS' | 'SHIFT'
 
   const specialKeyMethods = {
     DEL: () => {
@@ -248,20 +242,20 @@ const Keyboard = () => {
       return (
         <div className={key_row} key={i}>
           {row.map((key) => {
-            if (key.specialkey) {
+            if (key.specialKey) {
               return (
                 <div
-                  onClick={specialKeyMethods[key.specialkey]}
-                  key={key.specialkey}
-                  className={`${styles.special_key} ${styles[key.specialkey]} ${isKeyActive(
-                    key.specialkey
+                  onClick={specialKeyMethods[key.specialKey]}
+                  key={key.specialKey}
+                  className={`${styles.special_key} ${styles[key.specialKey]} ${isKeyActive(
+                    key.specialKey
                   )}`}
                 >
-                  <img src={`/special-keys/${key.specialkey}.png`} alt={key.specialkey} />
+                  <img src={`/special-keys/${key.specialKey}.png`} alt={key.specialKey} />
                   <img
-                    src={`/special-keys/active/${key.specialkey}.png`}
+                    src={`/special-keys/active/${key.specialKey}.png`}
                     className={active}
-                    alt={key.specialkey}
+                    alt={key.specialKey}
                   />
                 </div>
               )
