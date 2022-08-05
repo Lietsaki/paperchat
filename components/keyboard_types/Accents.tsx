@@ -1,6 +1,6 @@
 import styles from 'styles/components/keyboard.module.scss'
 
-const { accents, active } = styles
+const { keyboard_grid, active } = styles
 
 type specialKeys = 'DEL' | 'ENTER' | 'SPACE'
 type specialKey = { specialKey: specialKeys }
@@ -188,6 +188,12 @@ const Keyboard = () => {
     }
   }
 
+  const getSpecialKeyImg = (specialKey: string, active: Boolean) => {
+    const processed_key = specialKey === 'ENTER' ? 'ENTER_2' : specialKey
+    if (!active) return `/special-keys/${processed_key}.png`
+    if (active) return `/special-keys/active/${processed_key}.png`
+  }
+
   const getKeys = () => {
     return keys.map((key) => {
       if (key.specialKey) {
@@ -197,9 +203,9 @@ const Keyboard = () => {
             key={key.specialKey}
             className={`${styles.special_key} ${styles[key.specialKey]}`}
           >
-            <img src={`/special-keys/${key.specialKey}.png`} alt={key.specialKey} />
+            <img src={getSpecialKeyImg(key.specialKey, false)} alt={key.specialKey} />
             <img
-              src={`/special-keys/active/${key.specialKey}.png`}
+              src={getSpecialKeyImg(key.specialKey, true)}
               className={active}
               alt={key.specialKey}
             />
@@ -211,7 +217,7 @@ const Keyboard = () => {
     })
   }
 
-  return <div className={accents}>{getKeys()}</div>
+  return <div className={keyboard_grid}>{getKeys()}</div>
 }
 
 export default Keyboard

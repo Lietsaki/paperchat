@@ -11,6 +11,50 @@
     width: 99%;
     height: 97%;
   }
+
+  img {
+    -webkit-user-drag: none;
+
+    &.active {
+      position: absolute !important;
+      z-index: 1;
+      opacity: 0;
+    }
+  }
+
+  .special_key {
+    background-color: $special-key-bg;
+    filter: none;
+
+    &:active,
+    &.selected {
+      background-color: $key-special-active-bg;
+
+      img:first-child {
+        opacity: 0;
+      }
+      img.active {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+@mixin base_key {
+  @include flexcenter;
+  background-color: $key-bg;
+  color: $key-color;
+  font-size: 28px;
+  border: 1.5px solid $clear-bg;
+  position: relative;
+
+  &:hover {
+    cursor: pointer;
+  }
+  &:active {
+    background-color: $key-active-bg;
+    color: $key-active-color;
+  }
 }
 
 .alphanumeric {
@@ -83,7 +127,7 @@
 
         img {
           width: 25%;
-          height: 40%;
+          height: 38%;
           object-fit: contain;
           position: relative;
           top: 3px;
@@ -98,51 +142,54 @@
     div {
       height: 32.6px;
       width: 33px;
-      @include flexcenter;
-      background-color: $key-bg;
-      color: $key-color;
-      font-size: 28px;
-      border: 1.5px solid $clear-bg;
-      position: relative;
-
-      &:hover {
-        cursor: pointer;
-      }
-      &:active {
-        background-color: $key-active-bg;
-        color: $key-active-color;
-      }
-    }
-
-    .special_key {
-      background-color: $special-key-bg;
-      filter: none;
-
-      &:active,
-      &.selected {
-        background-color: $key-special-active-bg;
-
-        img:first-child {
-          opacity: 0;
-        }
-        img.active {
-          opacity: 1;
-        }
-      }
-    }
-  }
-
-  img {
-    -webkit-user-drag: none;
-
-    &.active {
-      position: absolute !important;
-      z-index: 1;
-      opacity: 0;
+      @include base_key;
     }
   }
 }
 
-.accents {
+.keyboard_grid {
   display: grid;
+  grid-template-columns: repeat(11, 33.5px) 1fr;
+  grid-template-rows: repeat(5, 32.6px);
+
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  padding: 1.2px 0.8px 1.2px 1.2px;
+
+  .DEL,
+  .ENTER,
+  .SPACE {
+    grid-column: 12 / 13;
+  }
+
+  .ENTER {
+    grid-row: 3 / 5;
+
+    img {
+      width: 90%;
+      height: 70%;
+      object-fit: contain;
+    }
+  }
+
+  .DEL img {
+    width: 70%;
+    height: 52%;
+    object-fit: contain;
+  }
+
+  .SPACE img {
+    width: 90%;
+    height: 40%;
+    object-fit: contain;
+  }
+
+  div {
+    @include base_key;
+
+    &:nth-child(12) {
+      grid-column: 1 / 2;
+    }
+  }
 }
