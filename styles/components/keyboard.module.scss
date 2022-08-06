@@ -23,12 +23,12 @@
   }
 
   .special_key {
-    background-color: $special-key-bg;
+    background-color: $special-key-bg !important;
     filter: none;
 
     &:active,
     &.selected {
-      background-color: $key-special-active-bg;
+      background-color: $key-special-active-bg !important;
 
       img:first-child {
         opacity: 0;

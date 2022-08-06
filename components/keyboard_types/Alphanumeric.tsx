@@ -201,7 +201,7 @@ const keys: keys = [
   ]
 ]
 
-const Keyboard = () => {
+const AlphanumericKeyboard = () => {
   const [usingCaps, setCaps] = useState(false)
   const [usingShift, setShift] = useState(false)
 
@@ -271,4 +271,4 @@ const Keyboard = () => {
   return <div className={alphanumeric}>{getKeys()}</div>
 }
 
-export default Keyboard
+export default AlphanumericKeyboard

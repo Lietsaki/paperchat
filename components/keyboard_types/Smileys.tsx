@@ -9,173 +9,182 @@ type keys = (specialKey | regularKey)[]
 
 const keys: keys = [
   {
-    text: 'à'
+    text: '1'
   },
   {
-    text: 'á'
+    text: '2'
   },
   {
-    text: 'â'
+    text: '3'
   },
   {
-    text: 'ä'
+    text: '4'
   },
   {
-    text: 'è'
+    text: `5`
   },
   {
-    text: 'é'
+    text: '6'
   },
   {
-    text: 'ê'
+    text: '7'
   },
   {
-    text: 'ë'
+    text: '8'
   },
   {
-    text: 'ì'
+    text: '9'
   },
   {
-    text: 'í'
+    text: '0'
   },
   {
-    text: 'î'
+    text: '='
   },
   {
-    text: 'ï'
+    text: '☺'
   },
   {
-    text: 'ò'
+    text: '☻'
   },
   {
-    text: 'ó'
+    text: '☹'
   },
   {
-    text: 'ô'
+    text: '⚀'
   },
   {
-    text: 'ö'
+    text: '☼'
   },
   {
-    text: 'œ'
+    text: '☁'
   },
   {
-    text: 'ù'
+    text: '☂'
   },
   {
-    text: 'ú'
+    text: '☃'
   },
   {
-    text: 'û'
+    text: '✉'
   },
   {
-    text: 'ü'
+    text: '☎'
   },
   {
-    text: 'ç'
+    text: '∱'
   },
   {
     specialKey: 'DEL'
   },
   {
-    text: 'ñ'
+    text: 'Ⓐ'
   },
   {
-    text: 'ß'
+    text: 'Ⓑ'
   },
   {
-    text: 'À'
+    text: 'Ⓧ'
   },
   {
-    text: 'Á'
+    text: 'Ⓨ'
   },
   {
-    text: 'Â'
+    text: 'Ⓛ'
   },
   {
-    text: 'Ä'
+    text: 'Ⓡ'
   },
   {
-    text: 'È'
+    text: '✚'
   },
   {
-    text: 'É'
+    text: '♠'
   },
   {
-    text: 'Ê'
+    text: '◆'
   },
   {
-    text: 'Ë'
+    text: '♥'
   },
   {
-    text: 'Ì'
+    text: '♣'
   },
   {
     specialKey: 'ENTER'
   },
   {
-    text: 'Í'
+    text: '①'
   },
   {
-    text: 'Î'
+    text: '⑦'
   },
   {
-    text: 'Ï'
+    text: '+'
   },
   {
-    text: 'Ò'
+    text: '-'
   },
   {
-    text: 'Ó'
+    text: '☆'
   },
   {
-    text: 'Ô'
+    text: '○'
   },
   {
-    text: 'Ö'
+    text: '◇'
   },
   {
-    text: 'Œ'
+    text: '□'
   },
   {
-    text: 'Ù'
+    text: '△'
   },
   {
-    text: 'Ú'
+    text: '▽'
   },
   {
-    text: 'Û'
+    text: '⦾'
   },
   {
-    text: 'Ü'
+    text: '➡'
   },
   {
-    text: 'Ç'
+    text: '⬅'
   },
   {
-    text: 'Ñ'
+    text: '⬆'
   },
   {
-    text: '¡'
+    text: '⬇'
   },
   {
-    text: '¿'
+    text: '★'
   },
   {
-    text: '€'
+    text: '●'
   },
   {
-    text: '¢'
+    text: '◆'
   },
   {
-    text: '£'
+    text: '■'
+  },
+  {
+    text: '▲'
+  },
+  {
+    text: '▼'
+  },
+  {
+    text: '☓'
   },
   {
     specialKey: 'SPACE'
   }
 ]
 
-const AccentsKeyboard = () => {
+const SmileysKeyboard = () => {
   const specialKeyMethods = {
     DEL: () => {
       return ''
@@ -220,4 +229,4 @@ const AccentsKeyboard = () => {
   return <div className={keyboard_grid}>{getKeys()}</div>
 }
 
-export default AccentsKeyboard
+export default SmileysKeyboard

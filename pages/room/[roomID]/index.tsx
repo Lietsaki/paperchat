@@ -4,6 +4,7 @@ import PaperchatOctagon from 'components/PaperchatOctagon'
 import Keyboard from 'components/Keyboard'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import keyboard from 'types/Keyboard'
 
 const { top, left_column, right_column, top_section, bottom_section } = general_styles
 
@@ -29,8 +30,6 @@ const {
   keyboards_section,
   close_btn
 } = page_styles
-
-type keyboard = 'alphanumeric' | 'accents' | 'symbols' | 'smileys'
 
 const FindRooms = () => {
   const router = useRouter()
@@ -157,7 +156,7 @@ const FindRooms = () => {
               </div>
 
               <div className={keyboard_area}>
-                <Keyboard />
+                <Keyboard currentKeyboard={currentKeyboard} />
               </div>
 
               <div className={send_buttons}></div>
