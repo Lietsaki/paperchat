@@ -17,17 +17,18 @@ const {
   canvas_outline,
   canvas_content,
   keyboard_area,
-  keyboard_bg,
+  top_arrow,
+  down_arrow,
   send_buttons,
   tool_container,
   active,
   active_on_click,
   pixelated_top_left,
-  arrows_section,
-  pencil_section,
-  pencil_and_eraser,
-  strokes,
-  keyboards_section,
+  pencil,
+  eraser,
+  thick_stroke,
+  thin_stroke,
+  margin_bottom_sm,
   close_btn
 } = page_styles
 
@@ -56,89 +57,82 @@ const FindRooms = () => {
 
         <div className={`screen ${bottom}`}>
           <div className={tools_column}>
-            <div className={arrows_section}>
-              <div className={`${tool_container} ${active_on_click}`}>
-                <img src="/tool-buttons/top-arrow.png" alt="arrow top button" />
-                <img
-                  src="/tool-buttons/active/top-arrow.png"
-                  alt="arrow top button active"
-                  className={active}
-                />
-              </div>
-              <div className={`${tool_container} ${active_on_click}`}>
-                <img
-                  src="/tool-buttons/down-arrow.png"
-                  alt="arrow down button"
-                  className={active_on_click}
-                />
-                <img
-                  src="/tool-buttons/active/down-arrow.png"
-                  alt="arrow down button active"
-                  className={active}
-                />
-              </div>
-            </div>
-            <div className={pencil_section}>
-              <div className={pencil_and_eraser}>
-                <div className={tool_container} onClick={() => setUsingPencil(true)}>
-                  <img src={getButton(usingPencil, 'pencil')} alt="pencil button" />
-                </div>
-                <div className={tool_container} onClick={() => setUsingPencil(false)}>
-                  <img src={getButton(!usingPencil, 'eraser')} alt="eraser button" />
-                </div>
-              </div>
-              <div className={strokes}>
-                <div className={tool_container} onClick={() => setUsingThickStroke(true)}>
-                  <img
-                    src={getButton(usingThickStroke, 'thick-stroke')}
-                    alt="thick stroke button"
-                  />
-                </div>
-                <div className={tool_container} onClick={() => setUsingThickStroke(false)}>
-                  <img src={getButton(!usingThickStroke, 'thin-stroke')} alt="thin stroke button" />
-                </div>
-              </div>
+            <div className={`${tool_container} ${top_arrow} ${active_on_click}`}>
+              <img src="/tool-buttons/top-arrow.png" alt="arrow top button" />
+              <img
+                src="/tool-buttons/active/top-arrow.png"
+                alt="arrow top button active"
+                className={active}
+              />
             </div>
 
-            <div className={keyboards_section}>
-              <div
-                className={`${tool_container} ${pixelated_top_left}`}
-                onClick={() => setCurrentKeyboard('alphanumeric')}
-              >
-                <img
-                  src={getButton(currentKeyboard === 'alphanumeric', 'alphanumeric')}
-                  alt="alphanumeric button"
-                />
-              </div>
-              <div
-                className={`${tool_container} ${pixelated_top_left}`}
-                onClick={() => setCurrentKeyboard('accents')}
-              >
-                <img
-                  src={getButton(currentKeyboard === 'accents', 'accents')}
-                  alt="accents button"
-                />
-              </div>
-              <div
-                className={`${tool_container} ${pixelated_top_left}`}
-                onClick={() => setCurrentKeyboard('symbols')}
-              >
-                <img
-                  src={getButton(currentKeyboard === 'symbols', 'symbols')}
-                  alt="symbols button"
-                />
-              </div>
-              <div
-                className={`${tool_container} ${pixelated_top_left}`}
-                onClick={() => setCurrentKeyboard('smileys')}
-              >
-                <img
-                  src={getButton(currentKeyboard === 'smileys', 'smileys')}
-                  alt="smileys button"
-                />
-              </div>
+            <div className={`${tool_container} ${down_arrow} ${active_on_click}`}>
+              <img
+                src="/tool-buttons/down-arrow.png"
+                alt="arrow down button"
+                className={active_on_click}
+              />
+              <img
+                src="/tool-buttons/active/down-arrow.png"
+                alt="arrow down button active"
+                className={active}
+              />
+            </div>
+
+            <div className={`${tool_container} ${pencil}`} onClick={() => setUsingPencil(true)}>
+              <img src={getButton(usingPencil, 'pencil')} alt="pencil button" />
+            </div>
+
+            <div className={`${tool_container} ${eraser}`} onClick={() => setUsingPencil(false)}>
+              <img src={getButton(!usingPencil, 'eraser')} alt="eraser button" />
+            </div>
+
+            <div
+              className={`${tool_container} ${thick_stroke}`}
+              onClick={() => setUsingThickStroke(true)}
+            >
+              <img src={getButton(usingThickStroke, 'thick-stroke')} alt="thick stroke button" />
+            </div>
+
+            <div
+              className={`${tool_container} ${thin_stroke}`}
+              onClick={() => setUsingThickStroke(false)}
+            >
+              <img src={getButton(!usingThickStroke, 'thin-stroke')} alt="thin stroke button" />
+            </div>
+
+            <div
+              className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm}`}
+              onClick={() => setCurrentKeyboard('alphanumeric')}
+            >
+              <img
+                src={getButton(currentKeyboard === 'alphanumeric', 'alphanumeric')}
+                alt="alphanumeric button"
+              />
+            </div>
+
+            <div
+              className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm}`}
+              onClick={() => setCurrentKeyboard('accents')}
+            >
+              <img src={getButton(currentKeyboard === 'accents', 'accents')} alt="accents button" />
+            </div>
+
+            <div
+              className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm}`}
+              onClick={() => setCurrentKeyboard('symbols')}
+            >
+              <img src={getButton(currentKeyboard === 'symbols', 'symbols')} alt="symbols button" />
+            </div>
+
+            <div
+              className={`${tool_container} ${pixelated_top_left}`}
+              onClick={() => setCurrentKeyboard('smileys')}
+            >
+              <img src={getButton(currentKeyboard === 'smileys', 'smileys')} alt="smileys button" />
             </div>
           </div>
+
           <div className={close_btn}>
             <img src="/tool-buttons/close.png" alt="arrow top button" className={active_on_click} />
             <img

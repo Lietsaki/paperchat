@@ -102,7 +102,7 @@ const keys: keys = [
     text: '♠'
   },
   {
-    text: '◆'
+    text: '♦'
   },
   {
     text: '♥'

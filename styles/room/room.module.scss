@@ -27,7 +27,6 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    margin-top: 5px;
 
     .pixelated_top_left {
       @include pixelated-top-left;
@@ -53,10 +52,12 @@
       }
     }
 
-    .arrows_section {
-      :first-child {
-        margin-bottom: 2px;
-      }
+    .top_arrow {
+      margin-bottom: 2px;
+    }
+
+    .down_arrow {
+      margin-bottom: 16px;
 
       &::after {
         content: '';
@@ -66,28 +67,26 @@
         position: relative;
         right: 3px;
         filter: blur(0.6px);
-        margin: 4px 0 6px 0;
+        margin-top: 2px;
 
         @include phones {
-          border-width: 2px;
+          border-width: 3px;
         }
       }
     }
 
-    .pencil_section {
-      .pencil_and_eraser {
-        margin-bottom: 12px;
+    .pencil {
+      margin-bottom: 2px;
+    }
+    .eraser {
+      margin-bottom: 12px;
+    }
+    .thick_stroke {
+      margin-bottom: 2px;
+    }
 
-        :first-child {
-          margin-bottom: 2px;
-        }
-      }
-
-      .strokes {
-        :first-child {
-          margin-bottom: 2px;
-        }
-      }
+    .thin_stroke {
+      margin-bottom: 14px;
 
       &::after {
         content: '';
@@ -97,7 +96,7 @@
         position: relative;
         right: 3px;
         filter: blur(0.6px);
-        margin: 6px 0px;
+        margin-top: 4px;
 
         @include phones {
           border-width: 2px;
@@ -105,14 +104,8 @@
       }
     }
 
-    .keyboards_section {
-      div {
-        margin: 5px 0;
-
-        &:first-child {
-          margin-top: 0px;
-        }
-      }
+    .margin_bottom_sm {
+      margin-bottom: 4px;
     }
   }
 
