@@ -20,6 +20,9 @@ const {
   top_arrow,
   down_arrow,
   send_buttons,
+  send_buttons_bg,
+  send,
+  last_canvas,
   tool_container,
   active,
   active_on_click,
@@ -58,10 +61,10 @@ const FindRooms = () => {
         <div className={`screen ${bottom}`}>
           <div className={tools_column}>
             <div className={`${tool_container} ${top_arrow} ${active_on_click}`}>
-              <img src="/tool-buttons/top-arrow.png" alt="arrow top button" />
+              <img src="/tool-buttons/top-arrow.png" alt="top arrow button" />
               <img
                 src="/tool-buttons/active/top-arrow.png"
-                alt="arrow top button active"
+                alt="active top button"
                 className={active}
               />
             </div>
@@ -69,12 +72,12 @@ const FindRooms = () => {
             <div className={`${tool_container} ${down_arrow} ${active_on_click}`}>
               <img
                 src="/tool-buttons/down-arrow.png"
-                alt="arrow down button"
+                alt="down arrow button"
                 className={active_on_click}
               />
               <img
                 src="/tool-buttons/active/down-arrow.png"
-                alt="arrow down button active"
+                alt="active down arrow button"
                 className={active}
               />
             </div>
@@ -134,10 +137,10 @@ const FindRooms = () => {
           </div>
 
           <div className={close_btn}>
-            <img src="/tool-buttons/close.png" alt="arrow top button" className={active_on_click} />
+            <img src="/tool-buttons/close.png" alt="close button" className={active_on_click} />
             <img
               src="/tool-buttons/active/close.png"
-              alt="arrow top button active"
+              alt="active close button"
               className={active}
             />
           </div>
@@ -153,7 +156,34 @@ const FindRooms = () => {
                 <Keyboard currentKeyboard={currentKeyboard} />
               </div>
 
-              <div className={send_buttons}></div>
+              <div className={send_buttons}>
+                <div className={send_buttons_bg}>
+                  <div className={`${send} ${active_on_click}`}>
+                    <img src="/send-buttons/SEND.png" alt="send button" />
+                    <img
+                      src="/send-buttons/active/SEND.png"
+                      alt="active send button"
+                      className={active}
+                    />
+                  </div>
+                  <div className={`${last_canvas} ${active_on_click}`}>
+                    <img src="/send-buttons/LAST-CANVAS.png" alt="last canvas button" />
+                    <img
+                      src="/send-buttons/active/LAST-CANVAS.png"
+                      alt="active last canvas button"
+                      className={active}
+                    />
+                  </div>
+                  <div className={`${active_on_click}`}>
+                    <img src="/send-buttons/CLEAR.png" alt="clear button" />
+                    <img
+                      src="/send-buttons/active/CLEAR.png"
+                      alt="active clear button"
+                      className={active}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -20,6 +20,22 @@
     }
   }
 
+  @mixin active-on-click {
+    &:hover {
+      cursor: pointer;
+    }
+
+    &.active_on_click:active {
+      img:first-child {
+        opacity: 0;
+      }
+
+      img.active {
+        opacity: 1;
+      }
+    }
+  }
+
   .tools_column {
     grid-row: 1 / -1;
     display: flex;
@@ -46,19 +62,7 @@
         height: 7.6%;
       }
 
-      &:hover {
-        cursor: pointer;
-      }
-
-      &.active_on_click:active {
-        img:first-child {
-          opacity: 0;
-        }
-
-        img.active {
-          opacity: 1;
-        }
-      }
+      @include active-on-click;
     }
 
     .top_arrow {
@@ -141,8 +145,14 @@
       top: 3px;
       @include pixelated-rectangle-except-right;
 
+      @include phones {
+        height: 98%;
+        top: 2.6px;
+        left: 2px;
+      }
+
       display: grid;
-      grid-template-columns: 85% 15%;
+      grid-template-columns: 87% 13%;
       grid-template-rows: 52% 48%;
       padding: 5px 0 5px 5px;
 
@@ -177,7 +187,67 @@
       }
 
       .send_buttons {
-        background-color: pink;
+        @include pixelated-rectangle-except-right;
+        background-color: $dark-gray;
+
+        .send_buttons_bg {
+          @include pixelated-rectangle-except-right;
+          background-color: $clear-bg;
+          position: relative;
+          height: 97%;
+          width: 99%;
+          left: 3px;
+          top: 1.4%;
+
+          display: grid;
+          grid-template-rows: 1.1fr repeat(2, 1fr);
+
+          @include phones {
+            left: 1.5px;
+            height: 96.8%;
+          }
+          @include small-phones {
+            top: 1.6%;
+          }
+
+          div {
+            @include flexcenter;
+            @include active-on-click;
+            background-color: $send-area-bg;
+            position: relative;
+
+            img {
+              width: 80%;
+              height: 80%;
+              object-fit: contain;
+              left: unset;
+              position: absolute;
+              left: 6%;
+            }
+
+            &:active {
+              background-color: $send-area-active-bg;
+            }
+          }
+
+          .send {
+            img {
+              width: 90%;
+              height: 90%;
+              left: 2%;
+            }
+          }
+
+          .last_canvas {
+            border-top: 3px solid $dark-gray;
+            border-bottom: 3px solid $dark-gray;
+
+            @include phones {
+              border-top: 2px solid $dark-gray;
+              border-bottom: 2px solid $dark-gray;
+            }
+          }
+        }
       }
     }
   }
