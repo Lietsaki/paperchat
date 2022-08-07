@@ -43,9 +43,6 @@ a {
     min-width: 200px;
     width: 95vw;
   }
-  @include small-phones {
-    width: 85vw;
-  }
   @include usually-short-height {
     min-height: 720px;
   }

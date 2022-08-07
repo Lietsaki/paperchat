@@ -51,6 +51,12 @@
   @include landscape-tablet-up {
     font-size: 160%;
   }
+  @include phones {
+    font-size: 130%;
+  }
+  @include small-phones {
+    font-size: 120%;
+  }
 
   &:hover {
     cursor: pointer;
