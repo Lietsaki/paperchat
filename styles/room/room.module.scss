@@ -215,6 +215,22 @@
             @include active-on-click;
             background-color: $send-area-bg;
             position: relative;
+            border: 2px solid $clear-bg;
+            border-right: 4px solid $clear-bg;
+
+            &:nth-child(2) {
+              border-top: 4px solid $clear-bg;
+              border-bottom: 4px solid $clear-bg;
+            }
+
+            @include phones {
+              border-right: 3.5px solid $clear-bg;
+
+              &:nth-child(2) {
+                border-top: 3px solid $clear-bg;
+                border-bottom: 3px solid $clear-bg;
+              }
+            }
 
             img {
               width: 80%;
@@ -222,7 +238,7 @@
               object-fit: contain;
               left: unset;
               position: absolute;
-              left: 6%;
+              left: 8%;
             }
 
             &:active {
@@ -234,17 +250,37 @@
             img {
               width: 90%;
               height: 90%;
-              left: 2%;
+              left: 3%;
             }
           }
 
           .last_canvas {
-            border-top: 3px solid $dark-gray;
-            border-bottom: 3px solid $dark-gray;
+            &::before,
+            &::after {
+              content: '';
+              display: block;
+              border-top: solid 3px $dark-gray;
+              position: absolute;
+              width: 108%;
+              z-index: 10;
 
-            @include phones {
-              border-top: 2px solid $dark-gray;
-              border-bottom: 2px solid $dark-gray;
+              @include phones {
+                border-top: solid 2px $dark-gray;
+              }
+            }
+
+            &::before {
+              bottom: 102%;
+              @include small-phones {
+                bottom: 105%;
+              }
+            }
+
+            &::after {
+              bottom: -10%;
+              @include small-phones {
+                bottom: -13%;
+              }
             }
           }
         }
