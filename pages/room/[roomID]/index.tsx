@@ -2,8 +2,10 @@ import general_styles from 'styles/options-screen/options.module.scss'
 import page_styles from 'styles/room/room.module.scss'
 import PaperchatOctagon from 'components/PaperchatOctagon'
 import Keyboard from 'components/Keyboard'
+import Canvas from 'components/Canvas'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { getRandomColor } from 'helpers/helper_functions'
 import keyboard from 'types/Keyboard'
 
 const { top, left_column, right_column, top_section, bottom_section } = general_styles
@@ -14,8 +16,6 @@ const {
   canvas_column,
   canvas_area,
   canvas_bg,
-  canvas_outline,
-  canvas_content,
   keyboard_area,
   top_arrow,
   down_arrow,
@@ -40,6 +40,7 @@ const FindRooms = () => {
   const [usingPencil, setUsingPencil] = useState(true)
   const [usingThickStroke, setUsingThickStroke] = useState(true)
   const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('alphanumeric')
+  const [roomColor, setRoomColor] = useState(getRandomColor())
 
   const getButton = (condition: boolean, name: string) =>
     condition ? `/tool-buttons/selected/${name}.png` : `/tool-buttons/${name}.png`
@@ -136,8 +137,8 @@ const FindRooms = () => {
             </div>
           </div>
 
-          <div className={close_btn}>
-            <img src="/tool-buttons/close.png" alt="close button" className={active_on_click} />
+          <div className={`${close_btn} ${active_on_click}`}>
+            <img src="/tool-buttons/close.png" alt="close button" />
             <img
               src="/tool-buttons/active/close.png"
               alt="active close button"
@@ -147,9 +148,11 @@ const FindRooms = () => {
           <div className={canvas_column}>
             <div className={canvas_area}>
               <div className={canvas_bg}>
-                <div className={canvas_outline}>
-                  <div className={canvas_content}></div>
-                </div>
+                <Canvas
+                  usingPencil={usingPencil}
+                  roomColor={roomColor}
+                  usingThickStroke={usingThickStroke}
+                />
               </div>
 
               <div className={keyboard_area}>

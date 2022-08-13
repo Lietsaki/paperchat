@@ -53,6 +53,9 @@
   border: 1.5px solid $clear-bg;
   position: relative;
 
+  @include small-height-devices {
+    font-size: 150%;
+  }
   @include landscape-tablet-up {
     font-size: 160%;
   }

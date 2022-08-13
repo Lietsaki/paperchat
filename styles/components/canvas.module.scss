@@ -1,0 +1,22 @@
+.canvas_outline {
+  background-color: #748591;
+  width: 99.4%;
+  height: 98%;
+  @include pixelated-rectangle;
+  @include flexcenter;
+
+  .canvas_content {
+    width: 99%;
+    height: 97.4%;
+    position: relative;
+    background-color: $clear-bg;
+    @include pixelated-rectangle;
+    @include flexcenter;
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+    }
+  }
+}

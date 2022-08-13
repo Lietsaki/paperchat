@@ -129,6 +129,7 @@
     margin-right: 3px;
     width: 4.4%;
     height: 84%;
+    @include active-on-click;
   }
 
   .canvas_column {
@@ -163,22 +164,6 @@
         background-color: $clear-bg;
         @include pixelated-rectangle;
         @include flexcenter;
-
-        .canvas_outline {
-          background-color: #748591;
-          width: 99.4%;
-          height: 98%;
-          @include pixelated-rectangle;
-          @include flexcenter;
-
-          .canvas_content {
-            width: 99%;
-            height: 97.6%;
-            background-color: $clear-bg;
-            @include pixelated-rectangle;
-            @include flexcenter;
-          }
-        }
       }
 
       .keyboard_area {
@@ -267,6 +252,10 @@
               @include phones {
                 border-top: solid 2px $dark-gray;
               }
+
+              @include small-height-devices {
+                border-top: solid 2.5px $dark-gray;
+              }
             }
 
             &::before {
@@ -274,11 +263,17 @@
               @include small-phones {
                 bottom: 105%;
               }
+              @include small-height-devices {
+                bottom: 105%;
+              }
             }
 
             &::after {
               bottom: -10%;
               @include small-phones {
+                bottom: -13%;
+              }
+              @include small-height-devices {
                 bottom: -13%;
               }
             }
