@@ -32,12 +32,19 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   const drawDivisions = () => {
     if (!ctx) return
     ctx.strokeStyle = roomColor.replace('0.8', '0.4')
+
     for (let i = 1; i < 5; i++) {
       ctx.beginPath()
       ctx.moveTo(3, divisionsHeight * i)
       ctx.lineTo(canvasRef.current!.width - 3, divisionsHeight * i)
       ctx.stroke()
     }
+
+    const data_url = canvasRef.current!.toDataURL('image/png')
+    const img = new Image()
+    img.src = data_url
+    containerRef.current!.append(img)
+    ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
   }
 
   const drawUsernameRectangle = () => {
@@ -70,6 +77,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     if (!ctx || e.buttons !== 1 || isWithinUsername) return setPos(getPosition(e))
 
     ctx.beginPath()
+    ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
     ctx.lineCap = 'round'
     ctx.lineWidth = usingThickStroke ? 3 : 1.2
     ctx.strokeStyle = strokeColor
@@ -86,6 +94,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     if (pos.x < nameContainerWidth + 8 && pos.y < divisionsHeight + 4) return setPos(getPosition(e))
 
     ctx.beginPath()
+    ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
     ctx.lineCap = 'round'
     ctx.lineWidth = usingThickStroke ? 3 : 1.2
     ctx.strokeStyle = strokeColor

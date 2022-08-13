@@ -4,7 +4,7 @@ import PaperchatOctagon from 'components/PaperchatOctagon'
 import Keyboard from 'components/Keyboard'
 import Canvas from 'components/Canvas'
 import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { getRandomColor } from 'helpers/helper_functions'
 import keyboard from 'types/Keyboard'
 
@@ -44,6 +44,10 @@ const FindRooms = () => {
 
   const getButton = (condition: boolean, name: string) =>
     condition ? `/tool-buttons/selected/${name}.png` : `/tool-buttons/${name}.png`
+
+  const clearCanvas = () => {
+    console.log('hello')
+  }
 
   return (
     <div className="main">
@@ -177,7 +181,7 @@ const FindRooms = () => {
                       className={active}
                     />
                   </div>
-                  <div className={`${active_on_click}`}>
+                  <div className={`${active_on_click}`} onClick={clearCanvas}>
                     <img src="/send-buttons/CLEAR.png" alt="clear button" />
                     <img
                       src="/send-buttons/active/CLEAR.png"
