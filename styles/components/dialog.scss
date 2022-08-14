@@ -1,3 +1,12 @@
+.dialog_container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  @include flexcenter;
+  background-color: rgba(17, 17, 17, 0.45);
+  z-index: 1000;
+}
+
 .dialog_layer_1 {
   width: 320px;
   height: 100px;

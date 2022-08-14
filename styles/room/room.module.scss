@@ -4,6 +4,8 @@
   grid-template-columns: 7.5% 1fr;
   grid-template-rows: 6.5% 1fr 2%;
   overflow: hidden;
+  user-select: none;
+  position: relative;
 
   img {
     width: 100%;

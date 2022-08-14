@@ -14,7 +14,7 @@ const {
   username_input,
   editing_username,
   back_to_corner,
-  save_username_btn_container,
+  save_username_btn_container
 } = styles
 
 const Home = () => {
@@ -47,22 +47,13 @@ const Home = () => {
         <div className={`screen ${top}`}></div>
         <div className={`screen ${bottom}`}>
           <div className={btn_search_rooms}>
-            <MenuButton
-              onClick={() => router.push('/find-rooms')}
-              text="Search rooms"
-            />
+            <MenuButton onClick={() => router.push('/find-rooms')} text="Search rooms" />
           </div>
           <div className={btn_create_room}>
-            <MenuButton
-              onClick={() => router.push('/create-room')}
-              text="Create a room"
-            />
+            <MenuButton onClick={() => router.push('/create-room')} text="Create a room" />
           </div>
           <div className={btn_join}>
-            <MenuButton
-              onClick={() => router.push('/join-room')}
-              text="Join with a code"
-            />
+            <MenuButton onClick={() => router.push('/join-room')} text="Join with a code" />
           </div>
 
           <div onClick={editUsername} className={usernameAreaClasses}>

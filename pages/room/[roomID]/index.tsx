@@ -5,8 +5,9 @@ import Keyboard from 'components/Keyboard'
 import Canvas from 'components/Canvas'
 import { useRouter } from 'next/router'
 import { useState, useEffect, useRef } from 'react'
-import { getRandomColor } from 'helpers/helper_functions'
+import { getRandomColor } from 'helpers/helperFunctions'
 import keyboard from 'types/Keyboard'
+import emitter from 'helpers/MittEmitter'
 
 const { top, left_column, right_column, top_section, bottom_section } = general_styles
 
@@ -45,9 +46,7 @@ const FindRooms = () => {
   const getButton = (condition: boolean, name: string) =>
     condition ? `/tool-buttons/selected/${name}.png` : `/tool-buttons/${name}.png`
 
-  const clearCanvas = () => {
-    console.log('hello')
-  }
+  const clearCanvas = () => emitter.emit('clearCanvas', '')
 
   return (
     <div className="main">

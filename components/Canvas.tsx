@@ -1,5 +1,6 @@
 import styles from 'styles/components/canvas.module.scss'
 import { useEffect, useState, useRef } from 'react'
+import emitter from 'helpers/MittEmitter'
 
 const { canvas_outline, canvas_content } = styles
 
@@ -29,9 +30,16 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   // COLOR DATA
   const strokeColor = '#111'
 
+  const clearCanvas = () => {
+    console.log(ctx)
+    if (!ctx) return
+    ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
+    drawUsernameRectangle()
+  }
+
   const drawDivisions = () => {
     if (!ctx) return
-    ctx.strokeStyle = roomColor.replace('0.8', '0.4')
+    ctx.strokeStyle = roomColor.replace('1.0', '0.6')
 
     for (let i = 1; i < 5; i++) {
       ctx.beginPath()
@@ -50,7 +58,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   const drawUsernameRectangle = () => {
     if (!ctx) return
     let pixelBorderSize = canvasRef.current!.width >= 400 ? 3 : 2
-    ctx.fillStyle = roomColor.replace('0.8', '0.4')
+    ctx.lineWidth = 1
+    ctx.fillStyle = roomColor.replace('1.0', '0.3')
     ctx.strokeStyle = roomColor
     ctx.beginPath()
     ctx.moveTo(0, divisionsHeight)
@@ -64,6 +73,16 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     ctx.lineTo(0, -5)
     ctx.fill()
     ctx.stroke()
+
+    const f = new FontFace('nds', 'url(/fonts/nds.ttf)')
+    console.log(f.status)
+
+    f.load().then((font) => {
+      ctx.fillStyle = roomColor
+      ctx.font = `${divisionsHeight}px 'nds', roboto, sans-serif`
+      console.log()
+      ctx.fillText('Johnny', 5, Math.floor((80 / 100) * divisionsHeight))
+    })
   }
 
   const getPosition = (e: React.MouseEvent) => {
@@ -73,7 +92,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   const draw = (e: React.MouseEvent) => {
     // e.buttons !== 1 makes sure the mouse left button is pressed
-    const isWithinUsername = pos.x < nameContainerWidth + 8 && pos.y < divisionsHeight + 4
+    const isWithinUsername = pos.x < nameContainerWidth + 8 && pos.y < divisionsHeight + 6
     if (!ctx || e.buttons !== 1 || isWithinUsername) return setPos(getPosition(e))
 
     ctx.beginPath()
@@ -91,7 +110,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   const drawDot = (e: React.MouseEvent) => {
     if (!ctx || e.buttons !== 1) return
-    if (pos.x < nameContainerWidth + 8 && pos.y < divisionsHeight + 4) return setPos(getPosition(e))
+    if (pos.x < nameContainerWidth + 8 && pos.y < divisionsHeight + 6) return setPos(getPosition(e))
 
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
@@ -106,6 +125,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   // CANVAS SETUP - Happens on mounted
   useEffect(() => {
+    console.log(roomColor)
     const canvas = canvasRef.current!
     outlineRef.current!.style.backgroundColor = roomColor
 
@@ -125,6 +145,13 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   useEffect(() => drawDivisions(), [divisionsHeight])
   useEffect(() => drawUsernameRectangle(), [nameContainerWidth])
+  useEffect(() => {
+    emitter.on('clearCanvas', clearCanvas)
+
+    return () => {
+      emitter.off('clearCanvas')
+    }
+  }, [ctx])
 
   return (
     <div ref={outlineRef} className={canvas_outline}>
