@@ -47,6 +47,8 @@ const FindRooms = () => {
     condition ? `/tool-buttons/selected/${name}.png` : `/tool-buttons/${name}.png`
 
   const clearCanvas = () => emitter.emit('clearCanvas', '')
+  const typeKey = (key: string) => emitter.emit('typeKey', key)
+  const typeSpace = () => emitter.emit('typeSpace', '')
 
   return (
     <div className="main">
@@ -159,7 +161,11 @@ const FindRooms = () => {
               </div>
 
               <div className={keyboard_area}>
-                <Keyboard currentKeyboard={currentKeyboard} />
+                <Keyboard
+                  typeSpace={typeSpace}
+                  typeKey={typeKey}
+                  currentKeyboard={currentKeyboard}
+                />
               </div>
 
               <div className={send_buttons}>

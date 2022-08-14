@@ -2,6 +2,10 @@ import styles from 'styles/components/keyboard.module.scss'
 
 const { keyboard_grid, active } = styles
 
+type accentsProps = {
+  typeKey: (key: string) => void
+  typeSpace: () => void
+}
 type specialKeys = 'DEL' | 'ENTER' | 'SPACE'
 type specialKey = { specialKey: specialKeys }
 type regularKey = { text: string; specialKey?: specialKeys }
@@ -175,7 +179,7 @@ const keys: keys = [
   }
 ]
 
-const AccentsKeyboard = () => {
+const AccentsKeyboard = ({ typeKey, typeSpace }: accentsProps) => {
   const specialKeyMethods = {
     DEL: () => {
       return ''
@@ -184,7 +188,7 @@ const AccentsKeyboard = () => {
       return ''
     },
     SPACE: () => {
-      return ''
+      typeSpace()
     }
   }
 
@@ -212,7 +216,11 @@ const AccentsKeyboard = () => {
           </div>
         )
       } else {
-        return <div key={key.text}>{key.text}</div>
+        return (
+          <div onClick={() => typeKey(key.text)} key={key.text}>
+            {key.text}
+          </div>
+        )
       }
     })
   }

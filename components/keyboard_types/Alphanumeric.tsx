@@ -3,6 +3,10 @@ import { useState } from 'react'
 
 const { alphanumeric, key_row, active } = styles
 
+type alphanumericProps = {
+  typeKey: (key: string) => void
+  typeSpace: () => void
+}
 type specialKeys = 'DEL' | 'CAPS' | 'ENTER' | 'SHIFT' | 'SPACE'
 type specialKey = { specialKey: specialKeys }
 type regularKey =
@@ -201,7 +205,7 @@ const keys: keys = [
   ]
 ]
 
-const AlphanumericKeyboard = () => {
+const AlphanumericKeyboard = ({ typeKey, typeSpace }: alphanumericProps) => {
   const [usingCaps, setCaps] = useState(false)
   const [usingShift, setShift] = useState(false)
 
@@ -221,7 +225,7 @@ const AlphanumericKeyboard = () => {
       setCaps(false)
     },
     SPACE: () => {
-      return ''
+      typeSpace()
     }
   }
 
@@ -260,7 +264,11 @@ const AlphanumericKeyboard = () => {
                 </div>
               )
             } else {
-              return <div key={key.text}>{getText(key)}</div>
+              return (
+                <div onClick={() => typeKey(getText(key))} key={key.text}>
+                  {getText(key)}
+                </div>
+              )
             }
           })}
         </div>

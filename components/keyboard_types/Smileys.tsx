@@ -2,6 +2,10 @@ import styles from 'styles/components/keyboard.module.scss'
 
 const { keyboard_grid, active } = styles
 
+type smileysProps = {
+  typeKey: (key: string) => void
+  typeSpace: () => void
+}
 type specialKeys = 'DEL' | 'ENTER' | 'SPACE'
 type specialKey = { specialKey: specialKeys }
 type regularKey = { text: string; specialKey?: specialKeys }
@@ -184,7 +188,7 @@ const keys: keys = [
   }
 ]
 
-const SmileysKeyboard = () => {
+const SmileysKeyboard = ({ typeKey, typeSpace }: smileysProps) => {
   const specialKeyMethods = {
     DEL: () => {
       return ''
@@ -193,7 +197,7 @@ const SmileysKeyboard = () => {
       return ''
     },
     SPACE: () => {
-      return ''
+      typeSpace()
     }
   }
 
@@ -221,7 +225,11 @@ const SmileysKeyboard = () => {
           </div>
         )
       } else {
-        return <div key={key.text}>{key.text}</div>
+        return (
+          <div onClick={() => typeKey(key.text)} key={key.text}>
+            {key.text}
+          </div>
+        )
       }
     })
   }

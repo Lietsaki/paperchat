@@ -9,14 +9,18 @@ const { keyboard_bg, keyboard_content } = styles
 
 type keyboardProps = {
   currentKeyboard: keyboard
+  typeKey: (key: string) => void
+  typeSpace: () => void
 }
 
-const Keyboard = ({ currentKeyboard }: keyboardProps) => {
+const Keyboard = ({ typeKey, typeSpace, currentKeyboard }: keyboardProps) => {
+  const typeFunctions = { typeKey, typeSpace }
+
   const getKeyboard = () => {
-    if (currentKeyboard === 'alphanumeric') return <Alphanumeric />
-    if (currentKeyboard === 'accents') return <Accents />
-    if (currentKeyboard === 'symbols') return <Symbols />
-    if (currentKeyboard === 'smileys') return <Smileys />
+    if (currentKeyboard === 'alphanumeric') return <Alphanumeric {...typeFunctions} />
+    if (currentKeyboard === 'accents') return <Accents {...typeFunctions} />
+    if (currentKeyboard === 'symbols') return <Symbols {...typeFunctions} />
+    if (currentKeyboard === 'smileys') return <Smileys {...typeFunctions} />
   }
 
   return (

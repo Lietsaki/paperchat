@@ -23,6 +23,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   // DRAWING STATE
   const [pos, setPos] = useState<positionObj>({ x: 0, y: 0 })
+  const [keyPos, setKeyPos] = useState<positionObj>({ x: 0, y: 0 })
   const [ctx, setCanvasCtx] = useState<CanvasRenderingContext2D | null>(null)
   const [nameContainerWidth, setNameContainerWidth] = useState(0)
   const [divisionsHeight, setDivisionsHeight] = useState(0)
@@ -31,10 +32,46 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   const strokeColor = '#111'
 
   const clearCanvas = () => {
-    console.log(ctx)
     if (!ctx) return
     ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
     drawUsernameRectangle()
+  }
+
+  const getNextYDivision = (y: number) => {
+    const nextDivision = y + divisionsHeight
+    if (nextDivision < canvasRef.current!.height) return nextDivision
+    return y
+  }
+
+  const typeKey = (key: string) => {
+    if (!ctx) return
+    ctx.fillStyle = strokeColor
+    const keyWidth = ctx.measureText(key).width
+    const nextKeyPos = { x: Math.round(keyPos.x + keyWidth), y: keyPos.y }
+    const nextKeyWillOverflowCanvas =
+      nextKeyPos.x >= Math.floor((98 / 100) * canvasRef.current!.width)
+
+    if (nextKeyWillOverflowCanvas) {
+      nextKeyPos.x = 5
+      nextKeyPos.y = getNextYDivision(keyPos.y)
+    }
+
+    ctx.fillText(key, keyPos.x, keyPos.y)
+    setKeyPos(nextKeyPos)
+  }
+
+  const typeSpace = () => {
+    const nextKeyPos = { x: keyPos.x + 5, y: keyPos.y }
+    const nextKeyWillOverflowCanvas =
+      nextKeyPos.x >= Math.floor((98 / 100) * canvasRef.current!.width)
+
+    if (nextKeyWillOverflowCanvas) {
+      console.log('overflowed!')
+      nextKeyPos.x = 5
+      nextKeyPos.y = getNextYDivision(keyPos.y)
+    }
+
+    setKeyPos(nextKeyPos)
   }
 
   const drawDivisions = () => {
@@ -74,14 +111,15 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     ctx.fill()
     ctx.stroke()
 
+    // Write username
     const f = new FontFace('nds', 'url(/fonts/nds.ttf)')
-    console.log(f.status)
 
     f.load().then((font) => {
       ctx.fillStyle = roomColor
       ctx.font = `${divisionsHeight}px 'nds', roboto, sans-serif`
-      console.log()
-      ctx.fillText('Johnny', 5, Math.floor((80 / 100) * divisionsHeight))
+      const firstLineY = Math.floor((80 / 100) * divisionsHeight)
+      ctx.fillText('Johnny', 5, firstLineY)
+      setKeyPos({ x: nameContainerWidth + 10, y: firstLineY })
     })
   }
 
@@ -125,13 +163,12 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   // CANVAS SETUP - Happens on mounted
   useEffect(() => {
-    console.log(roomColor)
     const canvas = canvasRef.current!
     outlineRef.current!.style.backgroundColor = roomColor
 
     if (!canvas.getContext) return
-    const context = canvas.getContext('2d')
-    setCanvasCtx(context)
+    const ctx = canvas.getContext('2d')
+    setCanvasCtx(ctx)
 
     const resize = () => {
       canvas.width = containerRef.current!.offsetWidth
@@ -147,11 +184,19 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   useEffect(() => drawUsernameRectangle(), [nameContainerWidth])
   useEffect(() => {
     emitter.on('clearCanvas', clearCanvas)
-
     return () => {
       emitter.off('clearCanvas')
     }
   }, [ctx])
+  useEffect(() => {
+    emitter.on('typeKey', typeKey)
+    emitter.on('typeSpace', typeSpace)
+
+    return () => {
+      emitter.off('typeKey')
+      emitter.off('typeSpace')
+    }
+  }, [keyPos])
 
   return (
     <div ref={outlineRef} className={canvas_outline}>
