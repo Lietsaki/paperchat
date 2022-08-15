@@ -5,6 +5,8 @@ const { keyboard_grid, active } = styles
 type smileysProps = {
   typeKey: (key: string) => void
   typeSpace: () => void
+  typeEnter: () => void
+  typeDel: () => void
 }
 type specialKeys = 'DEL' | 'ENTER' | 'SPACE'
 type specialKey = { specialKey: specialKeys }
@@ -188,13 +190,13 @@ const keys: keys = [
   }
 ]
 
-const SmileysKeyboard = ({ typeKey, typeSpace }: smileysProps) => {
+const SmileysKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: smileysProps) => {
   const specialKeyMethods = {
     DEL: () => {
-      return ''
+      typeDel()
     },
     ENTER: () => {
-      return ''
+      typeEnter()
     },
     SPACE: () => {
       typeSpace()

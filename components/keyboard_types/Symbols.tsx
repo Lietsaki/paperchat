@@ -5,6 +5,8 @@ const { keyboard_grid, active } = styles
 type symbolsProps = {
   typeKey: (key: string) => void
   typeSpace: () => void
+  typeEnter: () => void
+  typeDel: () => void
 }
 type specialKeys = 'DEL' | 'ENTER' | 'SPACE'
 type specialKey = { specialKey: specialKeys }
@@ -188,13 +190,13 @@ const keys: keys = [
   }
 ]
 
-const SymbolsKeyboard = ({ typeKey, typeSpace }: symbolsProps) => {
+const SymbolsKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: symbolsProps) => {
   const specialKeyMethods = {
     DEL: () => {
-      return ''
+      typeDel()
     },
     ENTER: () => {
-      return ''
+      typeEnter()
     },
     SPACE: () => {
       typeSpace()

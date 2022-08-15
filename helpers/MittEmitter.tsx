@@ -4,6 +4,8 @@ type Events = {
   clearCanvas: string
   typeKey: string
   typeSpace: string
+  typeEnter: string
+  typeDel: string
 }
 
 const emitter: Emitter<Events> = mitt<Events>()

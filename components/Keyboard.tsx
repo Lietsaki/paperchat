@@ -11,10 +11,12 @@ type keyboardProps = {
   currentKeyboard: keyboard
   typeKey: (key: string) => void
   typeSpace: () => void
+  typeEnter: () => void
+  typeDel: () => void
 }
 
-const Keyboard = ({ typeKey, typeSpace, currentKeyboard }: keyboardProps) => {
-  const typeFunctions = { typeKey, typeSpace }
+const Keyboard = ({ typeKey, typeSpace, typeEnter, typeDel, currentKeyboard }: keyboardProps) => {
+  const typeFunctions = { typeKey, typeSpace, typeEnter, typeDel }
 
   const getKeyboard = () => {
     if (currentKeyboard === 'alphanumeric') return <Alphanumeric {...typeFunctions} />

@@ -5,6 +5,8 @@ const { keyboard_grid, active } = styles
 type accentsProps = {
   typeKey: (key: string) => void
   typeSpace: () => void
+  typeEnter: () => void
+  typeDel: () => void
 }
 type specialKeys = 'DEL' | 'ENTER' | 'SPACE'
 type specialKey = { specialKey: specialKeys }
@@ -179,13 +181,13 @@ const keys: keys = [
   }
 ]
 
-const AccentsKeyboard = ({ typeKey, typeSpace }: accentsProps) => {
+const AccentsKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: accentsProps) => {
   const specialKeyMethods = {
     DEL: () => {
-      return ''
+      typeDel()
     },
     ENTER: () => {
-      return ''
+      typeEnter()
     },
     SPACE: () => {
       typeSpace()

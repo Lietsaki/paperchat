@@ -6,6 +6,8 @@ const { alphanumeric, key_row, active } = styles
 type alphanumericProps = {
   typeKey: (key: string) => void
   typeSpace: () => void
+  typeEnter: () => void
+  typeDel: () => void
 }
 type specialKeys = 'DEL' | 'CAPS' | 'ENTER' | 'SHIFT' | 'SPACE'
 type specialKey = { specialKey: specialKeys }
@@ -205,20 +207,20 @@ const keys: keys = [
   ]
 ]
 
-const AlphanumericKeyboard = ({ typeKey, typeSpace }: alphanumericProps) => {
+const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphanumericProps) => {
   const [usingCaps, setCaps] = useState(false)
   const [usingShift, setShift] = useState(false)
 
   const specialKeyMethods = {
     DEL: () => {
-      return ''
+      typeDel()
     },
     CAPS: () => {
       setCaps(!usingCaps)
       setShift(false)
     },
     ENTER: () => {
-      return ''
+      typeEnter()
     },
     SHIFT: () => {
       setShift(!usingShift)
@@ -239,6 +241,11 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace }: alphanumericProps) => {
     if (usingCaps) return key.text.toUpperCase()
     if (usingShift) return key.shiftText || key.text.toUpperCase()
     return key.text
+  }
+
+  const performType = (key: string) => {
+    if (usingShift) setShift(false)
+    typeKey(key)
   }
 
   const getKeys = () => {
@@ -265,7 +272,7 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace }: alphanumericProps) => {
               )
             } else {
               return (
-                <div onClick={() => typeKey(getText(key))} key={key.text}>
+                <div onClick={() => performType(getText(key))} key={key.text}>
                   {getText(key)}
                 </div>
               )

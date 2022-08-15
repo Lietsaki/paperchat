@@ -49,6 +49,8 @@ const FindRooms = () => {
   const clearCanvas = () => emitter.emit('clearCanvas', '')
   const typeKey = (key: string) => emitter.emit('typeKey', key)
   const typeSpace = () => emitter.emit('typeSpace', '')
+  const typeEnter = () => emitter.emit('typeEnter', '')
+  const typeDel = () => emitter.emit('typeDel', '')
 
   return (
     <div className="main">
@@ -162,8 +164,10 @@ const FindRooms = () => {
 
               <div className={keyboard_area}>
                 <Keyboard
-                  typeSpace={typeSpace}
                   typeKey={typeKey}
+                  typeSpace={typeSpace}
+                  typeEnter={typeEnter}
+                  typeDel={typeDel}
                   currentKeyboard={currentKeyboard}
                 />
               </div>

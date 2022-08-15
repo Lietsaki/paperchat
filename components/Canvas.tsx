@@ -15,6 +15,16 @@ interface positionObj {
   y: number
 }
 
+interface textData {
+  isSpace?: boolean
+  isEnter?: boolean
+  isKey?: boolean
+  x: number
+  y: number
+  keyWidth?: number
+  keyHeight?: number
+}
+
 const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   // REFS
   const outlineRef = useRef<HTMLDivElement>(null)
@@ -24,6 +34,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   // DRAWING STATE
   const [pos, setPos] = useState<positionObj>({ x: 0, y: 0 })
   const [keyPos, setKeyPos] = useState<positionObj>({ x: 0, y: 0 })
+  const [textHistory, setTextHistory] = useState<textData[]>([])
   const [ctx, setCanvasCtx] = useState<CanvasRenderingContext2D | null>(null)
   const [nameContainerWidth, setNameContainerWidth] = useState(0)
   const [divisionsHeight, setDivisionsHeight] = useState(0)
@@ -39,15 +50,24 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   const getNextYDivision = (y: number) => {
     const nextDivision = y + divisionsHeight
-    if (nextDivision < canvasRef.current!.height) return nextDivision
-    return y
+    if (nextDivision > canvasRef.current!.height) return -1
+    return nextDivision
   }
 
+  const getPreviousYDivision = (y: number) => {
+    const previousDivision = y - divisionsHeight
+    if (0 > previousDivision) return -1
+    return previousDivision
+  }
+
+  const getStartingX = () => nameContainerWidth + 10
+
   const typeKey = (key: string) => {
-    if (!ctx) return
+    if (!ctx || keyPos.y === -1) return
+    ctx.globalCompositeOperation = 'source-over'
     ctx.fillStyle = strokeColor
-    const keyWidth = ctx.measureText(key).width
-    const nextKeyPos = { x: Math.round(keyPos.x + keyWidth), y: keyPos.y }
+    const textMetrics = ctx.measureText(key)
+    const nextKeyPos = { x: Math.round(keyPos.x + textMetrics.width), y: keyPos.y }
     const nextKeyWillOverflowCanvas =
       nextKeyPos.x >= Math.floor((98 / 100) * canvasRef.current!.width)
 
@@ -55,23 +75,74 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
       nextKeyPos.x = 5
       nextKeyPos.y = getNextYDivision(keyPos.y)
     }
+
+    setTextHistory([
+      ...textHistory,
+      {
+        isKey: true,
+        x: keyPos.x,
+        y: keyPos.y,
+        keyWidth: textMetrics.width,
+        keyHeight: textMetrics.fontBoundingBoxAscent + textMetrics.fontBoundingBoxDescent
+      }
+    ])
 
     ctx.fillText(key, keyPos.x, keyPos.y)
     setKeyPos(nextKeyPos)
   }
 
   const typeSpace = () => {
+    if (keyPos.y === -1) return
     const nextKeyPos = { x: keyPos.x + 5, y: keyPos.y }
     const nextKeyWillOverflowCanvas =
       nextKeyPos.x >= Math.floor((98 / 100) * canvasRef.current!.width)
 
     if (nextKeyWillOverflowCanvas) {
-      console.log('overflowed!')
       nextKeyPos.x = 5
       nextKeyPos.y = getNextYDivision(keyPos.y)
     }
 
     setKeyPos(nextKeyPos)
+    setTextHistory([...textHistory, { isSpace: true, x: nextKeyPos.x, y: nextKeyPos.y }])
+  }
+
+  const typeEnter = () => {
+    if (keyPos.y === -1) return
+    const nextKeyPos = { x: 5, y: getNextYDivision(keyPos.y) }
+
+    if (nextKeyPos.y !== -1) {
+      setKeyPos(nextKeyPos)
+      setTextHistory([...textHistory, { isEnter: true, x: nextKeyPos.x, y: nextKeyPos.y }])
+    }
+  }
+
+  const typeDel = () => {
+    if (!ctx || !textHistory.length) return
+    const lastKey = textHistory[textHistory.length - 1]
+
+    if (lastKey.isKey) {
+      ctx.clearRect(
+        lastKey.x - 1,
+        lastKey.y - (lastKey.keyHeight! - 3),
+        lastKey.keyWidth!,
+        lastKey.keyHeight!
+      )
+      setKeyPos({ x: lastKey.x, y: lastKey.y })
+    } else if (lastKey.isSpace) {
+      setKeyPos({ x: lastKey.x - 5, y: lastKey.y })
+    } else if (lastKey.isEnter) {
+      let previousX = getStartingX()
+      const keyBehindPrevious = textHistory[textHistory.length - 2]
+
+      if (keyBehindPrevious) {
+        const { x, keyWidth } = keyBehindPrevious
+        previousX = keyWidth ? x + keyWidth : x
+      }
+
+      setKeyPos({ x: previousX, y: getPreviousYDivision(keyPos.y) })
+    }
+
+    setTextHistory(textHistory.slice(0, -1))
   }
 
   const drawDivisions = () => {
@@ -94,6 +165,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   const drawUsernameRectangle = () => {
     if (!ctx) return
+    ctx.globalCompositeOperation = 'source-over'
     let pixelBorderSize = canvasRef.current!.width >= 400 ? 3 : 2
     ctx.lineWidth = 1
     ctx.fillStyle = roomColor.replace('1.0', '0.3')
@@ -119,7 +191,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
       ctx.font = `${divisionsHeight}px 'nds', roboto, sans-serif`
       const firstLineY = Math.floor((80 / 100) * divisionsHeight)
       ctx.fillText('Johnny', 5, firstLineY)
-      setKeyPos({ x: nameContainerWidth + 10, y: firstLineY })
+      setKeyPos({ x: getStartingX(), y: firstLineY })
     })
   }
 
@@ -127,6 +199,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     const rect = canvasRef.current!.getBoundingClientRect()
     return { x: e.clientX - rect.left, y: e.clientY - rect.top }
   }
+
+  const resetPosition = () => setPos({ x: 0, y: 0 })
 
   const draw = (e: React.MouseEvent) => {
     // e.buttons !== 1 makes sure the mouse left button is pressed
@@ -191,12 +265,16 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   useEffect(() => {
     emitter.on('typeKey', typeKey)
     emitter.on('typeSpace', typeSpace)
+    emitter.on('typeEnter', typeEnter)
+    emitter.on('typeDel', typeDel)
 
     return () => {
       emitter.off('typeKey')
       emitter.off('typeSpace')
+      emitter.off('typeEnter')
+      emitter.off('typeDel')
     }
-  }, [keyPos])
+  }, [keyPos, textHistory])
 
   return (
     <div ref={outlineRef} className={canvas_outline}>
@@ -205,6 +283,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
           onMouseDown={drawDot}
           onMouseMove={draw}
           onMouseEnter={(e) => setPos(getPosition(e))}
+          onMouseLeave={resetPosition}
           ref={canvasRef}
         >
           <p>Please use a browser that supports the canvas element</p>
