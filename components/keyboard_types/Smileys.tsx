@@ -1,6 +1,8 @@
 import styles from 'styles/components/keyboard.module.scss'
+import { createFloatingKey, removeFloatingKey } from 'helpers/floatingKey'
+import { useState } from 'react'
 
-const { keyboard_grid, active } = styles
+const { keyboard_grid, active, dragging } = styles
 
 type smileysProps = {
   typeKey: (key: string) => void
@@ -191,6 +193,9 @@ const keys: keys = [
 ]
 
 const SmileysKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: smileysProps) => {
+  const [activeKey, setActiveKey] = useState('')
+  const [draggingKey, setDragginKey] = useState('')
+
   const specialKeyMethods = {
     DEL: () => {
       typeDel()
@@ -207,6 +212,29 @@ const SmileysKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: smileysProp
     const processed_key = specialKey === 'ENTER' ? 'ENTER_2' : specialKey
     if (!active) return `/special-keys/${processed_key}.png`
     if (active) return `/special-keys/active/${processed_key}.png`
+  }
+
+  const handleMouseDown = (key: string) => {
+    setActiveKey(key)
+    document.addEventListener('mouseup', handleMouseUp)
+    document.body.style.cursor = 'grabbing'
+  }
+
+  const handleMouseLeave = (key: string, e: React.MouseEvent) => {
+    if (activeKey === key && !draggingKey) {
+      setDragginKey(key)
+      const row = document.getElementsByClassName(keyboard_grid)
+      const sampleKey = row[0].children[0]
+      createFloatingKey(key, e, sampleKey)
+    }
+  }
+
+  const handleMouseUp = () => {
+    setActiveKey('')
+    setDragginKey('')
+    document.removeEventListener('mouseup', handleMouseUp)
+    document.body.style.cursor = 'auto'
+    removeFloatingKey()
   }
 
   const getKeys = () => {
@@ -228,7 +256,12 @@ const SmileysKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: smileysProp
         )
       } else {
         return (
-          <div onClick={() => typeKey(key.text)} key={key.text}>
+          <div
+            onMouseLeave={(e) => handleMouseLeave(key.text, e)}
+            onMouseDown={() => handleMouseDown(key.text)}
+            onClick={() => typeKey(key.text)}
+            key={key.text}
+          >
             {key.text}
           </div>
         )
@@ -236,7 +269,7 @@ const SmileysKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: smileysProp
     })
   }
 
-  return <div className={keyboard_grid}>{getKeys()}</div>
+  return <div className={`${keyboard_grid} ${activeKey ? dragging : ''}`}>{getKeys()}</div>
 }
 
 export default SmileysKeyboard

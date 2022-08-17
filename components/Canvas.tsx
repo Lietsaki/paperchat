@@ -71,8 +71,6 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     const nextKeyWillOverflowCanvas =
       nextKeyPos.x >= Math.floor((98 / 100) * canvasRef.current!.width)
 
-    console.log(textMetrics)
-
     if (nextKeyWillOverflowCanvas) {
       nextKeyPos.x = 5
       nextKeyPos.y = getNextYDivision(keyPos.y)

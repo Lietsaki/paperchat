@@ -1,5 +1,6 @@
 import styles from 'styles/components/keyboard.module.scss'
-import { useState, useCallback } from 'react'
+import { createFloatingKey, removeFloatingKey } from 'helpers/floatingKey'
+import { useState } from 'react'
 
 const { alphanumeric, key_row, active, dragging, floating_key } = styles
 
@@ -211,6 +212,7 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
   const [usingCaps, setCaps] = useState(false)
   const [usingShift, setShift] = useState(false)
   const [activeKey, setActiveKey] = useState('')
+  const [draggingKey, setDragginKey] = useState('')
 
   const specialKeyMethods = {
     DEL: () => {
@@ -255,45 +257,21 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
     document.body.style.cursor = 'grabbing'
   }
 
-  const updateFloatingKeyPostion = (e: MouseEvent) => {
-    const floatingKey = document.querySelector(`.${floating_key}`) as HTMLDivElement
-    floatingKey.style.left = e.pageX - 10 + 'px'
-    floatingKey.style.top = e.pageY - 15 + 'px'
-  }
-
-  const mousemoveCallback = useCallback((e: MouseEvent) => updateFloatingKeyPostion(e), [])
-
   const handleMouseLeave = (key: string, e: React.MouseEvent) => {
-    if (activeKey === key) {
-      const main = document.querySelector('.main')
-      const floatingKey = document.createElement('div')
-      floatingKey.innerText = key
-      floatingKey.classList.add(floating_key)
-      main!.append(floatingKey)
-      floatingKey.style.left = e.pageX - 10 + 'px'
-      floatingKey.style.top = e.pageY - 15 + 'px'
-
+    if (activeKey === key && !draggingKey) {
+      setDragginKey(key)
       const row = document.getElementsByClassName(key_row)
       const sampleKey = row[0].children[0]
-      const computedFontSize = getComputedStyle(sampleKey).fontSize
-      floatingKey.style.fontSize = computedFontSize
-
-      document.addEventListener('mousemove', mousemoveCallback)
+      createFloatingKey(key, e, sampleKey)
     }
-
-    console.log('mouse left')
   }
 
   const handleMouseUp = () => {
     setActiveKey('')
+    setDragginKey('')
     document.removeEventListener('mouseup', handleMouseUp)
     document.body.style.cursor = 'auto'
-    const floatingKey = document.querySelector(`.${floating_key}`)
-
-    if (floatingKey) {
-      document.removeEventListener('mousemove', mousemoveCallback)
-      floatingKey.remove()
-    }
+    removeFloatingKey()
   }
 
   const getKeys = () => {

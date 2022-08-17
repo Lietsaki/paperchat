@@ -45,12 +45,6 @@
   }
 }
 
-.floating_key {
-  @include ds-font;
-  color: $key-color;
-  position: absolute;
-}
-
 @mixin base-key {
   @include flexcenter;
   background-color: $key-bg;
