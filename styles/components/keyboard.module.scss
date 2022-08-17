@@ -45,7 +45,13 @@
   }
 }
 
-@mixin base_key {
+.floating_key {
+  @include ds-font;
+  color: $key-color;
+  position: absolute;
+}
+
+@mixin base-key {
   @include flexcenter;
   background-color: $key-bg;
   color: $key-color;
@@ -70,6 +76,7 @@
     cursor: pointer;
   }
   &:active {
+    cursor: grabbing;
     background-color: $key-active-bg;
     color: $key-active-color;
   }
@@ -176,7 +183,11 @@
     div {
       height: 100%;
       width: 9%;
-      @include base_key;
+      @include base-key;
+    }
+
+    &.dragging div:hover {
+      cursor: grabbing;
     }
   }
 }
@@ -224,10 +235,14 @@
   }
 
   div {
-    @include base_key;
+    @include base-key;
 
     &:nth-child(12) {
       grid-column: 1 / 2;
     }
+  }
+
+  &.dragging div:hover {
+    cursor: grabbing;
   }
 }

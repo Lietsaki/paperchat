@@ -1,7 +1,7 @@
 import styles from 'styles/components/keyboard.module.scss'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 
-const { alphanumeric, key_row, active } = styles
+const { alphanumeric, key_row, active, dragging, floating_key } = styles
 
 type alphanumericProps = {
   typeKey: (key: string) => void
@@ -210,6 +210,7 @@ const keys: keys = [
 const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphanumericProps) => {
   const [usingCaps, setCaps] = useState(false)
   const [usingShift, setShift] = useState(false)
+  const [activeKey, setActiveKey] = useState('')
 
   const specialKeyMethods = {
     DEL: () => {
@@ -248,10 +249,57 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
     typeKey(key)
   }
 
+  const handleMouseDown = (key: string) => {
+    setActiveKey(key)
+    document.addEventListener('mouseup', handleMouseUp)
+    document.body.style.cursor = 'grabbing'
+  }
+
+  const updateFloatingKeyPostion = (e: MouseEvent) => {
+    const floatingKey = document.querySelector(`.${floating_key}`) as HTMLDivElement
+    floatingKey.style.left = e.pageX - 10 + 'px'
+    floatingKey.style.top = e.pageY - 15 + 'px'
+  }
+
+  const mousemoveCallback = useCallback((e: MouseEvent) => updateFloatingKeyPostion(e), [])
+
+  const handleMouseLeave = (key: string, e: React.MouseEvent) => {
+    if (activeKey === key) {
+      const main = document.querySelector('.main')
+      const floatingKey = document.createElement('div')
+      floatingKey.innerText = key
+      floatingKey.classList.add(floating_key)
+      main!.append(floatingKey)
+      floatingKey.style.left = e.pageX - 10 + 'px'
+      floatingKey.style.top = e.pageY - 15 + 'px'
+
+      const row = document.getElementsByClassName(key_row)
+      const sampleKey = row[0].children[0]
+      const computedFontSize = getComputedStyle(sampleKey).fontSize
+      floatingKey.style.fontSize = computedFontSize
+
+      document.addEventListener('mousemove', mousemoveCallback)
+    }
+
+    console.log('mouse left')
+  }
+
+  const handleMouseUp = () => {
+    setActiveKey('')
+    document.removeEventListener('mouseup', handleMouseUp)
+    document.body.style.cursor = 'auto'
+    const floatingKey = document.querySelector(`.${floating_key}`)
+
+    if (floatingKey) {
+      document.removeEventListener('mousemove', mousemoveCallback)
+      floatingKey.remove()
+    }
+  }
+
   const getKeys = () => {
     return keys.map((row, i) => {
       return (
-        <div className={key_row} key={i}>
+        <div className={`${key_row} ${activeKey ? dragging : ''}`} key={i}>
           {row.map((key) => {
             if (key.specialKey) {
               return (
@@ -271,9 +319,16 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
                 </div>
               )
             } else {
+              const keyText = getText(key)
+
               return (
-                <div onClick={() => performType(getText(key))} key={key.text}>
-                  {getText(key)}
+                <div
+                  onMouseLeave={(e) => handleMouseLeave(keyText, e)}
+                  onMouseDown={() => handleMouseDown(keyText)}
+                  onClick={() => performType(keyText)}
+                  key={key.text}
+                >
+                  {keyText}
                 </div>
               )
             }

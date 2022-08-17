@@ -1,6 +1,6 @@
 import styles from 'styles/components/keyboard.module.scss'
 
-const { keyboard_grid, active } = styles
+const { keyboard_grid, active, dragging } = styles
 
 type accentsProps = {
   typeKey: (key: string) => void
