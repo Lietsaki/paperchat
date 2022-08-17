@@ -1,4 +1,5 @@
 import React from 'react'
+import emitter from './MittEmitter'
 
 const createFloatingKey = (key: string, e: React.MouseEvent, sampleKey: Element) => {
   const main = document.querySelector('.main')
@@ -13,6 +14,7 @@ const createFloatingKey = (key: string, e: React.MouseEvent, sampleKey: Element)
   floatingKey.style.fontSize = computedFontSize
 
   document.addEventListener('mousemove', updateFloatingKeyPostion)
+  emitter.emit('draggingKey', key)
 }
 
 const updateFloatingKeyPostion = (e: MouseEvent) => {
@@ -27,6 +29,7 @@ const removeFloatingKey = () => {
 
   if (floatingKeys.length) {
     Array.from(floatingKeys).forEach((el) => el.remove())
+    emitter.emit('draggingKey', '')
   }
 }
 

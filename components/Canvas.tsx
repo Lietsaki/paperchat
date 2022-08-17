@@ -1,5 +1,5 @@
 import styles from 'styles/components/canvas.module.scss'
-import { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import emitter from 'helpers/MittEmitter'
 
 const { canvas_outline, canvas_content } = styles
@@ -34,6 +34,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   // DRAWING STATE
   const [pos, setPos] = useState<positionObj>({ x: 0, y: 0 })
   const [keyPos, setKeyPos] = useState<positionObj>({ x: 0, y: 0 })
+  const [draggingKey, setDraggingKey] = useState('')
   const [textHistory, setTextHistory] = useState<textData[]>([])
   const [ctx, setCanvasCtx] = useState<CanvasRenderingContext2D | null>(null)
   const [nameContainerWidth, setNameContainerWidth] = useState(0)
@@ -145,6 +146,51 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     setTextHistory(textHistory.slice(0, -1))
   }
 
+  const getFontSize = () => divisionsHeight - Math.round((12 / 100) * divisionsHeight)
+
+  const dropDraggingKey = (e: MouseEvent, draggingKey: string) => {
+    if (!draggingKey || !ctx) return
+
+    const { height, width } = canvasRef.current!
+    const dropPos = getPosition(e)
+    if (width > 380 && height > 168) {
+      dropPos.x -= Math.round((2 / 100) * width)
+      dropPos.y += Math.round((3 / 100) * height)
+    } else {
+      dropPos.x -= Math.round((3 / 100) * width)
+      dropPos.y += -0.5
+    }
+    const isWithinUsername = dropPos.x < nameContainerWidth + 8 && dropPos.y < divisionsHeight + 6
+    const droppedOutsideCanvas =
+      dropPos.y >= height || 8 >= dropPos.y || dropPos.x >= width || 8 >= dropPos.x
+    if (isWithinUsername || droppedOutsideCanvas) return
+
+    ctx.globalCompositeOperation = 'source-over'
+    ctx.fillStyle = strokeColor
+    const textMetrics = ctx.measureText(draggingKey)
+    const nextKeyPos = { x: Math.round(dropPos.x + textMetrics.width), y: dropPos.y }
+    const nextKeyWillOverflowCanvas = nextKeyPos.x >= Math.floor((98 / 100) * width)
+
+    if (nextKeyWillOverflowCanvas) {
+      nextKeyPos.x = 5
+      nextKeyPos.y = getNextYDivision(dropPos.y)
+    }
+
+    setTextHistory([
+      ...textHistory,
+      {
+        isKey: true,
+        x: dropPos.x,
+        y: dropPos.y,
+        keyWidth: textMetrics.width,
+        keyHeight: textMetrics.fontBoundingBoxAscent + textMetrics.fontBoundingBoxDescent
+      }
+    ])
+
+    ctx.fillText(draggingKey, dropPos.x, dropPos.y)
+    setKeyPos(nextKeyPos)
+  }
+
   const drawDivisions = () => {
     if (!ctx) return
     ctx.strokeStyle = roomColor.replace('1.0', '0.6')
@@ -188,14 +234,14 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
     f.load().then((font) => {
       ctx.fillStyle = roomColor
-      ctx.font = `${divisionsHeight}px 'nds', roboto, sans-serif`
+      ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       const firstLineY = Math.floor((80 / 100) * divisionsHeight)
       ctx.fillText('Johnny', 5, firstLineY)
       setKeyPos({ x: getStartingX(), y: firstLineY })
     })
   }
 
-  const getPosition = (e: React.MouseEvent) => {
+  const getPosition = (e: React.MouseEvent | MouseEvent) => {
     const rect = canvasRef.current!.getBoundingClientRect()
     return { x: e.clientX - rect.left, y: e.clientY - rect.top }
   }
@@ -203,6 +249,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   const resetPosition = () => setPos({ x: 0, y: 0 })
 
   const draw = (e: React.MouseEvent) => {
+    if (draggingKey) return
     // e.buttons !== 1 makes sure the mouse left button is pressed
     const isWithinUsername = pos.x < nameContainerWidth + 8 && pos.y < divisionsHeight + 6
     if (!ctx || e.buttons !== 1 || isWithinUsername) return setPos(getPosition(e))
@@ -221,6 +268,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   }
 
   const drawDot = (e: React.MouseEvent) => {
+    if (draggingKey) return
     if (!ctx || e.buttons !== 1) return
     if (pos.x < nameContainerWidth + 8 && pos.y < divisionsHeight + 6) return setPos(getPosition(e))
 
@@ -258,10 +306,22 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   useEffect(() => drawUsernameRectangle(), [nameContainerWidth])
   useEffect(() => {
     emitter.on('clearCanvas', clearCanvas)
+    emitter.on('draggingKey', (key: string) => setDraggingKey(key))
+
     return () => {
       emitter.off('clearCanvas')
+      emitter.off('draggingKey')
     }
   }, [ctx])
+
+  useEffect(() => {
+    const handleKeyDrop = (e: MouseEvent) => dropDraggingKey(e, draggingKey)
+    document.querySelector('html')!.addEventListener('mouseup', handleKeyDrop)
+    return () => {
+      document.querySelector('html')!.removeEventListener('mouseup', handleKeyDrop)
+    }
+  }, [draggingKey])
+
   useEffect(() => {
     emitter.on('typeKey', typeKey)
     emitter.on('typeSpace', typeSpace)
