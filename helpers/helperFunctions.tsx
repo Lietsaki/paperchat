@@ -1,3 +1,5 @@
+import { positionObj } from 'types/Position'
+
 const getRandomNumber = (min: number, max: number) => Math.round(Math.random() * (max - min) + min)
 
 const getRandomColor = () => {
@@ -5,4 +7,20 @@ const getRandomColor = () => {
    ${getRandomNumber(30, 80)}%, ${getRandomNumber(40, 65)}%, 1.0)`
 }
 
-export { getRandomColor }
+const getPercentage = (percentage: number, of: number) => Math.floor((percentage / 100) * of)
+
+const dropPosOffset = (dropPos: positionObj, width: number, height: number) => {
+  const offsetAppliedPos = { ...dropPos }
+
+  if (width > 380 && height > 168) {
+    offsetAppliedPos.x -= getPercentage(2, width)
+    offsetAppliedPos.y += getPercentage(3, height)
+  } else {
+    offsetAppliedPos.x -= getPercentage(3, width)
+    offsetAppliedPos.y += -0.5
+  }
+
+  return offsetAppliedPos
+}
+
+export { getRandomColor, getPercentage, dropPosOffset }

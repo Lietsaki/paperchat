@@ -2,6 +2,7 @@ import styles from 'styles/components/canvas.module.scss'
 import React, { useEffect, useState, useRef } from 'react'
 import emitter from 'helpers/MittEmitter'
 import { clientPos, positionObj } from 'types/Position'
+import { getPercentage, dropPosOffset } from 'helpers/helperFunctions'
 
 const { canvas_outline, canvas_content } = styles
 
@@ -59,42 +60,58 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     return previousDivision
   }
 
-  const getStartingX = () => nameContainerWidth + 15
+  const getPosition = (e: clientPos) => {
+    const rect = canvasRef.current!.getBoundingClientRect()
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top }
+  }
 
-  const typeKey = (key: string) => {
-    if (!ctx || keyPos.y === -1) return
+  const resetPosition = () => setPos({ x: 0, y: 0 })
+  const getFontSize = () => divisionsHeight - getPercentage(12, divisionsHeight)
+  const getStartingX = () => nameContainerWidth + 15
+  const posOverflowsX = (pos: positionObj) => pos.x >= getPercentage(98, canvasRef.current!.width)
+
+  const isWithinUsername = (pos: positionObj) => {
+    return pos.x < nameContainerWidth + 8 && pos.y < divisionsHeight + 6
+  }
+
+  const handleTextInsert = (key: string, posToUse?: positionObj) => {
+    if (!ctx) return
+    const keyPosition = posToUse || keyPos
     ctx.globalCompositeOperation = 'source-over'
     ctx.fillStyle = strokeColor
     const textMetrics = ctx.measureText(key)
-    const nextKeyPos = { x: Math.round(keyPos.x + textMetrics.width), y: keyPos.y }
-    const nextKeyWillOverflowCanvas =
-      nextKeyPos.x >= Math.floor((98 / 100) * canvasRef.current!.width)
+    const nextKeyPos = { x: Math.round(keyPosition.x + textMetrics.width), y: keyPosition.y }
+    const nextKeyWillOverflowCanvas = posOverflowsX(nextKeyPos)
 
     if (nextKeyWillOverflowCanvas) {
       nextKeyPos.x = 5
-      nextKeyPos.y = getNextYDivision(keyPos.y)
+      nextKeyPos.y = getNextYDivision(keyPosition.y)
     }
 
     setTextHistory([
       ...textHistory,
       {
         isKey: true,
-        x: keyPos.x,
-        y: keyPos.y,
+        x: keyPosition.x,
+        y: keyPosition.y,
         keyWidth: textMetrics.width,
         keyHeight: textMetrics.fontBoundingBoxAscent + textMetrics.fontBoundingBoxDescent
       }
     ])
 
-    ctx.fillText(key, keyPos.x, keyPos.y)
+    ctx.fillText(key, keyPosition.x, keyPosition.y)
     setKeyPos(nextKeyPos)
+  }
+
+  const typeKey = (key: string) => {
+    if (!ctx || keyPos.y === -1) return
+    handleTextInsert(key)
   }
 
   const typeSpace = () => {
     if (keyPos.y === -1) return
     const nextKeyPos = { x: keyPos.x + 5, y: keyPos.y }
-    const nextKeyWillOverflowCanvas =
-      nextKeyPos.x >= Math.floor((98 / 100) * canvasRef.current!.width)
+    const nextKeyWillOverflowCanvas = posOverflowsX(nextKeyPos)
 
     if (nextKeyWillOverflowCanvas) {
       nextKeyPos.x = 5
@@ -144,49 +161,16 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     setTextHistory(textHistory.slice(0, -1))
   }
 
-  const getFontSize = () => divisionsHeight - Math.round((12 / 100) * divisionsHeight)
-
   const dropDraggingKey = (e: clientPos, draggingKey: string) => {
     if (!draggingKey || !ctx) return
 
     const { height, width } = canvasRef.current!
-    const dropPos = getPosition(e)
-    if (width > 380 && height > 168) {
-      dropPos.x -= Math.round((2 / 100) * width)
-      dropPos.y += Math.round((3 / 100) * height)
-    } else {
-      dropPos.x -= Math.round((3 / 100) * width)
-      dropPos.y += -0.5
-    }
-    const isWithinUsername = dropPos.x < nameContainerWidth + 8 && dropPos.y < divisionsHeight + 6
-    const droppedOutsideCanvas =
-      dropPos.y >= height || 8 >= dropPos.y || dropPos.x >= width || 8 >= dropPos.x
-    if (isWithinUsername || droppedOutsideCanvas) return
+    const offsetPos = dropPosOffset(getPosition(e), width, height)
+    const { x, y } = offsetPos
+    const droppedOutsideCanvas = y >= height || 8 >= y || x >= width || 8 >= x
 
-    ctx.globalCompositeOperation = 'source-over'
-    ctx.fillStyle = strokeColor
-    const textMetrics = ctx.measureText(draggingKey)
-    const nextKeyPos = { x: Math.round(dropPos.x + textMetrics.width), y: dropPos.y }
-    const nextKeyWillOverflowCanvas = nextKeyPos.x >= Math.floor((98 / 100) * width)
-
-    if (nextKeyWillOverflowCanvas) {
-      nextKeyPos.x = 5
-      nextKeyPos.y = getNextYDivision(dropPos.y)
-    }
-
-    setTextHistory([
-      ...textHistory,
-      {
-        isKey: true,
-        x: dropPos.x,
-        y: dropPos.y,
-        keyWidth: textMetrics.width,
-        keyHeight: textMetrics.fontBoundingBoxAscent + textMetrics.fontBoundingBoxDescent
-      }
-    ])
-
-    ctx.fillText(draggingKey, dropPos.x, dropPos.y)
-    setKeyPos(nextKeyPos)
+    if (isWithinUsername(offsetPos) || droppedOutsideCanvas) return
+    handleTextInsert(draggingKey, offsetPos)
   }
 
   const drawDivisions = () => {
@@ -227,30 +211,22 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     ctx.fill()
     ctx.stroke()
 
-    // Write username
+    // Write username making sure our font loaded first
     const f = new FontFace('nds', 'url(/fonts/nds.ttf)')
 
     f.load().then((font) => {
       ctx.fillStyle = roomColor
       ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
-      const firstLineY = Math.floor((80 / 100) * divisionsHeight)
+      const firstLineY = getPercentage(80, divisionsHeight)
       ctx.fillText('Johnny', 5, firstLineY)
       setKeyPos({ x: getStartingX(), y: firstLineY })
     })
   }
 
-  const getPosition = (e: clientPos) => {
-    const rect = canvasRef.current!.getBoundingClientRect()
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top }
-  }
-
-  const resetPosition = () => setPos({ x: 0, y: 0 })
-
   const draw = (e: React.MouseEvent) => {
     if (draggingKey) return
     // e.buttons !== 1 makes sure the mouse left button is pressed
-    const isWithinUsername = pos.x < nameContainerWidth + 8 && pos.y < divisionsHeight + 6
-    if (!ctx || e.buttons !== 1 || isWithinUsername) return setPos(getPosition(e))
+    if (!ctx || e.buttons !== 1 || isWithinUsername(pos)) return setPos(getPosition(e))
 
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
@@ -267,8 +243,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   const drawDot = (e: React.MouseEvent) => {
     if (draggingKey) return
-    if (!ctx || e.buttons !== 1) return
-    if (pos.x < nameContainerWidth + 8 && pos.y < divisionsHeight + 6) return setPos(getPosition(e))
+    if (!ctx || e.buttons !== 1 || isWithinUsername(pos)) return setPos(getPosition(e))
 
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
@@ -297,7 +272,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
     resize()
     setDivisionsHeight(Math.floor(canvas.height / 5))
-    setNameContainerWidth(Math.floor((25 / 100) * canvas.width))
+    setNameContainerWidth(getPercentage(25, canvas.width))
   }, [])
 
   useEffect(() => drawDivisions(), [divisionsHeight])
