@@ -5,6 +5,8 @@ import { clientPos, positionObj } from 'types/Position'
 
 const { canvas_outline, canvas_content } = styles
 
+// TODO: Drawing with touch events
+
 type canvasProps = {
   usingThickStroke: boolean
   usingPencil: boolean

@@ -33,7 +33,7 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
   const handleMouseDown = (key: string) => {
     setActiveKey(key)
 
-    // Listen for mouseup in the whole document, as the text will be dragged outisde the key.
+    // Listen for mouseup in the whole document, as the text will be dragged outside the key.
     // onMouseUp would only fire within the key, not when dragged into the canvas, for example.
     document.addEventListener('mouseup', handleMouseUp)
     document.addEventListener('touchend', handleMouseUp)
