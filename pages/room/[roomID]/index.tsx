@@ -6,7 +6,7 @@ import Canvas from 'components/Canvas'
 import { useRouter } from 'next/router'
 import { useState, useEffect, useRef } from 'react'
 import { getRandomColor } from 'helpers/helperFunctions'
-import keyboard from 'types/Keyboard'
+import { keyboard } from 'types/Keyboard'
 import emitter from 'helpers/MittEmitter'
 
 const { top, left_column, right_column, top_section, bottom_section } = general_styles
@@ -40,7 +40,7 @@ const FindRooms = () => {
   const router = useRouter()
   const [usingPencil, setUsingPencil] = useState(true)
   const [usingThickStroke, setUsingThickStroke] = useState(true)
-  const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('alphanumeric')
+  const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('Alphanumeric')
   const [roomColor, setRoomColor] = useState(getRandomColor())
 
   const getButton = (condition: boolean, name: string) =>
@@ -114,33 +114,33 @@ const FindRooms = () => {
 
             <div
               className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm}`}
-              onClick={() => setCurrentKeyboard('alphanumeric')}
+              onClick={() => setCurrentKeyboard('Alphanumeric')}
             >
               <img
-                src={getButton(currentKeyboard === 'alphanumeric', 'alphanumeric')}
+                src={getButton(currentKeyboard === 'Alphanumeric', 'alphanumeric')}
                 alt="alphanumeric button"
               />
             </div>
 
             <div
               className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm}`}
-              onClick={() => setCurrentKeyboard('accents')}
+              onClick={() => setCurrentKeyboard('Accents')}
             >
-              <img src={getButton(currentKeyboard === 'accents', 'accents')} alt="accents button" />
+              <img src={getButton(currentKeyboard === 'Accents', 'accents')} alt="accents button" />
             </div>
 
             <div
               className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm}`}
-              onClick={() => setCurrentKeyboard('symbols')}
+              onClick={() => setCurrentKeyboard('Symbols')}
             >
-              <img src={getButton(currentKeyboard === 'symbols', 'symbols')} alt="symbols button" />
+              <img src={getButton(currentKeyboard === 'Symbols', 'symbols')} alt="symbols button" />
             </div>
 
             <div
               className={`${tool_container} ${pixelated_top_left}`}
-              onClick={() => setCurrentKeyboard('smileys')}
+              onClick={() => setCurrentKeyboard('Smileys')}
             >
-              <img src={getButton(currentKeyboard === 'smileys', 'smileys')} alt="smileys button" />
+              <img src={getButton(currentKeyboard === 'Smileys', 'smileys')} alt="smileys button" />
             </div>
           </div>
 

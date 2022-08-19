@@ -1,6 +1,9 @@
 import styles from 'styles/components/keyboard.module.scss'
 import { createFloatingKey, removeFloatingKey } from 'helpers/floatingKey'
-import { useState } from 'react'
+import React, { useState } from 'react'
+import { eventPos } from 'types/Position'
+import { regularAlphaKey } from 'types/Keyboard'
+import { Alphanumeric } from 'static/KeyboardsData'
 
 const { alphanumeric, key_row, active, dragging, floating_key } = styles
 
@@ -10,203 +13,6 @@ type alphanumericProps = {
   typeEnter: () => void
   typeDel: () => void
 }
-type specialKeys = 'DEL' | 'CAPS' | 'ENTER' | 'SHIFT' | 'SPACE'
-type specialKey = { specialKey: specialKeys }
-type regularKey =
-  | {
-      text: string
-      specialKey?: specialKeys
-      shiftText?: string
-    }
-  | {
-      text: string
-      shiftText: string
-      specialKey?: specialKeys
-    }
-
-type keys = (specialKey | regularKey)[][]
-
-const keys: keys = [
-  [
-    {
-      text: '1',
-      shiftText: '!'
-    },
-    {
-      text: '2',
-      shiftText: '@'
-    },
-    {
-      text: '3',
-      shiftText: '#'
-    },
-    {
-      text: '4',
-      shiftText: '$'
-    },
-    {
-      text: '5',
-      shiftText: '%'
-    },
-    {
-      text: '6',
-      shiftText: '^'
-    },
-    {
-      text: '7',
-      shiftText: '&'
-    },
-    {
-      text: '8',
-      shiftText: '*'
-    },
-    {
-      text: '9',
-      shiftText: '('
-    },
-    {
-      text: '0',
-      shiftText: ')'
-    },
-    {
-      text: '-',
-      shiftText: '_'
-    },
-    {
-      text: '=',
-      shiftText: '+'
-    }
-  ],
-  [
-    {
-      text: 'q'
-    },
-    {
-      text: 'w'
-    },
-    {
-      text: 'e'
-    },
-    {
-      text: 'r'
-    },
-    {
-      text: 't'
-    },
-    {
-      text: 'y'
-    },
-    {
-      text: 'u'
-    },
-    {
-      text: 'i'
-    },
-    {
-      text: 'o'
-    },
-    {
-      text: 'p'
-    },
-    {
-      specialKey: 'DEL'
-    }
-  ],
-  [
-    {
-      specialKey: 'CAPS'
-    },
-    {
-      text: 'a'
-    },
-    {
-      text: 's'
-    },
-    {
-      text: 'd'
-    },
-    {
-      text: 'f'
-    },
-    {
-      text: 'g'
-    },
-    {
-      text: 'h'
-    },
-    {
-      text: 'j'
-    },
-    {
-      text: 'k'
-    },
-    {
-      text: 'l'
-    },
-    {
-      specialKey: 'ENTER'
-    }
-  ],
-  [
-    {
-      specialKey: 'SHIFT'
-    },
-    {
-      text: 'z'
-    },
-    {
-      text: 'x'
-    },
-    {
-      text: 'c'
-    },
-    {
-      text: 'v'
-    },
-    {
-      text: 'b'
-    },
-    {
-      text: 'n'
-    },
-    {
-      text: 'm'
-    },
-    {
-      text: ',',
-      shiftText: '<'
-    },
-    {
-      text: '.',
-      shiftText: '>'
-    },
-    {
-      text: '/',
-      shiftText: '?'
-    }
-  ],
-  [
-    {
-      text: ';',
-      shiftText: ':'
-    },
-    {
-      text: '´',
-      shiftText: '~'
-    },
-    {
-      specialKey: 'SPACE'
-    },
-    {
-      text: '[',
-      shiftText: '{'
-    },
-    {
-      text: ']',
-      shiftText: '}'
-    }
-  ]
-]
 
 const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphanumericProps) => {
   const [usingCaps, setCaps] = useState(false)
@@ -240,7 +46,7 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
     return ''
   }
 
-  const getText = (key: regularKey) => {
+  const getText = (key: regularAlphaKey) => {
     if (usingCaps) return key.text.toUpperCase()
     if (usingShift) return key.shiftText || key.text.toUpperCase()
     return key.text
@@ -254,10 +60,11 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
   const handleMouseDown = (key: string) => {
     setActiveKey(key)
     document.addEventListener('mouseup', handleMouseUp)
+    document.addEventListener('touchend', handleMouseUp)
     document.body.style.cursor = 'grabbing'
   }
 
-  const handleMouseLeave = (key: string, e: React.MouseEvent) => {
+  const handleKeyLeave = (key: string, e: eventPos) => {
     if (activeKey === key && !draggingKey) {
       setDragginKey(key)
       const row = document.getElementsByClassName(key_row)
@@ -266,16 +73,21 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
     }
   }
 
+  const handleTouchMove = (key: string, e: React.TouchEvent) => {
+    handleKeyLeave(key, { touches: e.nativeEvent.touches })
+  }
+
   const handleMouseUp = () => {
     setActiveKey('')
     setDragginKey('')
     document.removeEventListener('mouseup', handleMouseUp)
+    document.removeEventListener('touchend', handleMouseUp)
     document.body.style.cursor = 'auto'
     removeFloatingKey()
   }
 
   const getKeys = () => {
-    return keys.map((row, i) => {
+    return Alphanumeric.map((row, i) => {
       return (
         <div className={`${key_row} ${activeKey ? dragging : ''}`} key={i}>
           {row.map((key) => {
@@ -301,8 +113,10 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
 
               return (
                 <div
-                  onMouseLeave={(e) => handleMouseLeave(keyText, e)}
+                  onMouseLeave={(e) => handleKeyLeave(keyText, e)}
+                  onTouchMove={(e) => handleTouchMove(keyText, e)}
                   onMouseDown={() => handleMouseDown(keyText)}
+                  onTouchStart={() => handleMouseDown(keyText)}
                   onClick={() => performType(keyText)}
                   key={key.text}
                 >

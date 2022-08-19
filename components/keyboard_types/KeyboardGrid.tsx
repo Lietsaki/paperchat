@@ -1,211 +1,27 @@
 import styles from 'styles/components/keyboard.module.scss'
 import { createFloatingKey, removeFloatingKey } from 'helpers/floatingKey'
 import { useState } from 'react'
+import { keys } from 'types/Keyboard'
+import { eventPos } from 'types/Position'
 
 const { keyboard_grid, active, dragging } = styles
 
-type smileysProps = {
+type keyboardGridProps = {
   typeKey: (key: string) => void
   typeSpace: () => void
   typeEnter: () => void
   typeDel: () => void
+  keySet: keys
 }
-type specialKeys = 'DEL' | 'ENTER' | 'SPACE'
-type specialKey = { specialKey: specialKeys }
-type regularKey = { text: string; specialKey?: specialKeys }
-type keys = (specialKey | regularKey)[]
 
-const keys: keys = [
-  {
-    text: '1'
-  },
-  {
-    text: '2'
-  },
-  {
-    text: '3'
-  },
-  {
-    text: '4'
-  },
-  {
-    text: `5`
-  },
-  {
-    text: '6'
-  },
-  {
-    text: '7'
-  },
-  {
-    text: '8'
-  },
-  {
-    text: '9'
-  },
-  {
-    text: '0'
-  },
-  {
-    text: '='
-  },
-  {
-    text: '☺'
-  },
-  {
-    text: '☻'
-  },
-  {
-    text: '☹'
-  },
-  {
-    text: '⚀'
-  },
-  {
-    text: '☼'
-  },
-  {
-    text: '☁'
-  },
-  {
-    text: '☂'
-  },
-  {
-    text: '☃'
-  },
-  {
-    text: '✉'
-  },
-  {
-    text: '☎'
-  },
-  {
-    text: '∱'
-  },
-  {
-    specialKey: 'DEL'
-  },
-  {
-    text: 'Ⓐ'
-  },
-  {
-    text: 'Ⓑ'
-  },
-  {
-    text: 'Ⓧ'
-  },
-  {
-    text: 'Ⓨ'
-  },
-  {
-    text: 'Ⓛ'
-  },
-  {
-    text: 'Ⓡ'
-  },
-  {
-    text: '✚'
-  },
-  {
-    text: '♠'
-  },
-  {
-    text: '♦'
-  },
-  {
-    text: '♥'
-  },
-  {
-    text: '♣'
-  },
-  {
-    specialKey: 'ENTER'
-  },
-  {
-    text: '①'
-  },
-  {
-    text: '⑦'
-  },
-  {
-    text: '+'
-  },
-  {
-    text: '-'
-  },
-  {
-    text: '☆'
-  },
-  {
-    text: '○'
-  },
-  {
-    text: '◇'
-  },
-  {
-    text: '□'
-  },
-  {
-    text: '△'
-  },
-  {
-    text: '▽'
-  },
-  {
-    text: '⦾'
-  },
-  {
-    text: '➡'
-  },
-  {
-    text: '⬅'
-  },
-  {
-    text: '⬆'
-  },
-  {
-    text: '⬇'
-  },
-  {
-    text: '★'
-  },
-  {
-    text: '●'
-  },
-  {
-    text: '◆'
-  },
-  {
-    text: '■'
-  },
-  {
-    text: '▲'
-  },
-  {
-    text: '▼'
-  },
-  {
-    text: '☓'
-  },
-  {
-    specialKey: 'SPACE'
-  }
-]
-
-const SmileysKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: smileysProps) => {
+const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboardGridProps) => {
   const [activeKey, setActiveKey] = useState('')
   const [draggingKey, setDragginKey] = useState('')
 
   const specialKeyMethods = {
-    DEL: () => {
-      typeDel()
-    },
-    ENTER: () => {
-      typeEnter()
-    },
-    SPACE: () => {
-      typeSpace()
-    }
+    DEL: () => typeDel(),
+    ENTER: () => typeEnter(),
+    SPACE: () => typeSpace()
   }
 
   const getSpecialKeyImg = (specialKey: string, active: Boolean) => {
@@ -216,11 +32,15 @@ const SmileysKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: smileysProp
 
   const handleMouseDown = (key: string) => {
     setActiveKey(key)
+
+    // Listen for mouseup in the whole document, as the text will be dragged outisde the key.
+    // onMouseUp would only fire within the key, not when dragged into the canvas, for example.
     document.addEventListener('mouseup', handleMouseUp)
+    document.addEventListener('touchend', handleMouseUp)
     document.body.style.cursor = 'grabbing'
   }
 
-  const handleMouseLeave = (key: string, e: React.MouseEvent) => {
+  const handleKeyLeave = (key: string, e: eventPos) => {
     if (activeKey === key && !draggingKey) {
       setDragginKey(key)
       const row = document.getElementsByClassName(keyboard_grid)
@@ -229,16 +49,21 @@ const SmileysKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: smileysProp
     }
   }
 
+  const handleTouchMove = (key: string, e: React.TouchEvent) => {
+    handleKeyLeave(key, { touches: e.nativeEvent.touches })
+  }
+
   const handleMouseUp = () => {
     setActiveKey('')
     setDragginKey('')
     document.removeEventListener('mouseup', handleMouseUp)
+    document.removeEventListener('touchend', handleMouseUp)
     document.body.style.cursor = 'auto'
     removeFloatingKey()
   }
 
   const getKeys = () => {
-    return keys.map((key) => {
+    return keySet.map((key) => {
       if (key.specialKey) {
         return (
           <div
@@ -257,8 +82,10 @@ const SmileysKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: smileysProp
       } else {
         return (
           <div
-            onMouseLeave={(e) => handleMouseLeave(key.text, e)}
+            onMouseLeave={(e) => handleKeyLeave(key.text, e)}
+            onTouchMove={(e) => handleTouchMove(key.text, e)}
             onMouseDown={() => handleMouseDown(key.text)}
+            onTouchStart={() => handleMouseDown(key.text)}
             onClick={() => typeKey(key.text)}
             key={key.text}
           >
@@ -272,4 +99,4 @@ const SmileysKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: smileysProp
   return <div className={`${keyboard_grid} ${activeKey ? dragging : ''}`}>{getKeys()}</div>
 }
 
-export default SmileysKeyboard
+export default KeyboardGrid

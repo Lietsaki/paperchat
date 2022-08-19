@@ -1,6 +1,7 @@
 import styles from 'styles/components/canvas.module.scss'
 import React, { useEffect, useState, useRef } from 'react'
 import emitter from 'helpers/MittEmitter'
+import { clientPos, positionObj } from 'types/Position'
 
 const { canvas_outline, canvas_content } = styles
 
@@ -8,11 +9,6 @@ type canvasProps = {
   usingThickStroke: boolean
   usingPencil: boolean
   roomColor: string
-}
-
-interface positionObj {
-  x: number
-  y: number
 }
 
 interface textData {
@@ -61,7 +57,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     return previousDivision
   }
 
-  const getStartingX = () => nameContainerWidth + 10
+  const getStartingX = () => nameContainerWidth + 15
 
   const typeKey = (key: string) => {
     if (!ctx || keyPos.y === -1) return
@@ -148,7 +144,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   const getFontSize = () => divisionsHeight - Math.round((12 / 100) * divisionsHeight)
 
-  const dropDraggingKey = (e: MouseEvent, draggingKey: string) => {
+  const dropDraggingKey = (e: clientPos, draggingKey: string) => {
     if (!draggingKey || !ctx) return
 
     const { height, width } = canvasRef.current!
@@ -241,7 +237,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     })
   }
 
-  const getPosition = (e: React.MouseEvent | MouseEvent) => {
+  const getPosition = (e: clientPos) => {
     const rect = canvasRef.current!.getBoundingClientRect()
     return { x: e.clientX - rect.left, y: e.clientY - rect.top }
   }
@@ -315,10 +311,17 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   }, [ctx])
 
   useEffect(() => {
-    const handleKeyDrop = (e: MouseEvent) => dropDraggingKey(e, draggingKey)
-    document.querySelector('html')!.addEventListener('mouseup', handleKeyDrop)
+    const handleMouseKeyDrop = (e: MouseEvent) => dropDraggingKey(e, draggingKey)
+    const handleTouchKeyDrop = (e: TouchEvent) => {
+      const { clientX, clientY } = e.changedTouches[0]
+      dropDraggingKey({ clientX, clientY }, draggingKey)
+    }
+
+    document.querySelector('html')!.addEventListener('mouseup', handleMouseKeyDrop)
+    document.querySelector('html')!.addEventListener('touchend', handleTouchKeyDrop)
     return () => {
-      document.querySelector('html')!.removeEventListener('mouseup', handleKeyDrop)
+      document.querySelector('html')!.removeEventListener('mouseup', handleMouseKeyDrop)
+      document.querySelector('html')!.removeEventListener('touchend', handleTouchKeyDrop)
     }
   }, [draggingKey])
 
