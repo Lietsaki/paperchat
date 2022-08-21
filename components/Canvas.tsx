@@ -134,6 +134,13 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   const typeEnter = () => {
     if (keyPos.y === -1) return
     const nextKeyPos = { x: 5, y: getNextYDivision(keyPos.y) }
+    const averageLetterHeight = 15
+    const wouldKeysBeWithinUsername = isWithinUsername({
+      x: 5,
+      y: nextKeyPos.y - averageLetterHeight
+    })
+
+    if (wouldKeysBeWithinUsername) nextKeyPos.y += getPercentage(6, canvasRef.current!.height)
 
     if (nextKeyPos.y !== -1) {
       setKeyPos(nextKeyPos)
@@ -149,7 +156,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
       ctx.clearRect(
         lastKey.x - 1,
         lastKey.y - (lastKey.keyHeight! - 3),
-        lastKey.keyWidth!,
+        lastKey.keyWidth! + 1,
         lastKey.keyHeight!
       )
       setKeyPos({ x: lastKey.x, y: lastKey.y })
