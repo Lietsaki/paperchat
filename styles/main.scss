@@ -60,7 +60,7 @@ $strong-orange: #fb6900;
   }
 }
 
-@mixin usually-short-height {
+@mixin unsually-short-height {
   @media (max-height: 500px) {
     @content;
   }

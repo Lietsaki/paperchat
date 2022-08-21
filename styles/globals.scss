@@ -50,7 +50,7 @@ a {
     min-width: 200px;
     width: 95vw;
   }
-  @include usually-short-height {
+  @include unsually-short-height {
     min-height: 720px;
   }
 }

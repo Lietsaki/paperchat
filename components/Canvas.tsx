@@ -61,13 +61,22 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   }
 
   const getPosition = (e: clientPos) => {
-    const rect = canvasRef.current!.getBoundingClientRect()
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top }
+    const canvas = canvasRef.current!
+    const rect = canvas.getBoundingClientRect() // abs. size of element
+    const scaleX = canvas.width / rect.width // relationship bitmap vs. element for x
+    const scaleY = canvas.height / rect.height // relationship bitmap vs. element for y
+
+    // Scale mouse coordinates after they have been adjusted to be relative to the element
+    return {
+      x: (e.clientX - rect.left) * scaleX, //
+      y: (e.clientY - rect.top) * scaleY //
+    }
   }
 
   const resetPosition = () => setPos({ x: 0, y: 0 })
-  const getFontSize = () => divisionsHeight - getPercentage(12, divisionsHeight)
-  const getStartingX = () => nameContainerWidth + 15
+  const getFontSize = () =>
+    divisionsHeight - getPercentage(canvasRef.current!.width > 295 ? 12 : 6, divisionsHeight)
+  const getStartingX = () => nameContainerWidth + getPercentage(3, canvasRef.current!.width)
   const posOverflowsX = (pos: positionObj) => pos.x >= getPercentage(98, canvasRef.current!.width)
 
   const isWithinUsername = (pos: positionObj) => {
@@ -175,6 +184,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   const drawDivisions = () => {
     if (!ctx) return
+    ctx.fillStyle = '#FDFDFD'
+    ctx.fillRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
     ctx.strokeStyle = roomColor.replace('1.0', '0.6')
 
     for (let i = 1; i < 5; i++) {
@@ -223,10 +234,10 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     })
   }
 
-  const draw = (e: React.MouseEvent) => {
+  const draw = (e: React.PointerEvent) => {
     if (draggingKey) return
-    // e.buttons !== 1 makes sure the mouse left button is pressed
-    if (!ctx || e.buttons !== 1 || isWithinUsername(pos)) return setPos(getPosition(e))
+    const usedMouseNoLeftBtn = e.pointerType === 'mouse' && e.buttons !== 1
+    if (!ctx || usedMouseNoLeftBtn || isWithinUsername(pos)) return setPos(getPosition(e))
 
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
@@ -241,9 +252,13 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     ctx.stroke()
   }
 
-  const drawDot = (e: React.MouseEvent) => {
+  const drawDot = (e: React.PointerEvent) => {
     if (draggingKey) return
-    if (!ctx || e.buttons !== 1 || isWithinUsername(pos)) return setPos(getPosition(e))
+    const posToUse = e.pointerType === 'touch' ? getPosition(e) : pos
+    const usedMouseNoLeftBtn = e.pointerType === 'mouse' && e.buttons !== 1
+
+    if (!ctx || usedMouseNoLeftBtn || isWithinUsername(posToUse)) return setPos(getPosition(e))
+    if (e.pointerType === 'touch') setPos(posToUse)
 
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
@@ -251,8 +266,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     ctx.lineWidth = usingThickStroke ? 3 : 1.2
     ctx.strokeStyle = strokeColor
 
-    ctx.moveTo(pos.x, pos.y)
-    ctx.lineTo(pos.x + 1, pos.y + 1)
+    ctx.moveTo(posToUse.x, posToUse.y)
+    ctx.lineTo(posToUse.x + 1, posToUse.y + 1)
     ctx.stroke()
   }
 
@@ -262,15 +277,10 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     outlineRef.current!.style.backgroundColor = roomColor
 
     if (!canvas.getContext) return
+    canvas.width = containerRef.current!.offsetWidth
+    canvas.height = containerRef.current!.offsetHeight
     const ctx = canvas.getContext('2d')
     setCanvasCtx(ctx)
-
-    const resize = () => {
-      canvas.width = containerRef.current!.offsetWidth
-      canvas.height = containerRef.current!.offsetHeight
-    }
-
-    resize()
     setDivisionsHeight(Math.floor(canvas.height / 5))
     setNameContainerWidth(getPercentage(25, canvas.width))
   }, [])
@@ -320,8 +330,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     <div ref={outlineRef} className={canvas_outline}>
       <div ref={containerRef} className={canvas_content}>
         <canvas
-          onMouseDown={drawDot}
-          onMouseMove={draw}
+          onPointerDown={drawDot}
+          onPointerMove={draw}
           onMouseEnter={(e) => setPos(getPosition(e))}
           onMouseLeave={resetPosition}
           ref={canvasRef}

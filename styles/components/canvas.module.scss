@@ -18,6 +18,7 @@
       height: 100%;
       position: absolute;
       z-index: 10;
+      touch-action: none;
     }
 
     img {

@@ -12,9 +12,22 @@ const getPercentage = (percentage: number, of: number) => Math.floor((percentage
 const dropPosOffset = (dropPos: positionObj, width: number, height: number) => {
   const offsetAppliedPos = { ...dropPos }
 
+  // Tablets and desktop
   if (width > 380 && height > 168) {
-    offsetAppliedPos.x -= getPercentage(2, width)
+    offsetAppliedPos.x -= getPercentage(2.2, width)
     offsetAppliedPos.y += getPercentage(3, height)
+
+    // Large mobile phones
+  } else if (width > 338 && height > 116) {
+    offsetAppliedPos.x -= getPercentage(3.2, width)
+    offsetAppliedPos.y -= 0.4
+
+    // Small mobile phones
+  } else if (width > 290 && height > 100) {
+    offsetAppliedPos.x -= getPercentage(3.5, width)
+    offsetAppliedPos.y -= 0.4
+
+    // Extremely small phones/fallback
   } else {
     offsetAppliedPos.x -= getPercentage(3, width)
     offsetAppliedPos.y += -0.5
