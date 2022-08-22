@@ -36,4 +36,38 @@ const dropPosOffset = (dropPos: positionObj, width: number, height: number) => {
   return offsetAppliedPos
 }
 
-export { getRandomColor, getPercentage, dropPosOffset }
+const getHighestAndLowestPoints = (ctx: CanvasRenderingContext2D, color: number[]) => {
+  const w = ctx.canvas.width
+  const h = ctx.canvas.height
+  const data = ctx.getImageData(0, 0, w, h) // get image data
+  const buffer = data.data // and its pixel buffer
+  const len = buffer.length // cache length
+  let y = 0
+  let p = 0
+  let px = 0 // for iterating
+
+  let highestPoint = null
+  let lowestPoint = null
+
+  /// iterating x/y instead of forward to get position the easy way
+  for (; y < h; y++) {
+    /// common value for all x
+    p = y * 4 * w
+
+    for (let x = 0; x < w; x++) {
+      /// next pixel (skipping 4 bytes as each pixel is RGBA bytes)
+      px = p + x * 4
+
+      /// if red component match check the others
+      if (buffer[px] === color[0]) {
+        if (buffer[px + 1] === color[1] && buffer[px + 2] === color[2]) {
+          if (!highestPoint) highestPoint = [x, y]
+          else lowestPoint = [x, y]
+        }
+      }
+    }
+  }
+  return { highestPoint, lowestPoint }
+}
+
+export { getRandomColor, getPercentage, dropPosOffset, getHighestAndLowestPoints }

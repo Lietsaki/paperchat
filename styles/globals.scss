@@ -76,3 +76,24 @@ a {
   z-index: 1;
   transition: all 0.2s ease-in-out;
 }
+
+// Add a pretty cross-browser scrollbar
+.scrollify {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: transparent;
+
+  &::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $scrollbar-color-2;
+    border-radius: 6px;
+    border: 3px solid $scrollbar-color-2;
+  }
+}

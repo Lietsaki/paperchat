@@ -1,12 +1,10 @@
 import styles from 'styles/components/canvas.module.scss'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, createElement } from 'react'
 import emitter from 'helpers/MittEmitter'
 import { clientPos, positionObj } from 'types/Position'
-import { getPercentage, dropPosOffset } from 'helpers/helperFunctions'
+import { getPercentage, dropPosOffset, getHighestAndLowestPoints } from 'helpers/helperFunctions'
 
 const { canvas_outline, canvas_content } = styles
-
-// TODO: Drawing with touch events
 
 type canvasProps = {
   usingThickStroke: boolean
@@ -41,11 +39,12 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   // COLOR DATA
   const strokeColor = '#111'
+  const strokeRGBArray = [17, 17, 17]
 
   const clearCanvas = () => {
     if (!ctx) return
     ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
-    drawUsernameRectangle()
+    drawUsernameRectangle(ctx)
   }
 
   const getNextYDivision = (y: number) => {
@@ -209,7 +208,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
   }
 
-  const drawUsernameRectangle = () => {
+  const drawUsernameRectangle = (ctx: CanvasRenderingContext2D, loadFont?: boolean) => {
     if (!ctx) return
     ctx.globalCompositeOperation = 'source-over'
     let pixelBorderSize = canvasRef.current!.width >= 400 ? 3 : 2
@@ -232,13 +231,16 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     // Write username making sure our font loaded first
     const f = new FontFace('nds', 'url(/fonts/nds.ttf)')
 
-    f.load().then((font) => {
+    const writeUsername = () => {
       ctx.fillStyle = roomColor
       ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       const firstLineY = getPercentage(80, divisionsHeight)
       ctx.fillText('Johnny', 5, firstLineY)
       setKeyPos({ x: getStartingX(), y: firstLineY })
-    })
+    }
+
+    if (loadFont) f.load().then((font) => writeUsername())
+    else writeUsername()
   }
 
   const draw = (e: React.PointerEvent) => {
@@ -278,6 +280,29 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     ctx.stroke()
   }
 
+  const sendMessage = () => {
+    if (!ctx) return
+
+    const pic_canvas = document.createElement('canvas')
+    const pic_ctx = pic_canvas.getContext('2d')!
+    const min_height = divisionsHeight + 5
+
+    const { highestPoint, lowestPoint } = getHighestAndLowestPoints(ctx, strokeRGBArray)
+    let height = ctx.canvas.height
+    if (highestPoint && lowestPoint) height = lowestPoint[1] - highestPoint[1]
+
+    pic_canvas.height = height > min_height ? height : min_height
+    pic_canvas.width = ctx.canvas.width
+    drawUsernameRectangle(pic_ctx)
+
+    console.log('POINTS!', { lowestPoint, highestPoint })
+    console.log(ctx.canvas.width, ctx.canvas.height)
+
+    const data_url = pic_canvas.toDataURL()
+    console.log(data_url)
+    // emitter.emit('canvasDataUrl', data_url)
+  }
+
   // CANVAS SETUP - Happens on mounted
   useEffect(() => {
     const canvas = canvasRef.current!
@@ -293,14 +318,16 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   }, [])
 
   useEffect(() => drawDivisions(), [divisionsHeight])
-  useEffect(() => drawUsernameRectangle(), [nameContainerWidth])
+  useEffect(() => drawUsernameRectangle(ctx!, true), [nameContainerWidth])
   useEffect(() => {
     emitter.on('clearCanvas', clearCanvas)
     emitter.on('draggingKey', (key: string) => setDraggingKey(key))
+    emitter.on('sendMessage', sendMessage)
 
     return () => {
       emitter.off('clearCanvas')
       emitter.off('draggingKey')
+      emitter.off('sendMessage')
     }
   }, [ctx])
 

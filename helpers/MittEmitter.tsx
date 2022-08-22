@@ -7,6 +7,8 @@ type Events = {
   typeEnter: string
   typeDel: string
   draggingKey: string
+  sendMessage: string
+  canvasDataUrl: string
 }
 
 const emitter: Emitter<Events> = mitt<Events>()

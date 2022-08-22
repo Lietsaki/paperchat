@@ -51,6 +51,19 @@ const FindRooms = () => {
   const typeSpace = () => emitter.emit('typeSpace', '')
   const typeEnter = () => emitter.emit('typeEnter', '')
   const typeDel = () => emitter.emit('typeDel', '')
+  const sendMessage = () => emitter.emit('sendMessage', '')
+
+  const receiveCanvasDataUrl = (data_url: string) => {
+    console.log('got this', data_url)
+  }
+
+  useEffect(() => {
+    emitter.on('canvasDataUrl', receiveCanvasDataUrl)
+
+    return () => {
+      emitter.off('canvasDataUrl')
+    }
+  }, [])
 
   return (
     <div className="main">
@@ -174,7 +187,7 @@ const FindRooms = () => {
 
               <div className={send_buttons}>
                 <div className={send_buttons_bg}>
-                  <div className={`${send} ${active_on_click}`}>
+                  <div onClick={sendMessage} className={`${send} ${active_on_click}`}>
                     <img src="/send-buttons/SEND.png" alt="send button" />
                     <img
                       src="/send-buttons/active/SEND.png"
