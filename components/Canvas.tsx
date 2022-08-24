@@ -38,6 +38,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   const [divisionsHeight, setDivisionsHeight] = useState(0)
 
   // COLOR DATA
+  const canvasBgColor = '#FDFDFD'
   const strokeColor = '#111'
   const strokeRGBArray = [17, 17, 17]
 
@@ -190,7 +191,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   const drawDivisions = () => {
     if (!ctx) return
-    ctx.fillStyle = '#FDFDFD'
+    ctx.fillStyle = canvasBgColor
     ctx.fillRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
     ctx.strokeStyle = roomColor.replace('1.0', '0.6')
 
@@ -285,22 +286,112 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
     const pic_canvas = document.createElement('canvas')
     const pic_ctx = pic_canvas.getContext('2d')!
-    const min_height = divisionsHeight + 5
+    const min_height = divisionsHeight + 3
+    pic_canvas.width = ctx.canvas.width
 
     const { highestPoint, lowestPoint } = getHighestAndLowestPoints(ctx, strokeRGBArray)
-    let height = ctx.canvas.height
-    if (highestPoint && lowestPoint) height = lowestPoint[1] - highestPoint[1]
 
-    pic_canvas.height = height > min_height ? height : min_height
-    pic_canvas.width = ctx.canvas.width
-    drawUsernameRectangle(pic_ctx)
+    if (highestPoint && lowestPoint) {
+      const isNextToUsername =
+        lowestPoint[0] > nameContainerWidth &&
+        highestPoint[0] > nameContainerWidth &&
+        lowestPoint[1] < divisionsHeight + 6 &&
+        highestPoint[1] < divisionsHeight + 6
+
+      if (isNextToUsername) {
+        pic_canvas.height = min_height
+        pic_ctx.fillStyle = canvasBgColor
+        pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
+
+        pic_ctx.drawImage(
+          ctx.canvas,
+          0,
+          0,
+          ctx.canvas.width,
+          pic_canvas.height,
+          0,
+          0,
+          pic_canvas.width,
+          pic_canvas.height
+        )
+
+        const final_canvas = pic_canvas.toDataURL()
+        console.log(final_canvas)
+      } else {
+        const hPointNextToUsername =
+          highestPoint[0] > nameContainerWidth && highestPoint[1] < divisionsHeight + 6
+
+        if (hPointNextToUsername) {
+          pic_canvas.height = lowestPoint[1] + 15
+          pic_ctx.fillStyle = canvasBgColor
+          pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
+
+          pic_ctx.drawImage(
+            ctx.canvas,
+            0,
+            0,
+            ctx.canvas.width,
+            pic_canvas.height,
+            0,
+            0,
+            pic_canvas.width,
+            pic_canvas.height
+          )
+
+          const final_canvas = pic_canvas.toDataURL()
+          console.log(final_canvas)
+        } else {
+          const hPointOutsideUsername =
+            highestPoint[0] > nameContainerWidth && highestPoint[1] > divisionsHeight + 6
+
+          if (hPointOutsideUsername) {
+            if (lowestPoint[1] - highestPoint[1] < min_height) pic_canvas.height = min_height
+            else pic_canvas.height = lowestPoint[1] + 15 - (highestPoint[1] - 15)
+
+            pic_ctx.fillStyle = canvasBgColor
+            pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
+            drawUsernameRectangle(pic_ctx)
+
+            pic_ctx.drawImage(
+              ctx.canvas,
+              0,
+              highestPoint[1] - 8,
+              ctx.canvas.width,
+              pic_canvas.height,
+              0,
+              0,
+              pic_canvas.width,
+              pic_canvas.height
+            )
+
+            const final_canvas = pic_canvas.toDataURL()
+            console.log(final_canvas)
+          } else {
+            pic_canvas.height = lowestPoint[1] + 15
+            pic_ctx.fillStyle = canvasBgColor
+            pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
+
+            pic_ctx.drawImage(
+              ctx.canvas,
+              0,
+              0,
+              ctx.canvas.width,
+              pic_canvas.height,
+              0,
+              0,
+              pic_canvas.width,
+              pic_canvas.height
+            )
+
+            const final_canvas = pic_canvas.toDataURL()
+            console.log(final_canvas)
+          }
+        }
+      }
+    }
 
     console.log('POINTS!', { lowestPoint, highestPoint })
     console.log(ctx.canvas.width, ctx.canvas.height)
-
-    const data_url = pic_canvas.toDataURL()
-    console.log(data_url)
-    // emitter.emit('canvasDataUrl', data_url)
   }
 
   // CANVAS SETUP - Happens on mounted
