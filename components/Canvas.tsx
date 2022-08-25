@@ -60,6 +60,16 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     return previousDivision
   }
 
+  const getStartOfDivision = (y: number) => {
+    let division = 0
+
+    while (division + divisionsHeight < y) {
+      division += divisionsHeight
+    }
+
+    return division
+  }
+
   const getPosition = (e: clientPos) => {
     const canvas = canvasRef.current!
     const rect = canvas.getBoundingClientRect() // abs. size of element
@@ -343,19 +353,30 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
         } else {
           const hPointOutsideUsername =
             highestPoint[0] > nameContainerWidth && highestPoint[1] > divisionsHeight + 6
+          const contentHeight = lowestPoint[1] - highestPoint[1]
 
           if (hPointOutsideUsername) {
-            if (lowestPoint[1] - highestPoint[1] < min_height) pic_canvas.height = min_height
-            else pic_canvas.height = lowestPoint[1] + 15 - (highestPoint[1] - 15)
+            let sourceY = 0
+            if (contentHeight <= min_height - 4) {
+              pic_canvas.height = min_height
+              sourceY = getStartOfDivision(highestPoint[1])
+            } else {
+              pic_canvas.height = lowestPoint[1] + 15 - (highestPoint[1] - 15)
+              sourceY = highestPoint[1] - 15
+            }
 
             pic_ctx.fillStyle = canvasBgColor
             pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
             drawUsernameRectangle(pic_ctx)
 
+            console.log('hPointOutsideUsername')
+            console.log(contentHeight)
+            console.log(pic_canvas.height)
+
             pic_ctx.drawImage(
               ctx.canvas,
               0,
-              highestPoint[1] - 8,
+              sourceY,
               ctx.canvas.width,
               pic_canvas.height,
               0,
@@ -367,21 +388,30 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
             const final_canvas = pic_canvas.toDataURL()
             console.log(final_canvas)
           } else {
-            pic_canvas.height = lowestPoint[1] + 15
+            const sourceY = getStartOfDivision(highestPoint[1]) + 1
+            if (contentHeight <= min_height - 4) {
+              pic_canvas.height = min_height * 2
+            } else {
+              pic_canvas.height = min_height + (lowestPoint[1] + 15 - (highestPoint[1] - 15))
+            }
+
             pic_ctx.fillStyle = canvasBgColor
             pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
+            drawUsernameRectangle(pic_ctx)
 
             pic_ctx.drawImage(
               ctx.canvas,
               0,
-              0,
+              sourceY,
               ctx.canvas.width,
               pic_canvas.height,
               0,
-              0,
+              min_height,
               pic_canvas.width,
               pic_canvas.height
             )
+
+            console.log('here, in your new condition')
 
             const final_canvas = pic_canvas.toDataURL()
             console.log(final_canvas)
