@@ -84,13 +84,14 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   }
 
   const resetPosition = () => setPos({ x: 0, y: 0 })
-  const getFontSize = () =>
-    divisionsHeight - getPercentage(canvasRef.current!.width > 295 ? 12 : 6, divisionsHeight)
+  const getFontSize = () => getPercentage(canvasRef.current!.width > 295 ? 88 : 94, divisionsHeight)
   const getStartingX = () => nameContainerWidth + getPercentage(3, canvasRef.current!.width)
   const posOverflowsX = (pos: positionObj) => pos.x >= getPercentage(98, canvasRef.current!.width)
+  const divionsHeightWithMargin = () => divisionsHeight + 6
+  const nameContainerWidthWithMargin = () => nameContainerWidth + 8
 
   const isWithinUsername = (pos: positionObj) => {
-    return pos.x < nameContainerWidth + 8 && pos.y < divisionsHeight + 6
+    return pos.x < nameContainerWidthWithMargin() && pos.y < divionsHeightWithMargin()
   }
 
   const handleTextInsert = (key: string, posToUse?: positionObj) => {
@@ -299,129 +300,102 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     const min_height = divisionsHeight + 3
     pic_canvas.width = ctx.canvas.width
 
-    const { highestPoint, lowestPoint } = getHighestAndLowestPoints(ctx, strokeRGBArray)
+    const nameContainerPos = { x: nameContainerWidth, y: divisionsHeight }
+    const { highestPoint, lowestPoint, conflictingPoints } = getHighestAndLowestPoints(
+      ctx,
+      strokeRGBArray,
+      nameContainerPos
+    )
 
     if (highestPoint && lowestPoint) {
+      const contentHeight = lowestPoint[1] - highestPoint[1]
+      let sourceY = 0
+      let destinationY = 0
+
       const isNextToUsername =
         lowestPoint[0] > nameContainerWidth &&
         highestPoint[0] > nameContainerWidth &&
-        lowestPoint[1] < divisionsHeight + 6 &&
-        highestPoint[1] < divisionsHeight + 6
+        lowestPoint[1] < divionsHeightWithMargin() &&
+        highestPoint[1] < divionsHeightWithMargin()
+
+      const hPointNextToUsername =
+        !isNextToUsername &&
+        highestPoint[0] > nameContainerWidth &&
+        highestPoint[1] < divionsHeightWithMargin()
+
+      const hPointUnderAndOutsideUsername =
+        highestPoint[0] > nameContainerWidth && highestPoint[1] > divionsHeightWithMargin()
+
+      const hPointUnderAndWithinUsername =
+        highestPoint[0] < nameContainerWidth && highestPoint[1] > divionsHeightWithMargin()
 
       if (isNextToUsername) {
         pic_canvas.height = min_height
-        pic_ctx.fillStyle = canvasBgColor
-        pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
+      }
 
-        pic_ctx.drawImage(
-          ctx.canvas,
-          0,
-          0,
-          ctx.canvas.width,
-          pic_canvas.height,
-          0,
-          0,
-          pic_canvas.width,
-          pic_canvas.height
-        )
+      if (hPointNextToUsername) {
+        pic_canvas.height = lowestPoint[1] + 15
+      }
 
-        const final_canvas = pic_canvas.toDataURL()
-        console.log(final_canvas)
-      } else {
-        const hPointNextToUsername =
-          highestPoint[0] > nameContainerWidth && highestPoint[1] < divisionsHeight + 6
+      if (hPointUnderAndOutsideUsername && !conflictingPoints) {
+        const contentSmallerThanMinHeight = contentHeight <= min_height - 4
+        const startOfDivision = getStartOfDivision(highestPoint[1])
+        const endOfDivision = startOfDivision + divisionsHeight
 
-        if (hPointNextToUsername) {
-          pic_canvas.height = lowestPoint[1] + 15
-          pic_ctx.fillStyle = canvasBgColor
-          pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
-
-          pic_ctx.drawImage(
-            ctx.canvas,
-            0,
-            0,
-            ctx.canvas.width,
-            pic_canvas.height,
-            0,
-            0,
-            pic_canvas.width,
-            pic_canvas.height
-          )
-
-          const final_canvas = pic_canvas.toDataURL()
-          console.log(final_canvas)
+        if (
+          contentSmallerThanMinHeight &&
+          highestPoint[1] > startOfDivision &&
+          lowestPoint[1] < endOfDivision
+        ) {
+          pic_canvas.height = min_height
+          sourceY = startOfDivision
         } else {
-          const hPointOutsideUsername =
-            highestPoint[0] > nameContainerWidth && highestPoint[1] > divisionsHeight + 6
-          const contentHeight = lowestPoint[1] - highestPoint[1]
-
-          if (hPointOutsideUsername) {
-            let sourceY = 0
-            if (contentHeight <= min_height - 4) {
-              pic_canvas.height = min_height
-              sourceY = getStartOfDivision(highestPoint[1])
-            } else {
-              pic_canvas.height = lowestPoint[1] + 15 - (highestPoint[1] - 15)
-              sourceY = highestPoint[1] - 15
-            }
-
-            pic_ctx.fillStyle = canvasBgColor
-            pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
-            drawUsernameRectangle(pic_ctx)
-
-            console.log('hPointOutsideUsername')
-            console.log(contentHeight)
-            console.log(pic_canvas.height)
-
-            pic_ctx.drawImage(
-              ctx.canvas,
-              0,
-              sourceY,
-              ctx.canvas.width,
-              pic_canvas.height,
-              0,
-              0,
-              pic_canvas.width,
-              pic_canvas.height
-            )
-
-            const final_canvas = pic_canvas.toDataURL()
-            console.log(final_canvas)
-          } else {
-            const sourceY = getStartOfDivision(highestPoint[1]) + 1
-            if (contentHeight <= min_height - 4) {
-              pic_canvas.height = min_height * 2
-            } else {
-              pic_canvas.height = min_height + (lowestPoint[1] + 15 - (highestPoint[1] - 15))
-            }
-
-            pic_ctx.fillStyle = canvasBgColor
-            pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
-            drawUsernameRectangle(pic_ctx)
-
-            pic_ctx.drawImage(
-              ctx.canvas,
-              0,
-              sourceY,
-              ctx.canvas.width,
-              pic_canvas.height,
-              0,
-              min_height,
-              pic_canvas.width,
-              pic_canvas.height
-            )
-
-            console.log('here, in your new condition')
-
-            const final_canvas = pic_canvas.toDataURL()
-            console.log(final_canvas)
-          }
+          pic_canvas.height = lowestPoint[1] + 15 - (highestPoint[1] - 15)
+          sourceY = highestPoint[1] - 15
         }
       }
-    }
 
-    console.log('POINTS!', { lowestPoint, highestPoint })
-    console.log(ctx.canvas.width, ctx.canvas.height)
+      if (hPointUnderAndWithinUsername || conflictingPoints) {
+        sourceY = getStartOfDivision(highestPoint[1]) + 1
+        destinationY = min_height
+
+        const contentSmallerThanMinHeight = contentHeight <= min_height - 4
+        const startOfDivision = getStartOfDivision(highestPoint[1])
+        const endOfDivision = startOfDivision + divisionsHeight
+
+        if (
+          contentSmallerThanMinHeight &&
+          highestPoint[1] > startOfDivision &&
+          lowestPoint[1] < endOfDivision
+        ) {
+          pic_canvas.height = min_height * 2
+        } else {
+          pic_canvas.height = min_height + (lowestPoint[1] + 15 - (highestPoint[1] - 15))
+        }
+      }
+
+      pic_ctx.fillStyle = canvasBgColor
+      pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
+
+      if (hPointUnderAndOutsideUsername || hPointUnderAndWithinUsername || conflictingPoints) {
+        drawUsernameRectangle(pic_ctx)
+      }
+
+      pic_ctx.drawImage(
+        ctx.canvas,
+        0,
+        sourceY,
+        ctx.canvas.width,
+        pic_canvas.height,
+        0,
+        destinationY,
+        pic_canvas.width,
+        pic_canvas.height
+      )
+
+      const final_canvas = pic_canvas.toDataURL()
+      console.log(final_canvas)
+    }
   }
 
   // CANVAS SETUP - Happens on mounted
