@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { keys } from 'types/Keyboard'
 import { eventPos } from 'types/Position'
 
-const { keyboard_grid, active, dragging } = styles
+const { keyboard_grid, key_container, regular_key, dragging } = styles
 
 type keyboardGridProps = {
   typeKey: (key: string) => void
@@ -24,10 +24,9 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
     SPACE: () => typeSpace()
   }
 
-  const getSpecialKeyImg = (specialKey: string, active: Boolean) => {
+  const getSpecialKeyImg = (specialKey: string) => {
     const processed_key = specialKey === 'ENTER' ? 'ENTER_2' : specialKey
-    if (!active) return `/special-keys/${processed_key}.png`
-    if (active) return `/special-keys/active/${processed_key}.png`
+    return `/special-keys/${processed_key}.png`
   }
 
   const handleMouseDown = (key: string) => {
@@ -71,12 +70,8 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
             key={key.specialKey}
             className={`${styles.special_key} ${styles[key.specialKey]}`}
           >
-            <img src={getSpecialKeyImg(key.specialKey, false)} alt={key.specialKey} />
-            <img
-              src={getSpecialKeyImg(key.specialKey, true)}
-              className={active}
-              alt={key.specialKey}
-            />
+            <img src={getSpecialKeyImg(key.specialKey)} alt={key.specialKey} />
+            <div className="active_color"></div>
           </div>
         )
       } else {
@@ -87,9 +82,11 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
             onMouseDown={() => handleMouseDown(key.text)}
             onTouchStart={() => handleMouseDown(key.text)}
             onClick={() => typeKey(key.text)}
+            className={key_container}
             key={key.text}
           >
-            {key.text}
+            <div className={regular_key}>{key.text}</div>
+            <div className="active_color"></div>
           </div>
         )
       }

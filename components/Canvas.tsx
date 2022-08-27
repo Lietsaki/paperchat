@@ -1,5 +1,5 @@
 import styles from 'styles/components/canvas.module.scss'
-import React, { useEffect, useState, useRef, createElement } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import emitter from 'helpers/MittEmitter'
 import { clientPos, positionObj } from 'types/Position'
 import { getPercentage, dropPosOffset, getHighestAndLowestPoints } from 'helpers/helperFunctions'
@@ -247,7 +247,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
       ctx.fillStyle = roomColor
       ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       const firstLineY = getPercentage(80, divisionsHeight)
-      ctx.fillText('Johnny', 5, firstLineY)
+      ctx.fillText('Johnny', 8, firstLineY - 1.5)
       setKeyPos({ x: getStartingX(), y: firstLineY })
     }
 
@@ -297,7 +297,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
     const pic_canvas = document.createElement('canvas')
     const pic_ctx = pic_canvas.getContext('2d')!
-    const min_height = divisionsHeight + 3
+    const min_height = divisionsHeight + 0
     pic_canvas.width = ctx.canvas.width
 
     const nameContainerPos = { x: nameContainerWidth, y: divisionsHeight }
@@ -355,7 +355,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
         }
       }
 
-      if (hPointUnderAndWithinUsername || conflictingPoints) {
+      if (hPointUnderAndWithinUsername || (conflictingPoints && !hPointNextToUsername)) {
+        console.log('last case')
         sourceY = getStartOfDivision(highestPoint[1]) + 1
         destinationY = min_height
 
@@ -377,7 +378,10 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
       pic_ctx.fillStyle = canvasBgColor
       pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
 
-      if (hPointUnderAndOutsideUsername || hPointUnderAndWithinUsername || conflictingPoints) {
+      if (
+        (hPointUnderAndOutsideUsername || hPointUnderAndWithinUsername || conflictingPoints) &&
+        !hPointNextToUsername
+      ) {
         drawUsernameRectangle(pic_ctx)
       }
 
@@ -393,8 +397,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
         pic_canvas.height
       )
 
-      const final_canvas = pic_canvas.toDataURL()
-      console.log(final_canvas)
+      emitter.emit('canvasDataUrl', pic_canvas.toDataURL())
+      clearCanvas()
     }
   }
 

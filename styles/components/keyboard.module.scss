@@ -19,60 +19,42 @@
 
   img {
     -webkit-user-drag: none;
-
-    &.active {
-      position: absolute !important;
-      z-index: 1;
-      opacity: 0;
-    }
   }
 
   .special_key {
     background-color: $special-key-bg !important;
-    filter: none;
+    border: 1.5px solid $clear-bg;
+    position: relative;
+    @include flexcenter;
+    z-index: 10;
+
+    img {
+      z-index: 10;
+    }
+
+    &::after {
+      content: '';
+      background-color: $special-key-bg !important;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      z-index: 8;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
 
     &:active,
     &.selected {
-      background-color: $key-special-active-bg !important;
-
-      img:first-child {
-        opacity: 0;
+      img {
+        z-index: 4;
       }
-      img.active {
-        opacity: 1;
+
+      &::after {
+        z-index: 3;
       }
     }
-  }
-}
-
-@mixin base-key {
-  @include flexcenter;
-  background-color: $key-bg;
-  color: $key-color;
-  font-size: 175%;
-  border: 1.5px solid $clear-bg;
-  position: relative;
-
-  @include small-height-devices {
-    font-size: 150%;
-  }
-  @include landscape-tablet-up {
-    font-size: 160%;
-  }
-  @include phones {
-    font-size: 130%;
-  }
-  @include small-phones {
-    font-size: 120%;
-  }
-
-  &:hover {
-    cursor: pointer;
-  }
-  &:active {
-    cursor: grabbing;
-    background-color: $key-active-bg;
-    color: $key-active-color;
   }
 }
 
@@ -174,10 +156,10 @@
       }
     }
 
-    div {
+    div.key_container {
       height: 100%;
       width: 9%;
-      @include base-key;
+      font-size: 175%;
     }
 
     &.dragging div:hover {
@@ -228,9 +210,7 @@
     object-fit: contain;
   }
 
-  div {
-    @include base-key;
-
+  div.key_container {
     &:nth-child(12) {
       grid-column: 1 / 2;
     }
@@ -238,5 +218,50 @@
 
   &.dragging div:hover {
     cursor: grabbing;
+  }
+}
+
+@mixin base-key {
+  @include flexcenter;
+  background-color: $key-bg;
+  color: $key-color;
+  border: 1.5px solid $clear-bg;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+
+  &:active {
+    z-index: 4;
+  }
+}
+
+.key_container {
+  @include flexcenter;
+  position: relative;
+  font-size: 175%;
+
+  @include small-height-devices {
+    font-size: 150%;
+  }
+  @include landscape-tablet-up {
+    font-size: 160%;
+  }
+  @include phones {
+    font-size: 130%;
+  }
+  @include small-phones {
+    font-size: 120%;
+  }
+
+  .regular_key {
+    @include base-key;
+
+    &:hover {
+      cursor: pointer;
+    }
+    &:active {
+      cursor: grabbing;
+    }
   }
 }

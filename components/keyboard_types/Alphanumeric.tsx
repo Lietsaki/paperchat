@@ -5,7 +5,7 @@ import { eventPos } from 'types/Position'
 import { regularAlphaKey } from 'types/Keyboard'
 import { Alphanumeric } from 'static/KeyboardsData'
 
-const { alphanumeric, key_row, active, dragging, floating_key } = styles
+const { alphanumeric, key_row, key_container, regular_key, dragging } = styles
 
 type alphanumericProps = {
   typeKey: (key: string) => void
@@ -101,11 +101,7 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
                   )}`}
                 >
                   <img src={`/special-keys/${key.specialKey}.png`} alt={key.specialKey} />
-                  <img
-                    src={`/special-keys/active/${key.specialKey}.png`}
-                    className={active}
-                    alt={key.specialKey}
-                  />
+                  <div className="active_color"></div>
                 </div>
               )
             } else {
@@ -118,9 +114,11 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
                   onMouseDown={() => handleMouseDown(keyText)}
                   onTouchStart={() => handleMouseDown(keyText)}
                   onClick={() => performType(keyText)}
+                  className={key_container}
                   key={key.text}
                 >
-                  {keyText}
+                  <div className={regular_key}>{keyText}</div>
+                  <div className="active_color"></div>
                 </div>
               )
             }

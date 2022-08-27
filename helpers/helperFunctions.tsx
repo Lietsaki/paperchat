@@ -4,7 +4,7 @@ const getRandomNumber = (min: number, max: number) => Math.round(Math.random() *
 
 const getRandomColor = () => {
   return `hsla(${getRandomNumber(0, 255)},
-   ${getRandomNumber(30, 80)}%, ${getRandomNumber(40, 65)}%, 1.0)`
+   ${getRandomNumber(30, 65)}%, ${getRandomNumber(40, 65)}%, 1.0)`
 }
 
 const getPercentage = (percentage: number, of: number) => Math.floor((percentage / 100) * of)
@@ -77,4 +77,28 @@ const getHighestAndLowestPoints = (
   return { highestPoint, lowestPoint, conflictingPoints }
 }
 
-export { getRandomColor, getPercentage, dropPosOffset, getHighestAndLowestPoints }
+const createActiveColorClass = (hslaColor: string) => {
+  console.log('your color is', hslaColor)
+  const style = document.createElement('style')
+
+  style.innerHTML = `
+    .active_color {
+      background-color: ${hslaColor};
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      z-index: 5;
+      opacity: 0.5;
+      filter: brightness(0.8);
+    }
+  `
+  document.head.appendChild(style)
+}
+
+export {
+  getRandomColor,
+  getPercentage,
+  dropPosOffset,
+  getHighestAndLowestPoints,
+  createActiveColorClass
+}

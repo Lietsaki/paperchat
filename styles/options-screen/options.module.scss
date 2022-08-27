@@ -1,6 +1,6 @@
 .top {
   display: grid;
-  grid-template-columns: 8% 92%;
+  grid-template-columns: 7.5% 1fr;
 
   .left_column {
     background-color: $clear-bg;
@@ -30,7 +30,9 @@
     @include options-bg;
 
     display: flex;
-    align-items: flex-end;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 4px 2px 4px 4px;
   }
 }
 

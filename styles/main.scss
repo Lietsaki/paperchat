@@ -3,12 +3,10 @@ $bp-mid: 800px;
 
 $clear-bg: #fbfbfb;
 $green-border: #5a8d5a;
+$wifi-bg: #2ebc00;
 $dark-gray: #696969;
 $key-bg: #ebebeb;
 $key-color: #424242;
-$key-active-bg: #9a9ab2;
-$key-special-active-bg: #828ac3;
-$key-active-color: #28518a;
 $special-key-bg: #cbcbcb;
 $send-area-bg: #dbdbdb;
 $send-area-active-bg: #b2c3db;
@@ -16,6 +14,8 @@ $transparent-gray: #69696994;
 $dim-beige: #d6d2cb;
 $mellow-yellow: #f9ed71;
 $strong-yellow: #fbd300;
+$now-entering: #ddec00;
+$now-leaving: #18e0c5;
 $strong-orange: #fb6900;
 $scrollbar-color: #727272;
 $scrollbar-color-2: rgb(228, 222, 222);
@@ -383,47 +383,6 @@ $scrollbar-color-2: rgb(228, 222, 222);
     0px calc(100% - 0px),
     0px calc(100% - 0px)
   ) !important;
-
-  // @include phones {
-  //   clip-path: polygon(
-  //     0px 4px,
-  //     1px 4px,
-  //     1px 3px,
-  //     2px 3px,
-  //     2px 2px,
-  //     3px 2px,
-  //     3px 1px,
-  //     4px 1px,
-  //     4px 0px,
-  //     calc(100% - 4px) 0px,
-  //     calc(100% - 4px) 1px,
-  //     calc(100% - 3px) 1px,
-  //     calc(100% - 3px) 2px,
-  //     calc(100% - 2px) 2px,
-  //     calc(100% - 2px) 3px,
-  //     calc(100% - 1px) 3px,
-  //     calc(100% - 1px) 4px,
-  //     100% 4px,
-  //     100% calc(100% - 4px),
-  //     calc(100% - 1px) calc(100% - 4px),
-  //     calc(100% - 1px) calc(100% - 3px),
-  //     calc(100% - 2px) calc(100% - 3px),
-  //     calc(100% - 2px) calc(100% - 2px),
-  //     calc(100% - 3px) calc(100% - 2px),
-  //     calc(100% - 3px) calc(100% - 1px),
-  //     calc(100% - 4px) calc(100% - 1px),
-  //     calc(100% - 4px) 100%,
-  //     4px 100%,
-  //     4px calc(100% - 1px),
-  //     3px calc(100% - 1px),
-  //     3px calc(100% - 2px),
-  //     2px calc(100% - 2px),
-  //     2px calc(100% - 3px),
-  //     1px calc(100% - 3px),
-  //     1px calc(100% - 4px),
-  //     0px calc(100% - 4px)
-  //   ) !important;
-  // }
 }
 
 div.main {
@@ -431,5 +390,87 @@ div.main {
 
   @include small-phones() {
     --backToCornerWidth: 50%;
+  }
+}
+
+@mixin pixelated-rectangle-except-bottom-left {
+  clip-path: polygon(
+    0px 8px,
+    2px 8px,
+    2px 6px,
+    4px 6px,
+    4px 4px,
+    6px 4px,
+    6px 2px,
+    8px 2px,
+    8px 0px,
+    calc(100% - 8px) 0px,
+    calc(100% - 8px) 2px,
+    calc(100% - 6px) 2px,
+    calc(100% - 6px) 4px,
+    calc(100% - 4px) 4px,
+    calc(100% - 4px) 6px,
+    calc(100% - 2px) 6px,
+    calc(100% - 2px) 8px,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 2px) calc(100% - 8px),
+    calc(100% - 2px) calc(100% - 6px),
+    calc(100% - 4px) calc(100% - 6px),
+    calc(100% - 4px) calc(100% - 4px),
+    calc(100% - 6px) calc(100% - 4px),
+    calc(100% - 6px) calc(100% - 2px),
+    calc(100% - 8px) calc(100% - 2px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    8px calc(100% - 0px),
+    0px calc(100% - 0px),
+    0px calc(100% - 0px),
+    0px calc(100% - 0px),
+    0px calc(100% - 6px),
+    2px calc(100% - 0px),
+    0px calc(100% - 0px),
+    0px calc(100% - 0px)
+  ) !important;
+
+  @include phones {
+    clip-path: polygon(
+      0px 4px,
+      1px 4px,
+      1px 3px,
+      2px 3px,
+      2px 2px,
+      3px 2px,
+      3px 1px,
+      4px 1px,
+      4px 0px,
+      calc(100% - 4px) 0px,
+      calc(100% - 4px) 1px,
+      calc(100% - 3px) 1px,
+      calc(100% - 3px) 2px,
+      calc(100% - 2px) 2px,
+      calc(100% - 2px) 3px,
+      calc(100% - 1px) 3px,
+      calc(100% - 1px) 4px,
+      100% 4px,
+      100% calc(100% - 4px),
+      calc(100% - 1px) calc(100% - 4px),
+      calc(100% - 1px) calc(100% - 3px),
+      calc(100% - 2px) calc(100% - 3px),
+      calc(100% - 2px) calc(100% - 2px),
+      calc(100% - 3px) calc(100% - 2px),
+      calc(100% - 3px) calc(100% - 1px),
+      calc(100% - 4px) calc(100% - 1px),
+      calc(100% - 4px) 100%,
+      4px 100%,
+      8px calc(100% - 0px),
+      0px calc(100% - 0px),
+      0px calc(100% - 0px),
+      0px calc(100% - 0px),
+      0px calc(100% - 6px),
+      2px calc(100% - 0px),
+      0px calc(100% - 0px),
+      0px calc(100% - 0px)
+    ) !important;
   }
 }
