@@ -47,9 +47,6 @@ const FindRooms = () => {
   const [roomContent, setRoomContent] = useState<roomContent[]>([])
   const [roomColor, setRoomColor] = useState(getRandomColor())
 
-  const getButton = (condition: boolean, name: string) =>
-    condition ? `/tool-buttons/selected/${name}.png` : `/tool-buttons/${name}.png`
-
   const clearCanvas = () => emitter.emit('clearCanvas', '')
   const typeKey = (key: string) => emitter.emit('typeKey', key)
   const typeSpace = () => emitter.emit('typeSpace', '')
@@ -97,7 +94,7 @@ const FindRooms = () => {
             <div className="mid_section"></div>
             <div className={bottom_section}></div>
           </div>
-          <div className={right_column}>
+          <div className={`${right_column} scrollify`}>
             <PaperchatOctagon />
             {getRoomContent()}
           </div>
@@ -107,11 +104,7 @@ const FindRooms = () => {
           <div className={tools_column}>
             <div className={`${tool_container} ${top_arrow} ${active_on_click}`}>
               <img src="/tool-buttons/top-arrow.png" alt="top arrow button" />
-              <img
-                src="/tool-buttons/active/top-arrow.png"
-                alt="active top button"
-                className={active}
-              />
+              <div className="active_color"></div>
             </div>
 
             <div className={`${tool_container} ${down_arrow} ${active_on_click}`}>
@@ -120,75 +113,87 @@ const FindRooms = () => {
                 alt="down arrow button"
                 className={active_on_click}
               />
-              <img
-                src="/tool-buttons/active/down-arrow.png"
-                alt="active down arrow button"
-                className={active}
-              />
-            </div>
-
-            <div className={`${tool_container} ${pencil}`} onClick={() => setUsingPencil(true)}>
-              <img src={getButton(usingPencil, 'pencil')} alt="pencil button" />
-            </div>
-
-            <div className={`${tool_container} ${eraser}`} onClick={() => setUsingPencil(false)}>
-              <img src={getButton(!usingPencil, 'eraser')} alt="eraser button" />
+              <div className="active_color"></div>
             </div>
 
             <div
-              className={`${tool_container} ${thick_stroke}`}
+              className={`${tool_container} ${pencil} ${usingPencil ? active : ''}`}
+              onClick={() => setUsingPencil(true)}
+            >
+              <img src={`/tool-buttons/pencil.png`} alt="pencil button" />
+              <div className="active_color bright"></div>
+            </div>
+
+            <div
+              className={`${tool_container} ${eraser} ${!usingPencil ? active : ''}`}
+              onClick={() => setUsingPencil(false)}
+            >
+              <img src={`/tool-buttons/eraser.png`} alt="eraser button" />
+              <div className="active_color bright"></div>
+            </div>
+
+            <div
+              className={`${tool_container} ${thick_stroke} ${usingThickStroke ? active : ''}`}
               onClick={() => setUsingThickStroke(true)}
             >
-              <img src={getButton(usingThickStroke, 'thick-stroke')} alt="thick stroke button" />
+              <img src={`/tool-buttons/thick-stroke.png`} alt="thick stroke button" />
+              <div className="active_color bright"></div>
             </div>
 
             <div
-              className={`${tool_container} ${thin_stroke}`}
+              className={`${tool_container} ${thin_stroke} ${!usingThickStroke ? active : ''}`}
               onClick={() => setUsingThickStroke(false)}
             >
-              <img src={getButton(!usingThickStroke, 'thin-stroke')} alt="thin stroke button" />
+              <img src={`/tool-buttons/thin-stroke.png`} alt="thin stroke button" />
+              <div className="active_color bright"></div>
             </div>
 
             <div
-              className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm}`}
+              className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm}  ${
+                currentKeyboard === 'Alphanumeric' ? active : ''
+              }`}
               onClick={() => setCurrentKeyboard('Alphanumeric')}
             >
-              <img
-                src={getButton(currentKeyboard === 'Alphanumeric', 'alphanumeric')}
-                alt="alphanumeric button"
-              />
+              <img src={`/tool-buttons/alphanumeric.png`} alt="alphanumeric button" />
+              <div className="active_color bright"></div>
             </div>
 
             <div
-              className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm}`}
+              className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm} ${
+                currentKeyboard === 'Accents' ? active : ''
+              }`}
               onClick={() => setCurrentKeyboard('Accents')}
             >
-              <img src={getButton(currentKeyboard === 'Accents', 'accents')} alt="accents button" />
+              <img src={`/tool-buttons/accents.png`} alt="accents button" />
+              <div className="active_color bright"></div>
             </div>
 
             <div
-              className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm}`}
+              className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm} ${
+                currentKeyboard === 'Symbols' ? active : ''
+              }`}
               onClick={() => setCurrentKeyboard('Symbols')}
             >
-              <img src={getButton(currentKeyboard === 'Symbols', 'symbols')} alt="symbols button" />
+              <img src={`/tool-buttons/symbols.png`} alt="symbols button" />
+              <div className="active_color bright"></div>
             </div>
 
             <div
-              className={`${tool_container} ${pixelated_top_left}`}
+              className={`${tool_container} ${pixelated_top_left} ${
+                currentKeyboard === 'Smileys' ? active : ''
+              }`}
               onClick={() => setCurrentKeyboard('Smileys')}
             >
-              <img src={getButton(currentKeyboard === 'Smileys', 'smileys')} alt="smileys button" />
+              <img src={`/tool-buttons/smileys.png`} alt="smileys button" />
+              <div className="active_color bright"></div>
             </div>
           </div>
 
           <div className={`${close_btn} ${active_on_click}`}>
             <img src="/tool-buttons/close.png" alt="close button" />
-            <img
-              src="/tool-buttons/active/close.png"
-              alt="active close button"
-              className={active}
-            />
+            <div className="active_color bright"></div>
           </div>
+
           <div className={canvas_column}>
             <div className={canvas_area}>
               <div className={canvas_bg}>

@@ -90,6 +90,13 @@ const createActiveColorClass = (hslaColor: string) => {
       z-index: 5;
       opacity: 0.5;
       filter: brightness(0.8);
+      left: 0;
+      top: 0;
+    }
+    
+    .active_color.bright {
+      filter: brightness(1.05);
+      opacity: 0.4;
     }
   `
   document.head.appendChild(style)

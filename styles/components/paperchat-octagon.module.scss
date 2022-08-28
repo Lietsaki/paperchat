@@ -17,7 +17,12 @@
 
   &.paperchat_octagon {
     height: 12%;
+    min-height: 12%;
     background-color: $dark-gray;
+
+    &:first-child {
+      margin-top: auto;
+    }
 
     .octagon_outline {
       background-color: $clear-bg;
@@ -27,6 +32,10 @@
         background-color: $dark-gray;
         color: $dim-beige;
         text-transform: uppercase;
+
+        @include phones {
+          font-size: 22px;
+        }
       }
     }
   }
