@@ -2,6 +2,8 @@ import { positionObj } from 'types/Position'
 
 const getRandomNumber = (min: number, max: number) => Math.round(Math.random() * (max - min) + min)
 
+const getSimpleId = () => Date.now() + '' + (getRandomNumber(1, 99) + '')
+
 const getRandomColor = () => {
   return `hsla(${getRandomNumber(0, 255)},
    ${getRandomNumber(30, 65)}%, ${getRandomNumber(40, 65)}%, 1.0)`
@@ -101,10 +103,16 @@ const createActiveColorClass = (hslaColor: string) => {
   document.head.appendChild(style)
 }
 
+const isElementVisibleInContainer = (target: HTMLElement, container: HTMLElement) => {
+  return true
+}
+
 export {
+  getSimpleId,
   getRandomColor,
   getPercentage,
   dropPosOffset,
   getHighestAndLowestPoints,
-  createActiveColorClass
+  createActiveColorClass,
+  isElementVisibleInContainer
 }

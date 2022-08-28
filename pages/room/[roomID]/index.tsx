@@ -5,9 +5,10 @@ import UserInfoOctagon from 'components/room/UserInfoOctagon'
 import MessageOctagon from 'components/room/MessageOctagon'
 import Keyboard from 'components/Keyboard'
 import Canvas from 'components/Canvas'
+import ContentIndicator from 'components/room/ContentIndicator'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
-import { getRandomColor, createActiveColorClass } from 'helpers/helperFunctions'
+import { getRandomColor, getSimpleId, createActiveColorClass } from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
 import { roomContent } from 'types/Room'
 import emitter from 'helpers/MittEmitter'
@@ -39,7 +40,7 @@ const {
   close_btn
 } = page_styles
 
-const FindRooms = () => {
+const Room = () => {
   const router = useRouter()
   const [usingPencil, setUsingPencil] = useState(true)
   const [usingThickStroke, setUsingThickStroke] = useState(true)
@@ -55,7 +56,7 @@ const FindRooms = () => {
   const sendMessage = () => emitter.emit('sendMessage', '')
 
   const receiveCanvasDataUrl = (data_url: string) => {
-    setRoomContent([...roomContent, { message: data_url }])
+    setRoomContent([...roomContent, { message: data_url, id: getSimpleId() }])
   }
 
   useEffect(() => createActiveColorClass(roomColor), [roomColor])
@@ -68,19 +69,35 @@ const FindRooms = () => {
     }
   }, [roomContent])
 
+  useEffect(() => {
+    setRoomContent([
+      ...roomContent,
+      { paperchatOctagon: true, id: 'paperchat_octagon' },
+      { userEntering: 'Johnny', id: getSimpleId() }
+    ])
+  }, [])
+
   const getRoomContent = () => {
     return roomContent.map((item, i) => {
       if (item.userEntering || item.userLeaving) {
         return (
           <UserInfoOctagon
-            key={i}
+            key={item.id}
+            id={item.id}
             userEntering={item.userEntering}
             userLeaving={item.userLeaving}
           />
         )
       }
+
       if (item.message) {
-        return <MessageOctagon key={i} img_uri={item.message} color={roomColor} />
+        return (
+          <MessageOctagon key={item.id} id={item.id} img_uri={item.message} color={roomColor} />
+        )
+      }
+
+      if (item.paperchatOctagon) {
+        return <PaperchatOctagon key={item.id} id={item.id} />
       }
     })
   }
@@ -91,13 +108,10 @@ const FindRooms = () => {
         <div className={`screen ${top}`}>
           <div className={left_column}>
             <div className={top_section}></div>
-            <div className="mid_section"></div>
+            <ContentIndicator roomContent={roomContent} />
             <div className={bottom_section}></div>
           </div>
-          <div className={`${right_column} scrollify`}>
-            <PaperchatOctagon />
-            {getRoomContent()}
-          </div>
+          <div className={`${right_column} scrollify`}>{getRoomContent()}</div>
         </div>
 
         <div className={`screen ${bottom}`}>
@@ -250,4 +264,4 @@ const FindRooms = () => {
   )
 }
 
-export default FindRooms
+export default Room

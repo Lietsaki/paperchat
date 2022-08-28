@@ -19,7 +19,41 @@
       }
     }
 
-    // .mid_section {}
+    .content_indicator {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 8px 0 25px 0;
+
+      @keyframes grow {
+        0% {
+          transform: scaleY(0);
+        }
+        100% {
+          transform: scaleY(1);
+        }
+      }
+
+      .indicator {
+        animation: grow 0.2s ease-in-out;
+        transform-origin: bottom;
+        height: 4px;
+        width: 70%;
+        background-color: $content-visible;
+        filter: blur(0.5px);
+        margin-top: 5px;
+
+        &.invisible {
+          background-color: $content-invisible;
+        }
+
+        &:first-child {
+          margin-top: 0;
+        }
+      }
+    }
 
     .bottom_section {
       @include left-column-dotted-border;

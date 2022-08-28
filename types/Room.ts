@@ -2,6 +2,12 @@ type roomContent = {
   userEntering?: string
   userLeaving?: string
   message?: string
+  paperchatOctagon?: boolean
+  id: string
 }
 
-export type { roomContent }
+type contentIndicator = {
+  isVisible: boolean
+}
+
+export type { roomContent, contentIndicator }
