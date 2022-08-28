@@ -352,11 +352,15 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
         } else {
           pic_canvas.height = lowestPoint[1] + 15 - (highestPoint[1] - 15)
           sourceY = highestPoint[1] - 15
+
+          if (sourceY < divisionsHeight) {
+            pic_canvas.height = lowestPoint[1] + 15 - divionsHeightWithMargin()
+            sourceY = divionsHeightWithMargin()
+          }
         }
       }
 
       if (hPointUnderAndWithinUsername || (conflictingPoints && !hPointNextToUsername)) {
-        console.log('last case')
         sourceY = getStartOfDivision(highestPoint[1]) + 1
         destinationY = min_height
 

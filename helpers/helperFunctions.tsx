@@ -78,7 +78,6 @@ const getHighestAndLowestPoints = (
 }
 
 const createActiveColorClass = (hslaColor: string) => {
-  console.log('your color is', hslaColor)
   const style = document.createElement('style')
 
   style.innerHTML = `
