@@ -20,12 +20,44 @@
     }
 
     .content_indicator {
-      height: 100%;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: flex-end;
-      padding: 8px 0 25px 0;
+      padding: 7px 0 50% 0;
+
+      .indictor_container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        &:first-child {
+          margin-bottom: 5px;
+        }
+        &:last-child {
+          margin-top: 4px;
+        }
+
+        @include phones {
+          &:first-child {
+            margin-bottom: 3px;
+          }
+          &:last-child {
+            margin-top: 3px;
+          }
+        }
+      }
+
+      .main_container {
+        overflow: hidden;
+        margin-top: -1px;
+
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+          display: none;
+        }
+      }
 
       @keyframes grow {
         0% {
@@ -40,6 +72,7 @@
         animation: grow 0.2s ease-in-out;
         transform-origin: bottom;
         height: 4px;
+        min-height: 4px;
         width: 70%;
         background-color: $content-visible;
         filter: blur(0.5px);
@@ -49,8 +82,31 @@
           background-color: $content-invisible;
         }
 
+        &.overflowed_1 {
+          width: 50%;
+        }
+
+        &.overflowed_2 {
+          width: 25%;
+        }
+
         &:first-child {
           margin-top: 0;
+        }
+
+        @include phones {
+          height: 3px;
+          min-height: 3px;
+          width: 65%;
+          margin-top: 3px;
+
+          &.overflown_1 {
+            width: 45%;
+          }
+
+          &.overflown_2 {
+            width: 20%;
+          }
         }
       }
     }

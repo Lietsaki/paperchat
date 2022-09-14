@@ -311,6 +311,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
       const contentHeight = lowestPoint[1] - highestPoint[1]
       let sourceY = 0
       let destinationY = 0
+      const margin = 10
 
       const isNextToUsername =
         lowestPoint[0] > nameContainerWidth &&
@@ -334,7 +335,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
       }
 
       if (hPointNextToUsername) {
-        pic_canvas.height = lowestPoint[1] + 15
+        pic_canvas.height = lowestPoint[1] + margin
       }
 
       if (hPointUnderAndOutsideUsername && !conflictingPoints) {
@@ -350,11 +351,11 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
           pic_canvas.height = min_height
           sourceY = startOfDivision
         } else {
-          pic_canvas.height = lowestPoint[1] + 15 - (highestPoint[1] - 15)
-          sourceY = highestPoint[1] - 15
+          pic_canvas.height = lowestPoint[1] + margin - (highestPoint[1] - margin)
+          sourceY = highestPoint[1] - margin
 
           if (sourceY < divisionsHeight) {
-            pic_canvas.height = lowestPoint[1] + 15 - divionsHeightWithMargin()
+            pic_canvas.height = lowestPoint[1] + margin - divionsHeightWithMargin()
             sourceY = divionsHeightWithMargin()
           }
         }
@@ -375,7 +376,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
         ) {
           pic_canvas.height = min_height * 2
         } else {
-          pic_canvas.height = min_height + (lowestPoint[1] + 15 - (highestPoint[1] - 15))
+          pic_canvas.height = min_height + (lowestPoint[1] + margin - (highestPoint[1] - margin))
         }
       }
 
@@ -401,7 +402,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
         pic_canvas.height
       )
 
-      emitter.emit('canvasDataUrl', pic_canvas.toDataURL())
+      emitter.emit('canvasData', { dataUrl: pic_canvas.toDataURL(), height: pic_canvas.height })
       clearCanvas()
     }
   }

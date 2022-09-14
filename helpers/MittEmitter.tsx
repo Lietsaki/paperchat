@@ -1,4 +1,5 @@
 import mitt, { Emitter } from 'mitt'
+import { canvasData } from 'types/Room'
 
 type Events = {
   clearCanvas: string
@@ -8,7 +9,7 @@ type Events = {
   typeDel: string
   draggingKey: string
   sendMessage: string
-  canvasDataUrl: string
+  canvasData: canvasData
 }
 
 const emitter: Emitter<Events> = mitt<Events>()

@@ -7,10 +7,15 @@ import Keyboard from 'components/Keyboard'
 import Canvas from 'components/Canvas'
 import ContentIndicator from 'components/room/ContentIndicator'
 import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
-import { getRandomColor, getSimpleId, createActiveColorClass } from 'helpers/helperFunctions'
+import { useState, useEffect, useRef } from 'react'
+import {
+  getRandomColor,
+  getSimpleId,
+  createActiveColorClass,
+  willContainerBeOverflowed
+} from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
-import { roomContent } from 'types/Room'
+import { roomContent, canvasData } from 'types/Room'
 import emitter from 'helpers/MittEmitter'
 
 const { top, left_column, right_column, top_section, bottom_section } = general_styles
@@ -47,6 +52,7 @@ const Room = () => {
   const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('Alphanumeric')
   const [roomContent, setRoomContent] = useState<roomContent[]>([])
   const [roomColor, setRoomColor] = useState(getRandomColor())
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const clearCanvas = () => emitter.emit('clearCanvas', '')
   const typeKey = (key: string) => emitter.emit('typeKey', key)
@@ -55,19 +61,35 @@ const Room = () => {
   const typeDel = () => emitter.emit('typeDel', '')
   const sendMessage = () => emitter.emit('sendMessage', '')
 
-  const receiveCanvasDataUrl = (data_url: string) => {
-    setRoomContent([...roomContent, { message: data_url, id: getSimpleId() }])
+  const receiveCanvasData = ({ dataUrl, height }: canvasData) => {
+    const messagesWillTriggerScroll = willContainerBeOverflowed(
+      messagesContainerRef.current!,
+      0,
+      4.5,
+      height
+    )
+
+    setRoomContent([
+      ...roomContent,
+      { message: dataUrl, id: getSimpleId(), animate: !messagesWillTriggerScroll }
+    ])
   }
 
   useEffect(() => createActiveColorClass(roomColor), [roomColor])
 
   useEffect(() => {
-    emitter.on('canvasDataUrl', receiveCanvasDataUrl)
+    emitter.on('canvasData', receiveCanvasData)
+    setTimeout(() => scrollContent(), 100)
 
     return () => {
-      emitter.off('canvasDataUrl')
+      emitter.off('canvasData')
     }
   }, [roomContent])
+
+  const scrollContent = () => {
+    const container = document.querySelector(`.${right_column}`)
+    container!.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
+  }
 
   useEffect(() => {
     setRoomContent([
@@ -92,7 +114,13 @@ const Room = () => {
 
       if (item.message) {
         return (
-          <MessageOctagon key={item.id} id={item.id} img_uri={item.message} color={roomColor} />
+          <MessageOctagon
+            key={item.id}
+            id={item.id}
+            img_uri={item.message}
+            color={roomColor}
+            shouldAnimate={!!item.animate}
+          />
         )
       }
 
@@ -111,7 +139,9 @@ const Room = () => {
             <ContentIndicator roomContent={roomContent} />
             <div className={bottom_section}></div>
           </div>
-          <div className={`${right_column} scrollify`}>{getRoomContent()}</div>
+          <div ref={messagesContainerRef} className={`${right_column} scrollify`}>
+            {getRoomContent()}
+          </div>
         </div>
 
         <div className={`screen ${bottom}`}>

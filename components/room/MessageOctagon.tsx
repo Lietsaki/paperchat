@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react'
 import styles from 'styles/components/paperchat-octagon.module.scss'
 
-const { octagon_outside, octagon_outline, octagon_content, message, short_message } = styles
+const { octagon_outside, octagon_outline, octagon_content, message, short_message, animate } =
+  styles
 
-type messageOctagonProps = { img_uri: string; color: string; id: string }
+type messageOctagonProps = { img_uri: string; color: string; id: string; shouldAnimate: boolean }
 
-const messageOctagon = ({ img_uri, color, id }: messageOctagonProps) => {
+const messageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonProps) => {
   const outlineRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
@@ -22,7 +23,12 @@ const messageOctagon = ({ img_uri, color, id }: messageOctagonProps) => {
   }
 
   return (
-    <div className={`${octagon_outside} ${message} ${shortMessage ? short_message : ''}`} id={id}>
+    <div
+      className={`${octagon_outside} ${message} ${shortMessage ? short_message : ''} ${
+        shouldAnimate ? animate : ''
+      }`}
+      id={id}
+    >
       <div className={octagon_outline} ref={outlineRef} style={{ backgroundColor: color }}>
         <div className={octagon_content} ref={containerRef}>
           <img src={img_uri} onLoad={handleLoad} ref={imgRef} />

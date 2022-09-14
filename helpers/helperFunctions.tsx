@@ -103,8 +103,28 @@ const createActiveColorClass = (hslaColor: string) => {
   document.head.appendChild(style)
 }
 
-const isElementVisibleInContainer = (target: HTMLElement, container: HTMLElement) => {
-  return true
+const willContainerBeOverflowed = (
+  container: HTMLDivElement,
+  containerHeightOffset: number = 0,
+  childrenMargin?: number,
+  newItemHeight?: number
+) => {
+  const children = Array.from(container.children)
+  const baseHeight = newItemHeight || children[0] ? children[0].clientHeight : 0
+  const childMargin = childrenMargin || children[0] ? children[0].clientHeight + 1 : 0
+
+  const computedStyle = getComputedStyle(container)
+  const containerHeight =
+    container.clientHeight -
+    (parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom)) -
+    containerHeightOffset
+
+  const childrenHeight = children.reduce(
+    (count, child) => count + child.clientHeight + childMargin,
+    baseHeight
+  )
+
+  return childrenHeight > containerHeight
 }
 
 export {
@@ -114,5 +134,5 @@ export {
   dropPosOffset,
   getHighestAndLowestPoints,
   createActiveColorClass,
-  isElementVisibleInContainer
+  willContainerBeOverflowed
 }
