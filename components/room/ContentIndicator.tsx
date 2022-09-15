@@ -43,6 +43,7 @@ const ContentIndicator = ({ roomContent }: ContentIndicatorProps) => {
     observer = new IntersectionObserver(
       (entries) => {
         let newIndicators = { ...indicatorsRef.current }
+        let latestVisibleId = ''
 
         for (const entry of entries) {
           const { id } = entry.target
@@ -52,6 +53,7 @@ const ContentIndicator = ({ roomContent }: ContentIndicatorProps) => {
               newIndicators[id] = { isVisible: true }
             } else {
               newIndicators[id].isVisible = true
+              latestVisibleId = id
 
               if (newIndicators[id].isOverflowedIndicator1) {
                 newIndicators = handleOverflowedIndicatorView(id, newIndicators)
@@ -66,8 +68,8 @@ const ContentIndicator = ({ roomContent }: ContentIndicatorProps) => {
           }
         }
 
-        if (overflowed2OldestIndicator) {
-          scrollMiddleIndicatorForVisibility(newIndicators)
+        if (overflowed2OldestIndicator && latestVisibleId) {
+          scrollMiddleIndicatorForVisibility(latestVisibleId)
         }
 
         if (willContainerBeOverflowed(indicatorsContainerRef.current!, 10)) {
@@ -210,11 +212,19 @@ const ContentIndicator = ({ roomContent }: ContentIndicatorProps) => {
     container.scroll({ top: container.scrollHeight, behavior: 'smooth' })
   }
 
-  const scrollMiddleIndicatorForVisibility = (indicatorsToHandle: contentIndicators) => {
-    const indicatorKeys = Object.keys(indicatorsToHandle)
-    const newestVisibleKey = indicatorKeys.find((key) => indicatorsToHandle[key].isVisible)
-    const item = document.getElementById(indicatorIdPrefix + newestVisibleKey)
-    item?.scrollIntoView({ behavior: 'smooth' })
+  const isIndicatorOverflowed = (indicator: Element) => {
+    const contRect = middleIndicatorsRef.current!.getBoundingClientRect()
+    const indRect = indicator.getBoundingClientRect()
+
+    const overFlowedToTheBottom = indRect.bottom > contRect.bottom
+    const overFlowedToTheTop = contRect.top > indRect.top
+    return overFlowedToTheBottom || overFlowedToTheTop
+  }
+
+  const scrollMiddleIndicatorForVisibility = (latestVisibleId: string) => {
+    const item = document.getElementById(indicatorIdPrefix + latestVisibleId)
+    if (isIndicatorOverflowed(item!)) console.log('SCROLLING THAT FOR YOU', item)
+    if (isIndicatorOverflowed(item!)) item!.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }
 
   const renderIndicators = (indicatorKeys: string[]) => {
