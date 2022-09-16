@@ -25,6 +25,19 @@
       flex-direction: column;
       justify-content: flex-end;
       padding: 8px 0 50% 0;
+      height: 310px;
+
+      @include small-height-devices {
+        height: 252px;
+      }
+
+      @include phones {
+        height: 218px;
+      }
+
+      @include small-phones {
+        height: 190px;
+      }
 
       .indictor_container {
         display: flex;

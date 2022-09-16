@@ -54,6 +54,10 @@
         font-size: 30px;
         justify-content: flex-start;
 
+        @include small-height-devices {
+          font-size: 22px;
+        }
+
         @include phones {
           font-size: 22px;
         }
@@ -136,11 +140,18 @@
       font-size: 35px;
       background-color: $clear-bg;
 
+      @include small-height-devices {
+        font-size: 28px;
+        padding-bottom: 1px;
+      }
+      @include phones {
+        padding-bottom: 1px;
+      }
+
       @include phones {
         width: 99%;
         height: 89%;
         font-size: 20px;
-        padding-bottom: 1px;
       }
     }
   }
