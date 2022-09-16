@@ -139,7 +139,7 @@ const Room = () => {
             <ContentIndicator roomContent={roomContent} />
             <div className={bottom_section}></div>
           </div>
-          <div ref={messagesContainerRef} className={`${right_column} scrollify`}>
+          <div ref={messagesContainerRef} className={`${right_column}`}>
             {getRoomContent()}
           </div>
         </div>

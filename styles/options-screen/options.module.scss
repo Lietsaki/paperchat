@@ -24,7 +24,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      padding: 6px 0 50% 0;
+      padding: 8px 0 50% 0;
 
       .indictor_container {
         display: flex;
@@ -32,7 +32,7 @@
         align-items: center;
 
         &:first-child {
-          margin-bottom: 5px;
+          margin-bottom: 4px;
         }
         &:last-child {
           margin-top: 4px;
@@ -50,13 +50,6 @@
 
       .main_container {
         overflow: hidden;
-        margin-top: -1px;
-
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-        &::-webkit-scrollbar {
-          display: none;
-        }
       }
 
       @keyframes grow {
@@ -122,6 +115,14 @@
     display: flex;
     flex-direction: column;
     padding: 4px 2px 4px 4px;
+    overflow: scroll;
+
+    // Hide the scrollbar, but allow to scroll.
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }
 
