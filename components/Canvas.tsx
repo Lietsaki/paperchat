@@ -223,6 +223,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   const drawUsernameRectangle = (ctx: CanvasRenderingContext2D, loadFont?: boolean) => {
     if (!ctx) return
     ctx.globalCompositeOperation = 'source-over'
+    ctx.lineJoin = 'bevel'
+    ctx.imageSmoothingEnabled = false
     let pixelBorderSize = canvasRef.current!.width >= 400 ? 3 : 2
     ctx.lineWidth = 1
     ctx.fillStyle = roomColor.replace('1.0', '0.3')
