@@ -223,7 +223,6 @@ const ContentIndicator = ({ roomContent }: ContentIndicatorProps) => {
 
   const scrollMiddleIndicatorForVisibility = (latestVisibleId: string) => {
     const item = document.getElementById(indicatorIdPrefix + latestVisibleId)
-    console.log('should I scroll', isIndicatorOverflowed(item!))
     if (isIndicatorOverflowed(item!)) item!.scrollIntoView({ behavior: 'auto', block: 'nearest' })
   }
 

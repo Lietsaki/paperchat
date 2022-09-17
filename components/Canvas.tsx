@@ -78,8 +78,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
     // Scale mouse coordinates after they have been adjusted to be relative to the element
     return {
-      x: (e.clientX - rect.left) * scaleX, //
-      y: (e.clientY - rect.top) * scaleY //
+      x: Math.floor((e.clientX - rect.left) * scaleX),
+      y: Math.floor((e.clientY - rect.top) * scaleY)
     }
   }
 
@@ -262,7 +262,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
-    ctx.lineCap = 'round'
+    ctx.lineCap = 'square'
     ctx.lineWidth = usingThickStroke ? 3 : 1.2
     ctx.strokeStyle = strokeColor
 
@@ -283,12 +283,12 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
-    ctx.lineCap = 'round'
+    ctx.lineCap = 'square'
     ctx.lineWidth = usingThickStroke ? 3 : 1.2
     ctx.strokeStyle = strokeColor
 
     ctx.moveTo(posToUse.x, posToUse.y)
-    ctx.lineTo(posToUse.x + 1, posToUse.y + 1)
+    ctx.lineTo(posToUse.x, posToUse.y)
     ctx.stroke()
   }
 
