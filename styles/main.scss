@@ -75,6 +75,12 @@ $scrollbar-color-2: rgba(228, 228, 228, 0.6);
   align-items: center;
 }
 
+@mixin flexcenter-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 @mixin options-bg {
   background-image: url('/backgrounds/options-bg.png');
   background-size: cover;

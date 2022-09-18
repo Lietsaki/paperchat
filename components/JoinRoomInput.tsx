@@ -7,7 +7,7 @@ type JoinRoomInputProps = {
   handleCodeSubmit: (code: string) => void
 }
 
-const UsernameInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
+const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [code, setCode] = useState('')
 
@@ -34,4 +34,4 @@ const UsernameInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
   )
 }
 
-export default UsernameInput
+export default JoinRoomInput

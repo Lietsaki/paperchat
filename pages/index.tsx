@@ -2,8 +2,11 @@ import styles from 'styles/home/home.module.scss'
 import MenuButton from 'components/MenuButton'
 import Button from 'components/Button'
 import UsernameInput from 'components/UsernameInput'
-import { useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectUsername, setUsername } from 'store/slices/userSlice'
+import { usernameMinLength } from 'store/initializer'
 
 const {
   top,
@@ -11,6 +14,7 @@ const {
   btn_search_rooms,
   btn_create_room,
   btn_join,
+  username_form,
   username_input,
   editing_username,
   back_to_corner,
@@ -18,14 +22,19 @@ const {
 } = styles
 
 const Home = () => {
+  const router = useRouter()
   const [editingUsername, setEditingUsername] = useState(false)
   const [usernameAreaClasses, setUsernameAreaClasses] = useState(username_input)
-  const router = useRouter()
+
+  const [usernameInputValue, setUsernameInputValue] = useState(useSelector(selectUsername))
+  const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
+  const dispatch = useDispatch()
 
   const editUsername = () => {
     setEditingUsername(true)
     setUsernameAreaClasses(`${username_input} ${editing_username}`)
   }
+
   const finishEditingUsername = () => {
     setEditingUsername(false)
     setUsernameAreaClasses(`${username_input} ${back_to_corner}`)
@@ -37,9 +46,24 @@ const Home = () => {
     ) : null
   }
 
-  const saveUsername = () => {
-    console.log('save username!')
+  const saveUsername = (savedUsername: string) => {
+    if (savedUsername.length < usernameMinLength) return
+    setUsernameInputValue(savedUsername)
+    dispatch(setUsername(savedUsername))
+    localStorage.setItem('username', savedUsername)
+    finishEditingUsername()
   }
+
+  const handleFormSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    saveUsername(usernameBeingEdited)
+  }
+
+  useEffect(() => {
+    if (usernameInputValue) {
+      finishEditingUsername()
+    }
+  }, [usernameInputValue])
 
   return (
     <div className="main">
@@ -57,12 +81,19 @@ const Home = () => {
           </div>
 
           <div onClick={editUsername} className={usernameAreaClasses}>
-            <UsernameInput editing={editingUsername} />
-            {editingUsername ? (
-              <div className={save_username_btn_container}>
-                <Button onClick={saveUsername} text="Save" />
-              </div>
-            ) : null}
+            <form className={username_form} onSubmit={handleFormSubmit}>
+              <UsernameInput
+                editing={editingUsername}
+                receivedValue={usernameInputValue}
+                setUsernameBeingEdited={setUsernameBeingEdited}
+              />
+
+              {editingUsername ? (
+                <div className={save_username_btn_container}>
+                  <Button onClick={() => saveUsername(usernameBeingEdited)} text="Save" />
+                </div>
+              ) : null}
+            </form>
           </div>
 
           {editingUsernameModalCover()}

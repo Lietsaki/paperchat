@@ -15,7 +15,7 @@ const {
   bottom_section,
   bottom_top,
   bottom_bottom,
-  bottom_btn_container,
+  bottom_btn_container
 } = general_styles
 
 const { midsection } = page_styles
@@ -36,7 +36,7 @@ const JoinWithACode = () => {
             <div className={bottom_section}></div>
           </div>
           <div className={right_column}>
-            <PaperchatOctagon />
+            <PaperchatOctagon id={Date.now() + ''} />
           </div>
         </div>
         <div className={`screen ${bottom}`}>
