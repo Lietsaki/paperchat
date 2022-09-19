@@ -18,8 +18,8 @@ const UsernameInput = ({ editing, receivedValue, setUsernameBeingEdited }: Usern
 
   useEffect(() => {
     if (editing) return inputRef.current!.focus()
-    if (receivedValue !== inputValue) setInputValue('')
     inputRef.current!.blur()
+    setInputValue(receivedValue)
   }, [editing])
 
   useEffect(() => {

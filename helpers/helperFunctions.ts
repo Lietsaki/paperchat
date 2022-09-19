@@ -128,6 +128,7 @@ const willContainerBeOverflowed = (
 }
 
 export {
+  getRandomNumber,
   getSimpleId,
   getRandomColor,
   getPercentage,

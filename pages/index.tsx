@@ -60,7 +60,7 @@ const Home = () => {
   }
 
   useEffect(() => {
-    if (usernameInputValue) {
+    if (usernameInputValue && editingUsername) {
       finishEditingUsername()
     }
   }, [usernameInputValue])

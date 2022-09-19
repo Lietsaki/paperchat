@@ -1,4 +1,4 @@
-import getRandomUsername from '../helpers/usernameGenerator'
+import getRandomUsername from 'helpers/username-generator/usernameGenerator'
 import { store } from 'store/store'
 import { setUsername } from 'store/slices/userSlice'
 
@@ -10,6 +10,10 @@ const initializer = () => {
 
   if (savedUsername) {
     store.dispatch(setUsername(savedUsername))
+
+    const username = getRandomUsername()
+    localStorage.setItem('username', username)
+    store.dispatch(setUsername(username))
   } else {
     const username = getRandomUsername()
     localStorage.setItem('username', username)
