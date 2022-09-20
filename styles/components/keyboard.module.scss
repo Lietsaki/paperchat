@@ -78,6 +78,14 @@
       .DEL {
         width: 56px;
 
+        @include phones {
+          width: 45px;
+        }
+
+        @include small-phones {
+          width: 40px;
+        }
+
         img {
           width: 50%;
           height: 50%;
@@ -89,6 +97,10 @@
     &:nth-child(3) {
       .CAPS {
         width: 45px;
+
+        @include phones {
+          width: 40px;
+        }
 
         img {
           width: 75%;
@@ -104,6 +116,14 @@
       .ENTER {
         width: 72px;
 
+        @include phones {
+          width: 62px;
+        }
+
+        @include small-phones {
+          width: 58px;
+        }
+
         img {
           width: 90%;
           height: 70%;
@@ -117,6 +137,10 @@
 
       .SHIFT {
         width: 60px;
+
+        @include phones {
+          width: 50px;
+        }
 
         img {
           width: 60%;

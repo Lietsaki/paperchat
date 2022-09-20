@@ -18,6 +18,7 @@
       position: absolute;
       z-index: 12;
       touch-action: none;
+      filter: blur(0.3px);
     }
 
     img {

@@ -10,10 +10,6 @@ const initializer = () => {
 
   if (savedUsername) {
     store.dispatch(setUsername(savedUsername))
-
-    const username = getRandomUsername()
-    localStorage.setItem('username', username)
-    store.dispatch(setUsername(username))
   } else {
     const username = getRandomUsername()
     localStorage.setItem('username', username)

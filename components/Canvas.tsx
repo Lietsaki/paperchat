@@ -70,6 +70,18 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     return division
   }
 
+  const getLineWidth = () => {
+    const smallDevice = window.screen.width < 999
+
+    if (usingThickStroke) {
+      if (smallDevice) return 6
+      return 4
+    } else {
+      if (smallDevice) return 3
+      return 2
+    }
+  }
+
   const getPosition = (e: clientPos) => {
     const canvas = canvasRef.current!
     const rect = canvas.getBoundingClientRect() // abs. size of element
@@ -205,6 +217,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     ctx.fillStyle = canvasBgColor
     ctx.fillRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
     ctx.strokeStyle = roomColor.replace('1.0', '0.6')
+    ctx.lineWidth = 1
 
     for (let i = 1; i < 5; i++) {
       ctx.beginPath()
@@ -265,7 +278,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
     ctx.lineCap = 'square'
-    ctx.lineWidth = usingThickStroke ? 3 : 1.2
+    ctx.lineWidth = getLineWidth()
     ctx.strokeStyle = strokeColor
 
     ctx.moveTo(pos.x, pos.y)
@@ -286,7 +299,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
     ctx.lineCap = 'square'
-    ctx.lineWidth = usingThickStroke ? 3 : 1.2
+    ctx.lineWidth = getLineWidth()
     ctx.strokeStyle = strokeColor
 
     ctx.moveTo(posToUse.x, posToUse.y)
@@ -299,7 +312,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
     const pic_canvas = document.createElement('canvas')
     const pic_ctx = pic_canvas.getContext('2d')!
-    const min_height = divisionsHeight + 0
+    const min_height = divisionsHeight
     pic_canvas.width = ctx.canvas.width
 
     const nameContainerPos = { x: nameContainerWidth, y: divisionsHeight }
@@ -353,9 +366,11 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
           pic_canvas.height = min_height
           sourceY = startOfDivision
         } else {
-          pic_canvas.height = lowestPoint[1] + margin - (highestPoint[1] - margin)
-          sourceY = highestPoint[1] - margin
+          // We need extra margin in this case, so multiply it by 2
+          pic_canvas.height = lowestPoint[1] + margin * 2 - (highestPoint[1] - margin * 2)
+          sourceY = highestPoint[1] - margin * 2
 
+          // Prevent the original username rectangle from appearing on top of the one we're gonna draw
           if (sourceY < divisionsHeight) {
             pic_canvas.height = lowestPoint[1] + margin - divionsHeightWithMargin()
             sourceY = divionsHeightWithMargin()
@@ -364,7 +379,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
       }
 
       if (hPointUnderAndWithinUsername || (conflictingPoints && !hPointNextToUsername)) {
-        sourceY = getStartOfDivision(highestPoint[1]) + 1
+        sourceY = highestPoint[1] - margin
         destinationY = min_height
 
         const contentSmallerThanMinHeight = contentHeight <= min_height - 4
@@ -415,8 +430,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
     outlineRef.current!.style.backgroundColor = roomColor
 
     if (!canvas.getContext) return
-    canvas.width = containerRef.current!.offsetWidth
-    canvas.height = containerRef.current!.offsetHeight
+    canvas.width = containerRef.current!.offsetWidth * (window.devicePixelRatio || 1)
+    canvas.height = containerRef.current!.offsetHeight * (window.devicePixelRatio || 1)
     const ctx = canvas.getContext('2d')
     setCanvasCtx(ctx)
     setDivisionsHeight(Math.floor(canvas.height / 5))
