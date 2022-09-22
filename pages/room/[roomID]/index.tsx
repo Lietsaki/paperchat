@@ -17,6 +17,7 @@ import {
 import { keyboard } from 'types/Keyboard'
 import { roomContent, canvasData } from 'types/Room'
 import emitter from 'helpers/MittEmitter'
+import { createRoom } from 'firebase-config/realtimeDB'
 
 const { top, left_column, right_column, top_section, bottom_section } = general_styles
 
@@ -139,7 +140,11 @@ const Room = () => {
             <ContentIndicator roomContent={roomContent} />
             <div className={bottom_section}></div>
           </div>
+
           <div ref={messagesContainerRef} className={`${right_column}`}>
+            <div>
+              <button onClick={createRoom}>createRoom</button>
+            </div>
             {getRoomContent()}
           </div>
         </div>

@@ -6,8 +6,10 @@ import type { AppProps } from 'next/app'
 import { store } from 'store/store'
 import { Provider } from 'react-redux'
 import { initializer } from 'store/initializer'
+import initializeFirebase from 'firebase-config/init'
 
 if (typeof window !== 'undefined') {
+  initializeFirebase()
   initializer()
 }
 
