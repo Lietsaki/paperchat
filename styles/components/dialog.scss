@@ -18,7 +18,7 @@
   @include flexcenter;
   @include pixelated-rectangle;
 
-  @include small-phones {
+  @include phones {
     width: 280px;
     height: 90px;
   }
@@ -32,30 +32,31 @@
 
     .dialog_content {
       @include pixelated-rectangle;
+      @include ds-font;
       background-color: $dark-gray;
       background-image: url('/backgrounds/dialog-bg.png');
       background-size: contain;
-      font-family: 'nds', roboto, sans-serif;
       display: grid;
       grid-template-columns: 12% 38% 38% 12%;
       align-items: center;
       justify-content: center;
+      width: 97.5%;
+      height: 92%;
+      color: $clear-bg;
 
       .text {
         font-size: 22px;
         grid-column: 2 / 4;
-        display: flex;
-        align-items: center;
+        text-align: center;
         padding: 0 3%;
 
+        @include phones {
+          font-size: 19px;
+        }
         @include small-phones {
           font-size: 18px;
         }
       }
-
-      width: 97.5%;
-      height: 92%;
-      color: $clear-bg;
 
       .spinner-area-left,
       .spinner-area-right {
@@ -68,26 +69,27 @@
         height: 24px;
         display: flex;
         grid-column: 2 / 4;
-        justify-content: space-between;
+        justify-content: center;
 
         div {
           width: 100px;
 
           button {
+            @include flexcenter;
             font-size: 20px;
           }
-        }
 
-        @include small-phones {
-          grid-column: 1/5;
-
-          div {
-            height: 20px;
+          @include phones {
+            width: 85px;
 
             button {
               font-size: 18px;
             }
           }
+        }
+
+        @include small-phones {
+          height: 20px;
         }
       }
     }

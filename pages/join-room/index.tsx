@@ -36,7 +36,7 @@ const JoinWithACode = () => {
             <div className={bottom_section}></div>
           </div>
           <div className={right_column}>
-            <PaperchatOctagon id={Date.now() + ''} />
+            <PaperchatOctagon />
           </div>
         </div>
         <div className={`screen ${bottom}`}>

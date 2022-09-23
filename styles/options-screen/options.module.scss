@@ -146,6 +146,7 @@
   grid-template-columns: 1fr;
   grid-template-rows: 12% auto 12%;
   overflow: hidden;
+  position: relative;
 
   .bottom_top {
     @include flexcenter;

@@ -3,6 +3,8 @@ import PaperchatOctagon from 'components/PaperchatOctagon'
 import Button from 'components/Button'
 import { useRouter } from 'next/router'
 import page_styles from 'styles/create-room/create-room.module.scss'
+import Dialog from 'components/Dialog'
+import { useState } from 'react'
 
 const {
   top,
@@ -13,16 +15,48 @@ const {
   bottom_section,
   bottom_top,
   bottom_bottom,
-  bottom_btn_container,
+  bottom_btn_container
 } = general_styles
 
-const { option_cards, card, card__inner, title_row, title, icon, description } =
-  page_styles
+const { option_cards, card, card__inner, title_row, title, icon, description } = page_styles
+type dialogOptions = {
+  text: string
+  open: boolean
+  showSpinner: boolean
+  onOk?: () => void
+  onCancel?: () => void
+}
 
 const JoinWithACode = () => {
   const router = useRouter()
-  const selectRoom = (type: 'public' | 'private') => {
-    console.log('We want to create a room with this type ', type)
+  const baseDialogData = { text: '', open: false, showSpinner: false }
+  const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
+
+  const shouldDisplayCreatingDialog = () => {
+    if (!dialogData.open) return
+    const { text, showSpinner, onOk, onCancel } = dialogData
+
+    return (
+      <div className="dialog_container">
+        <Dialog text={text} showSpinner={showSpinner} onOk={onOk} onCancel={onCancel} />
+      </div>
+    )
+  }
+
+  const createPublicRoom = () => {
+    setDialogData({
+      open: true,
+      text: 'Creating your public room',
+      showSpinner: true
+    })
+  }
+
+  const createPrivateRoom = () => {
+    setDialogData({
+      open: true,
+      text: 'Creating your private room',
+      showSpinner: true
+    })
   }
 
   return (
@@ -38,12 +72,14 @@ const JoinWithACode = () => {
             <PaperchatOctagon />
           </div>
         </div>
+
         <div className={`screen ${bottom}`}>
           <div className={bottom_top}>
             <p>What room type do you want to create?</p>
           </div>
+
           <div className={option_cards}>
-            <div className={card}>
+            <div className={card} onClick={createPublicRoom}>
               <div className={card__inner}>
                 <div className={title_row}>
                   <div className={title}>Public</div>
@@ -59,12 +95,10 @@ const JoinWithACode = () => {
                     </svg>
                   </div>
                 </div>
-                <div className={description}>
-                  Your room will be listed and anyone can join
-                </div>
+                <div className={description}>Your room will be listed and anyone can join</div>
               </div>
             </div>
-            <div className={card}>
+            <div className={card} onClick={createPrivateRoom}>
               <div className={card__inner}>
                 <div className={title_row}>
                   <div className={title}>Private</div>
@@ -80,17 +114,18 @@ const JoinWithACode = () => {
                     </svg>
                   </div>
                 </div>
-                <div className={description}>
-                  Hidden room. Users join with an invitation code
-                </div>
+                <div className={description}>Hidden room. Users join with an invitation code</div>
               </div>
             </div>
           </div>
+
           <div className={bottom_bottom}>
             <div className={bottom_btn_container}>
               <Button onClick={() => router.push('/')} text="Cancel" />
             </div>
           </div>
+
+          {shouldDisplayCreatingDialog()}
         </div>
       </div>
     </div>

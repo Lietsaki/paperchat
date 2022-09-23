@@ -3,33 +3,43 @@ import Button from './Button'
 
 type DialogProps = {
   showSpinner?: boolean
-  hasOptions?: boolean
-  // text: string
+  text: string
+  onOk?: () => void
+  onCancel?: () => void
 }
 
-const MenuButton = ({
-  showSpinner = false,
-  hasOptions = true,
-}: DialogProps) => {
+const Dialog = ({ showSpinner = false, text, onOk, onCancel }: DialogProps) => {
   const cancel = () => {
-    console.log('user hit cancel')
+    if (!onCancel) return
+    onCancel()
     document.querySelector('.dialog_layer_1')?.classList.add('go_down')
   }
+
   const accept = () => {
-    console.log('user accepted')
+    if (!onOk) return
+    onOk()
     document.querySelector('.dialog_layer_1')?.classList.add('go_down')
   }
 
   const getOptions = () => {
-    if (hasOptions) {
+    if (onOk || onCancel) {
       return (
-        <div className="options">
-          <div className="options__left">
-            <Button text="Cancel" onClick={cancel} />
-          </div>
-          <div className="options__right">
-            <Button text="Accept" onClick={accept} />
-          </div>
+        <div className={`options ${onOk && onCancel ? 'justify_between' : ''}`}>
+          {onCancel ? (
+            <div className="options__left">
+              <Button text="Cancel" onClick={cancel} />
+            </div>
+          ) : (
+            ''
+          )}
+
+          {onOk ? (
+            <div className="options__right">
+              <Button text="Accept" onClick={accept} />
+            </div>
+          ) : (
+            ''
+          )}
         </div>
       )
     }
@@ -39,13 +49,9 @@ const MenuButton = ({
     <div className="dialog_layer_1 go_up">
       <div className="dialog_layer_2">
         <div className="dialog_content">
-          <div className="spinner-area-left">
-            {showSpinner ? <Spinner /> : null}
-          </div>
-          <div className="text">Do you want to download this?</div>
-          <div className="spinner-area-right">
-            {showSpinner ? <Spinner /> : null}
-          </div>
+          <div className="spinner-area-left">{showSpinner ? <Spinner /> : null}</div>
+          <div className="text">{text}</div>
+          <div className="spinner-area-right">{showSpinner ? <Spinner /> : null}</div>
 
           {getOptions()}
         </div>
@@ -54,4 +60,4 @@ const MenuButton = ({
   )
 }
 
-export default MenuButton
+export default Dialog
