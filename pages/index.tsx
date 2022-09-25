@@ -5,7 +5,7 @@ import UsernameInput from 'components/UsernameInput'
 import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectUsername, setUsername } from 'store/slices/userSlice'
+import { selectUser, setUsername } from 'store/slices/userSlice'
 import { usernameMinLength } from 'store/initializer'
 
 const {
@@ -26,7 +26,7 @@ const Home = () => {
   const [editingUsername, setEditingUsername] = useState(false)
   const [usernameAreaClasses, setUsernameAreaClasses] = useState(username_input)
 
-  const [usernameInputValue, setUsernameInputValue] = useState(useSelector(selectUsername))
+  const [usernameInputValue, setUsernameInputValue] = useState(useSelector(selectUser).username)
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
   const dispatch = useDispatch()
 

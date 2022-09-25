@@ -13,12 +13,13 @@ const Dialog = ({ showSpinner = false, text, onOk, onCancel }: DialogProps) => {
     if (!onCancel) return
     onCancel()
     document.querySelector('.dialog_layer_1')?.classList.add('go_down')
+    setTimeout(() => onCancel(), 400)
   }
 
   const accept = () => {
     if (!onOk) return
-    onOk()
     document.querySelector('.dialog_layer_1')?.classList.add('go_down')
+    setTimeout(() => onOk(), 400)
   }
 
   const getOptions = () => {

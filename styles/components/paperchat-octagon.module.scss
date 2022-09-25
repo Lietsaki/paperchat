@@ -15,6 +15,20 @@
     filter: blur(0.5px);
   }
 
+  @keyframes go-up {
+    0% {
+      max-height: 0;
+      min-height: 0;
+    }
+    100% {
+      max-height: 200px;
+    }
+  }
+
+  &.animate_growth {
+    animation: go-up 0.2s linear;
+  }
+
   &.paperchat_octagon {
     height: 12%;
     min-height: 12%;
@@ -76,20 +90,7 @@
     }
   }
 
-  @keyframes go-up {
-    0% {
-      max-height: 0;
-    }
-    100% {
-      max-height: 200px;
-    }
-  }
-
   &.message {
-    &.animate {
-      animation: go-up 0.2s linear;
-    }
-
     .octagon_outline {
       height: 98%;
       width: 99.4%;

@@ -1,4 +1,4 @@
-const getRoomName = (lastestName?: string) => {
+const getRoomCode = (lastestName?: string) => {
   if (!lastestName) return 'A'
   if (lastestName === 'Z') return 'A1'
   const unicodeAlphabetStart = 65
@@ -19,4 +19,4 @@ const getRoomName = (lastestName?: string) => {
   }
 }
 
-export default getRoomName
+export default getRoomCode

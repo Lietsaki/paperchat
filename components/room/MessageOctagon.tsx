@@ -1,8 +1,14 @@
 import { useRef, useState } from 'react'
 import styles from 'styles/components/paperchat-octagon.module.scss'
 
-const { octagon_outside, octagon_outline, octagon_content, message, short_message, animate } =
-  styles
+const {
+  octagon_outside,
+  octagon_outline,
+  octagon_content,
+  message,
+  short_message,
+  animate_growth
+} = styles
 
 type messageOctagonProps = { img_uri: string; color: string; id: string; shouldAnimate: boolean }
 
@@ -25,7 +31,7 @@ const messageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonPro
   return (
     <div
       className={`${octagon_outside} ${message} ${shortMessage ? short_message : ''} ${
-        shouldAnimate ? animate : ''
+        shouldAnimate ? animate_growth : ''
       }`}
       id={id}
     >

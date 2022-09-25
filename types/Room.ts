@@ -17,6 +17,12 @@ type contentIndicators = {
 
 type canvasData = { dataUrl: string; height: number }
 
+type localStorageRoom = {
+  code: string
+  id: string
+  color: string
+}
+
 // Types used in Firebase Realtime DB
 type room = {
   code: string
@@ -24,8 +30,25 @@ type room = {
   privateCode?: string
 }
 
-type user = {
-  username: string
+type firebaseMessage = {
+  imageURL?: string
+  author: string
+  userEntering?: string
+  userLeaving?: string
+  localID: string
+  createdOn: number
 }
 
-export type { roomContent, contentIndicators, canvasData, room, user }
+type queryResult<T> = {
+  [key: string]: T
+}
+
+export type {
+  roomContent,
+  contentIndicators,
+  canvasData,
+  room,
+  firebaseMessage,
+  queryResult,
+  localStorageRoom
+}

@@ -10,6 +10,7 @@ type canvasProps = {
   usingThickStroke: boolean
   usingPencil: boolean
   roomColor: string
+  username: string
 }
 
 interface textData {
@@ -22,9 +23,8 @@ interface textData {
   keyHeight?: number
 }
 
-const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
+const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasProps) => {
   // REFS
-  const outlineRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -262,7 +262,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
       ctx.fillStyle = roomColor
       ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       const firstLineY = getPercentage(80, divisionsHeight)
-      ctx.fillText('Johnny', 8, firstLineY - 1.5)
+      ctx.fillText(username, 8, firstLineY - 1.5)
       setKeyPos({ x: getStartingX(), y: firstLineY })
     }
 
@@ -272,8 +272,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
 
   const draw = (e: React.PointerEvent) => {
     if (draggingKey) return
-    const usedMouseNoLeftBtn = e.pointerType === 'mouse' && e.buttons !== 1
-    if (!ctx || usedMouseNoLeftBtn || isWithinUsername(pos)) return setPos(getPosition(e))
+    const pointerIsMakingContact = e.buttons === 1
+    if (!ctx || !pointerIsMakingContact || isWithinUsername(pos)) return setPos(getPosition(e))
 
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
@@ -427,7 +427,6 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   // CANVAS SETUP - Happens on mounted
   useEffect(() => {
     const canvas = canvasRef.current!
-    outlineRef.current!.style.backgroundColor = roomColor
 
     if (!canvas.getContext) return
     canvas.width = containerRef.current!.offsetWidth * (window.devicePixelRatio || 1)
@@ -482,7 +481,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor }: canvasProps) => {
   }, [keyPos, textHistory])
 
   return (
-    <div ref={outlineRef} className={canvas_outline}>
+    <div className={`${canvas_outline} active_bg_color`}>
       <div ref={containerRef} className={canvas_content}>
         <canvas
           onPointerDown={drawDot}

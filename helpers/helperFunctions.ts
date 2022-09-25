@@ -2,11 +2,13 @@ import { positionObj } from 'types/Position'
 
 const getRandomNumber = (min: number, max: number) => Math.round(Math.random() * (max - min) + min)
 
-const getSimpleId = () => Date.now() + '' + (getRandomNumber(1, 99) + '')
+const getSimpleId = () => Date.now() + '' + (getRandomNumber(1, 999) + '')
 
 const getRandomColor = () => {
-  return `hsla(${getRandomNumber(0, 255)},
-   ${getRandomNumber(30, 65)}%, ${getRandomNumber(40, 65)}%, 1.0)`
+  return `hsla(${getRandomNumber(0, 255)}, ${getRandomNumber(30, 65)}%, ${getRandomNumber(
+    40,
+    65
+  )}%, 1.0)`
 }
 
 const getPercentage = (percentage: number, of: number) => Math.floor((percentage / 100) * of)
@@ -80,7 +82,12 @@ const getHighestAndLowestPoints = (
 }
 
 const createActiveColorClass = (hslaColor: string) => {
+  const styleID = 'active_color_style'
+  const previousStyle = document.getElementById(styleID)
+  if (previousStyle) previousStyle.remove()
+
   const style = document.createElement('style')
+  style.id = styleID
 
   style.innerHTML = `
     .active_color {
@@ -93,6 +100,10 @@ const createActiveColorClass = (hslaColor: string) => {
       filter: brightness(0.8);
       left: 0;
       top: 0;
+    }
+
+    .active_bg_color {
+      background-color: ${hslaColor};
     }
     
     .active_color.bright {
@@ -127,6 +138,27 @@ const willContainerBeOverflowed = (
   return childrenHeight > containerHeight
 }
 
+const getImageData = (url: string) => {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    let img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = () => reject()
+    img.src = url
+  })
+}
+
+const isValidColor = (color: string) => {
+  if (typeof color !== 'string' || !color || !color.startsWith('hsla') || !color.endsWith('1.0)'))
+    return false
+
+  const testElement = document.createElement('div')
+  testElement.style.borderColor = color
+  const colorToTest = testElement.style.borderColor
+
+  if (colorToTest.length == 0) return false
+  return true
+}
+
 export {
   getRandomNumber,
   getSimpleId,
@@ -135,5 +167,7 @@ export {
   dropPosOffset,
   getHighestAndLowestPoints,
   createActiveColorClass,
-  willContainerBeOverflowed
+  willContainerBeOverflowed,
+  getImageData,
+  isValidColor
 }

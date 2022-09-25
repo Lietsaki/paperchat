@@ -5,6 +5,8 @@ import { useRouter } from 'next/router'
 import page_styles from 'styles/create-room/create-room.module.scss'
 import Dialog from 'components/Dialog'
 import { useState } from 'react'
+import { createRoom } from 'firebase-config/realtimeDB'
+import { dialogOptions } from 'types/Dialog'
 
 const {
   top,
@@ -19,13 +21,6 @@ const {
 } = general_styles
 
 const { option_cards, card, card__inner, title_row, title, icon, description } = page_styles
-type dialogOptions = {
-  text: string
-  open: boolean
-  showSpinner: boolean
-  onOk?: () => void
-  onCancel?: () => void
-}
 
 const JoinWithACode = () => {
   const router = useRouter()
@@ -43,19 +38,36 @@ const JoinWithACode = () => {
     )
   }
 
-  const createPublicRoom = () => {
+  const createPublicRoom = async () => {
     setDialogData({
       open: true,
       text: 'Creating your public room',
       showSpinner: true
     })
+    const roomID = await createRoom(false)
+    if (roomID === 'error') return showErrorDialog()
+    setDialogData(baseDialogData)
+    router.push(`room/${roomID}`)
   }
 
-  const createPrivateRoom = () => {
+  const createPrivateRoom = async () => {
     setDialogData({
       open: true,
       text: 'Creating your private room',
       showSpinner: true
+    })
+    const roomID = await createRoom(true)
+    if (roomID === 'error') return showErrorDialog()
+    setDialogData(baseDialogData)
+    router.push(`room/${roomID}`)
+  }
+
+  const showErrorDialog = () => {
+    setDialogData({
+      open: true,
+      text: 'There was an error. Please try again later.',
+      showSpinner: false,
+      onOk: () => setDialogData(baseDialogData)
     })
   }
 

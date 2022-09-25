@@ -9,15 +9,25 @@ import ContentIndicator from 'components/room/ContentIndicator'
 import { useRouter } from 'next/router'
 import { useState, useEffect, useRef } from 'react'
 import {
-  getRandomColor,
   getSimpleId,
   createActiveColorClass,
-  willContainerBeOverflowed
+  willContainerBeOverflowed,
+  getImageData,
+  isValidColor
 } from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
-import { roomContent, canvasData } from 'types/Room'
+import { roomContent, canvasData, firebaseMessage } from 'types/Room'
+import { dialogOptions } from 'types/Dialog'
 import emitter from 'helpers/MittEmitter'
-import { createRoom } from 'firebase-config/realtimeDB'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectUser } from 'store/slices/userSlice'
+import {
+  getCurrentRoom,
+  startMessageListener,
+  sendMessageToRoom,
+  getRoomMessages
+} from 'firebase-config/realtimeDB'
+import Dialog from 'components/Dialog'
 
 const { top, left_column, right_column, top_section, bottom_section } = general_styles
 
@@ -47,13 +57,20 @@ const {
 } = page_styles
 
 const Room = () => {
+  const defaultColor = 'hsla(204, 44%, 52%, 1.0)'
   const router = useRouter()
   const [usingPencil, setUsingPencil] = useState(true)
   const [usingThickStroke, setUsingThickStroke] = useState(true)
   const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('Alphanumeric')
-  const [roomContent, setRoomContent] = useState<roomContent[]>([])
-  const [roomColor, setRoomColor] = useState(getRandomColor())
+  const [roomContent, setRoomContent] = useState<roomContent[]>([
+    { paperchatOctagon: true, id: 'paperchat_octagon' }
+  ])
+  const [roomColor, setRoomColor] = useState(defaultColor)
+  const [user] = useState(useSelector(selectUser))
   const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const baseDialogData = { text: '', open: false, showSpinner: false }
+  const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
+  let roomCode = ''
 
   const clearCanvas = () => emitter.emit('clearCanvas', '')
   const typeKey = (key: string) => emitter.emit('typeKey', key)
@@ -62,28 +79,40 @@ const Room = () => {
   const typeDel = () => emitter.emit('typeDel', '')
   const sendMessage = () => emitter.emit('sendMessage', '')
 
-  const receiveCanvasData = ({ dataUrl, height }: canvasData) => {
-    const messagesWillTriggerScroll = willContainerBeOverflowed(
-      messagesContainerRef.current!,
-      0,
-      4.5,
-      height
-    )
+  useEffect(() => {
+    showLoadingDialog()
+    const currentRoomData = getCurrentRoom()
+    if (!currentRoomData) {
+      console.log('HANDLE CURRENT EMPTY CURRENT ROOM')
+      return
+    }
+    const { code, color } = currentRoomData
+    roomCode = code
+    if (color && isValidColor(color)) setRoomColor(color)
 
-    setRoomContent([
-      ...roomContent,
-      { message: dataUrl, id: getSimpleId(), animate: !messagesWillTriggerScroll }
-    ])
-  }
+    const checkForPreviousMessages = async () => {
+      const messages: firebaseMessage[] = await getRoomMessages()
+      const parsedMessages = await Promise.all(
+        messages.map((message) => parseToRoomContent(message, true))
+      )
+      setRoomContent([...roomContent, ...parsedMessages])
+      setTimeout(() => scrollContent(), 200)
+      startMessageListener()
+      setDialogData(baseDialogData)
+    }
+    checkForPreviousMessages()
+  }, [])
 
   useEffect(() => createActiveColorClass(roomColor), [roomColor])
 
   useEffect(() => {
     emitter.on('canvasData', receiveCanvasData)
+    emitter.on('receivedFirebaseMessage', receiveFirebaseMessage)
     setTimeout(() => scrollContent(), 100)
 
     return () => {
       emitter.off('canvasData')
+      emitter.off('receivedFirebaseMessage')
     }
   }, [roomContent])
 
@@ -92,13 +121,56 @@ const Room = () => {
     container!.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
   }
 
-  useEffect(() => {
+  const parseToRoomContent = async (message: firebaseMessage, animate?: boolean) => {
+    const { imageURL, userEntering, userLeaving, localID } = message
+
+    const roomMessage: roomContent = { id: localID }
+
+    let messageHeight = 0
+
+    if (userEntering || userLeaving) {
+      if (userEntering) roomMessage.userEntering = userEntering
+      if (userLeaving) roomMessage.userLeaving = userLeaving
+      messageHeight = window.innerWidth > 500 ? 43 : 28
+    }
+
+    if (imageURL) {
+      roomMessage.message = imageURL
+      const img = await getImageData(imageURL)
+      messageHeight = img.height
+    }
+
+    roomMessage.animate =
+      animate !== undefined
+        ? animate
+        : !willContainerBeOverflowed(messagesContainerRef.current!, 0, 4.5, messageHeight)
+
+    return roomMessage
+  }
+
+  const receiveFirebaseMessage = async (receivedMessage: firebaseMessage) => {
+    const isAlreadyPresent = roomContent.find((item) => item.id === receivedMessage.localID)
+    if (isAlreadyPresent) return
+
+    const roomMessage = await parseToRoomContent(receivedMessage)
+    setRoomContent([...roomContent, roomMessage])
+  }
+
+  const receiveCanvasData = ({ dataUrl, height }: canvasData) => {
+    const messagesWillTriggerScroll = willContainerBeOverflowed(
+      messagesContainerRef.current!,
+      0,
+      4.5,
+      height
+    )
+    const localID = getSimpleId()
+    sendMessageToRoom(dataUrl, localID)
+
     setRoomContent([
       ...roomContent,
-      { paperchatOctagon: true, id: 'paperchat_octagon' },
-      { userEntering: 'Johnny', id: getSimpleId() }
+      { message: dataUrl, id: localID, animate: !messagesWillTriggerScroll }
     ])
-  }, [])
+  }
 
   const getRoomContent = () => {
     return roomContent.map((item, i) => {
@@ -109,6 +181,7 @@ const Room = () => {
             id={item.id}
             userEntering={item.userEntering}
             userLeaving={item.userLeaving}
+            shouldAnimate={!!item.animate}
           />
         )
       }
@@ -131,6 +204,25 @@ const Room = () => {
     })
   }
 
+  const shouldDisplayDialog = () => {
+    if (!dialogData.open) return
+    const { text, showSpinner, onOk, onCancel } = dialogData
+
+    return (
+      <div className="dialog_container">
+        <Dialog text={text} showSpinner={showSpinner} onOk={onOk} onCancel={onCancel} />
+      </div>
+    )
+  }
+
+  const showLoadingDialog = () => {
+    setDialogData({
+      open: true,
+      text: 'Loading...',
+      showSpinner: true
+    })
+  }
+
   return (
     <div className="main">
       <div className="screens_section">
@@ -142,9 +234,6 @@ const Room = () => {
           </div>
 
           <div ref={messagesContainerRef} className={`${right_column}`}>
-            <div>
-              <button onClick={createRoom}>createRoom</button>
-            </div>
             {getRoomContent()}
           </div>
         </div>
@@ -247,6 +336,7 @@ const Room = () => {
             <div className={canvas_area}>
               <div className={canvas_bg}>
                 <Canvas
+                  username={user.username}
                   usingPencil={usingPencil}
                   roomColor={roomColor}
                   usingThickStroke={usingThickStroke}
@@ -293,6 +383,8 @@ const Room = () => {
               </div>
             </div>
           </div>
+
+          {shouldDisplayDialog()}
         </div>
       </div>
     </div>

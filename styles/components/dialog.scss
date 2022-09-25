@@ -102,6 +102,7 @@
 
 .go_down {
   animation: goDown 0.3s linear;
+  transform: translateY(260px);
 }
 
 @keyframes goUp {
