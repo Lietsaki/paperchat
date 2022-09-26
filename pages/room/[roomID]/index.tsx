@@ -22,10 +22,11 @@ import emitter from 'helpers/MittEmitter'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser } from 'store/slices/userSlice'
 import {
-  getCurrentRoom,
+  getRoomData,
   startMessageListener,
   sendMessageToRoom,
-  getRoomMessages
+  getRoomMessages,
+  leaveRoom
 } from 'firebase-config/realtimeDB'
 import Dialog from 'components/Dialog'
 
@@ -81,12 +82,12 @@ const Room = () => {
 
   useEffect(() => {
     showLoadingDialog()
-    const currentRoomData = getCurrentRoom()
-    if (!currentRoomData) {
+    const createdRoomData = getRoomData()
+    if (!createdRoomData) {
       console.log('HANDLE CURRENT EMPTY CURRENT ROOM')
       return
     }
-    const { code, color } = currentRoomData
+    const { code, color } = createdRoomData
     roomCode = code
     if (color && isValidColor(color)) setRoomColor(color)
 
@@ -223,6 +224,26 @@ const Room = () => {
     })
   }
 
+  const showAskExitRoomDialog = () => {
+    setDialogData({
+      open: true,
+      text: 'Leave room?',
+      showSpinner: false,
+      onCancel: () => {
+        setTimeout(() => {
+          setDialogData(baseDialogData)
+        }, 400)
+      },
+      onOk: () => exitRoom()
+    })
+  }
+
+  const exitRoom = () => {
+    leaveRoom()
+
+    // router.push('/')
+  }
+
   return (
     <div className="main">
       <div className="screens_section">
@@ -327,7 +348,7 @@ const Room = () => {
             </div>
           </div>
 
-          <div className={`${close_btn} ${active_on_click}`}>
+          <div className={`${close_btn} ${active_on_click}`} onClick={showAskExitRoomDialog}>
             <img src="/tool-buttons/close.png" alt="close button" />
             <div className="active_color bright"></div>
           </div>

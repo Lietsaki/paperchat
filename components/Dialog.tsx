@@ -11,9 +11,8 @@ type DialogProps = {
 const Dialog = ({ showSpinner = false, text, onOk, onCancel }: DialogProps) => {
   const cancel = () => {
     if (!onCancel) return
-    onCancel()
     document.querySelector('.dialog_layer_1')?.classList.add('go_down')
-    setTimeout(() => onCancel(), 400)
+    onCancel()
   }
 
   const accept = () => {

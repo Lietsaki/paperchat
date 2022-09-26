@@ -197,7 +197,10 @@ const ContentIndicator = ({ roomContent }: ContentIndicatorProps) => {
     setupObserver()
     setTimeout(() => scrollMiddleIndicators(), 50)
 
-    return () => observer?.disconnect()
+    return () => {
+      observer?.disconnect()
+      observer = null
+    }
   }, [
     roomContent,
     overflowed1OldestIndicator,
