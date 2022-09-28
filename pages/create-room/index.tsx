@@ -3,10 +3,10 @@ import PaperchatOctagon from 'components/PaperchatOctagon'
 import Button from 'components/Button'
 import { useRouter } from 'next/router'
 import page_styles from 'styles/create-room/create-room.module.scss'
-import Dialog from 'components/Dialog'
 import { useState } from 'react'
 import { createRoom } from 'firebase-config/realtimeDB'
 import { dialogOptions } from 'types/Dialog'
+import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 
 const {
   top,
@@ -24,19 +24,7 @@ const { option_cards, card, card__inner, title_row, title, icon, description } =
 
 const JoinWithACode = () => {
   const router = useRouter()
-  const baseDialogData = { text: '', open: false, showSpinner: false }
   const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
-
-  const shouldDisplayCreatingDialog = () => {
-    if (!dialogData.open) return
-    const { text, showSpinner, onOk, onCancel } = dialogData
-
-    return (
-      <div className="dialog_container">
-        <Dialog text={text} showSpinner={showSpinner} onOk={onOk} onCancel={onCancel} />
-      </div>
-    )
-  }
 
   const createPublicRoom = async () => {
     setDialogData({
@@ -67,7 +55,8 @@ const JoinWithACode = () => {
       open: true,
       text: 'There was an error. Please try again later.',
       showSpinner: false,
-      onOk: () => setDialogData(baseDialogData)
+      rightBtnFn: () => setDialogData(baseDialogData),
+      rightBtnText: 'Accept'
     })
   }
 
@@ -137,7 +126,7 @@ const JoinWithACode = () => {
             </div>
           </div>
 
-          {shouldDisplayCreatingDialog()}
+          {shouldDisplayDialog(dialogData)}
         </div>
       </div>
     </div>

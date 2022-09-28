@@ -27,7 +27,9 @@ type localStorageRoom = {
 type room = {
   code: string
   users: string[]
+  usersNumber: number
   privateCode?: string
+  id?: string
 }
 
 type firebaseMessage = {

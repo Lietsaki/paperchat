@@ -6,12 +6,13 @@
   height: 75px;
   width: 80%;
   display: grid;
-  grid-template-columns: 16% 50% 34%;
+  grid-template-columns: 18% 48% 34%;
   filter: blur(0.3px);
   position: relative;
   @include ds-font;
   font-size: 30px;
   overflow: hidden;
+  margin: 10px auto;
 
   &:hover {
     cursor: pointer;
@@ -37,9 +38,8 @@
       bottom: -2%;
       color: $clear-bg;
       filter: drop-shadow(3px 3px 2px $transparent-gray);
-      text-shadow: 2px 0 $dark-gray, -2px 0 $dark-gray, 0 2px $dark-gray,
-        0 -2px $dark-gray, 1px 1px $dark-gray, -1px -1px $dark-gray,
-        1px -1px $dark-gray, -1px 1px $dark-gray;
+      text-shadow: 2px 0 $dark-gray, -2px 0 $dark-gray, 0 2px $dark-gray, 0 -2px $dark-gray,
+        1px 1px $dark-gray, -1px -1px $dark-gray, 1px -1px $dark-gray, -1px 1px $dark-gray;
     }
 
     .pencil {

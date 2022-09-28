@@ -4,7 +4,7 @@ import Button from 'components/Button'
 import { useRouter } from 'next/router'
 import JoinRoomInput from 'components/JoinRoomInput'
 import page_styles from 'styles/join-room/join-room.module.scss'
-import Dialog from 'components/Dialog'
+// import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 
 const {
   top,
@@ -45,7 +45,7 @@ const JoinWithACode = () => {
           </div>
           <div className={midsection}>
             {/* <JoinRoomInput handleCodeSubmit={join} /> */}
-            <Dialog />
+            {/* <Dialog /> */}
           </div>
           <div className={bottom_bottom}>
             <div className={bottom_btn_container}>

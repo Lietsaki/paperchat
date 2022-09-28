@@ -1,41 +1,61 @@
 import Spinner from './Spinner'
 import Button from './Button'
+import { dialogOptions } from 'types/Dialog'
 
 type DialogProps = {
-  showSpinner?: boolean
   text: string
-  onOk?: () => void
-  onCancel?: () => void
+  showSpinner?: boolean
+  leftBtnText?: string
+  rightBtnText?: string
+  leftBtnFn?: () => void
+  rightBtnFn?: () => void
+  hideOnLeftBtn?: boolean
+  hideOnRightBtn?: boolean
 }
 
-const Dialog = ({ showSpinner = false, text, onOk, onCancel }: DialogProps) => {
-  const cancel = () => {
-    if (!onCancel) return
-    document.querySelector('.dialog_layer_1')?.classList.add('go_down')
-    onCancel()
+const Dialog = ({
+  showSpinner,
+  text,
+  leftBtnText,
+  rightBtnText,
+  leftBtnFn,
+  rightBtnFn,
+  hideOnLeftBtn = true,
+  hideOnRightBtn = true
+}: DialogProps) => {
+  const triggerLeftBtn = () => {
+    if (!leftBtnFn) return
+    if (hideOnLeftBtn) {
+      document.querySelector('.dialog_layer_1')?.classList.add('go_down')
+      return setTimeout(() => leftBtnFn(), 400)
+    }
+    leftBtnFn()
   }
 
-  const accept = () => {
-    if (!onOk) return
-    document.querySelector('.dialog_layer_1')?.classList.add('go_down')
-    setTimeout(() => onOk(), 400)
+  const triggerRightBtn = () => {
+    if (!rightBtnFn) return
+    if (hideOnRightBtn) {
+      document.querySelector('.dialog_layer_1')?.classList.add('go_down')
+      return setTimeout(() => rightBtnFn(), 400)
+    }
+    rightBtnFn()
   }
 
   const getOptions = () => {
-    if (onOk || onCancel) {
+    if (leftBtnFn || rightBtnFn) {
       return (
-        <div className={`options ${onOk && onCancel ? 'justify_between' : ''}`}>
-          {onCancel ? (
+        <div className={`options ${leftBtnFn && rightBtnFn ? 'justify_between_around' : ''}`}>
+          {leftBtnFn ? (
             <div className="options__left">
-              <Button text="Cancel" onClick={cancel} />
+              <Button text={leftBtnText!} onClick={triggerLeftBtn} />
             </div>
           ) : (
             ''
           )}
 
-          {onOk ? (
+          {rightBtnFn ? (
             <div className="options__right">
-              <Button text="Accept" onClick={accept} />
+              <Button text={rightBtnText!} onClick={triggerRightBtn} />
             </div>
           ) : (
             ''
@@ -60,4 +80,17 @@ const Dialog = ({ showSpinner = false, text, onOk, onCancel }: DialogProps) => {
   )
 }
 
-export default Dialog
+const baseDialogData: dialogOptions = { text: '', open: false, showSpinner: false }
+
+const shouldDisplayDialog = (dialogData: dialogOptions) => {
+  const { open, ...restOfProps } = dialogData
+  if (!open) return
+
+  return (
+    <div className="dialog_container">
+      <Dialog {...restOfProps} />
+    </div>
+  )
+}
+
+export { Dialog, baseDialogData, shouldDisplayDialog }

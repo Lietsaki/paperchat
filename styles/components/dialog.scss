@@ -72,24 +72,30 @@
         justify-content: center;
 
         div {
-          width: 100px;
+          width: auto;
+          min-width: 100px;
 
           button {
             @include flexcenter;
             font-size: 20px;
           }
+        }
 
-          @include phones {
-            width: 85px;
+        @include phones {
+          grid-column: 1 / -1;
+
+          div {
+            width: auto;
+            min-width: 88px;
 
             button {
-              font-size: 18px;
+              font-size: 16px;
             }
           }
         }
 
         @include small-phones {
-          height: 20px;
+          height: 22px;
         }
       }
     }

@@ -98,8 +98,16 @@ a {
   }
 }
 
-.justify_between {
+.justify_between_around {
   justify-content: space-between !important;
+
+  @include phones {
+    justify-content: space-around !important;
+  }
+}
+
+.justify_evenly {
+  justify-content: space-evenly !important;
 }
 
 .d_none {

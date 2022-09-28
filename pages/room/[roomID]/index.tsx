@@ -17,7 +17,6 @@ import {
 } from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
 import { roomContent, canvasData, firebaseMessage } from 'types/Room'
-import { dialogOptions } from 'types/Dialog'
 import emitter from 'helpers/MittEmitter'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser } from 'store/slices/userSlice'
@@ -28,7 +27,8 @@ import {
   getRoomMessages,
   leaveRoom
 } from 'firebase-config/realtimeDB'
-import Dialog from 'components/Dialog'
+import { dialogOptions } from 'types/Dialog'
+import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 
 const { top, left_column, right_column, top_section, bottom_section } = general_styles
 
@@ -69,7 +69,7 @@ const Room = () => {
   const [roomColor, setRoomColor] = useState(defaultColor)
   const [user] = useState(useSelector(selectUser))
   const messagesContainerRef = useRef<HTMLDivElement>(null)
-  const baseDialogData = { text: '', open: false, showSpinner: false }
+
   const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
   let roomCode = ''
 
@@ -84,7 +84,8 @@ const Room = () => {
     showLoadingDialog()
     const createdRoomData = getRoomData()
     if (!createdRoomData) {
-      console.log('HANDLE CURRENT EMPTY CURRENT ROOM')
+      console.log('HANDLE CURRENTLY EMPTY CURRENT ROOM')
+      // TODO: JOIN ROOM INSTEAD: check if it exists, then join (handle the case of it being private). If it doesn't exist, offer the user to create a new room.
       return
     }
     const { code, color } = createdRoomData
@@ -92,13 +93,13 @@ const Room = () => {
     if (color && isValidColor(color)) setRoomColor(color)
 
     const checkForPreviousMessages = async () => {
-      const messages: firebaseMessage[] = await getRoomMessages()
+      const messages: firebaseMessage[] = await getRoomMessages(false)
       const parsedMessages = await Promise.all(
         messages.map((message) => parseToRoomContent(message, true))
       )
       setRoomContent([...roomContent, ...parsedMessages])
       setTimeout(() => scrollContent(), 200)
-      startMessageListener()
+      startMessageListener(false)
       setDialogData(baseDialogData)
     }
     checkForPreviousMessages()
@@ -205,17 +206,6 @@ const Room = () => {
     })
   }
 
-  const shouldDisplayDialog = () => {
-    if (!dialogData.open) return
-    const { text, showSpinner, onOk, onCancel } = dialogData
-
-    return (
-      <div className="dialog_container">
-        <Dialog text={text} showSpinner={showSpinner} onOk={onOk} onCancel={onCancel} />
-      </div>
-    )
-  }
-
   const showLoadingDialog = () => {
     setDialogData({
       open: true,
@@ -229,12 +219,15 @@ const Room = () => {
       open: true,
       text: 'Leave room?',
       showSpinner: false,
-      onCancel: () => {
-        setTimeout(() => {
-          setDialogData(baseDialogData)
-        }, 400)
+      leftBtnText: 'Cancel',
+      rightBtnText: 'Accept',
+      rightBtnFn: () => {
+        setDialogData(baseDialogData)
+        console.log('exit room!')
       },
-      onOk: () => exitRoom()
+      leftBtnFn: () => {
+        setDialogData(baseDialogData)
+      }
     })
   }
 
@@ -405,7 +398,7 @@ const Room = () => {
             </div>
           </div>
 
-          {shouldDisplayDialog()}
+          {shouldDisplayDialog(dialogData)}
         </div>
       </div>
     </div>
