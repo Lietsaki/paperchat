@@ -48,7 +48,7 @@
   }
 
   @include phones {
-    font-size: 20px;
+    font-size: 18px;
 
     .button_inner {
       padding-bottom: 2px;
@@ -60,6 +60,22 @@
 
     .button_inner {
       padding-bottom: 3px;
+    }
+  }
+
+  &.smaller_font {
+    font-size: 22px;
+
+    @include phones {
+      font-size: 16px;
+    }
+
+    @include small-phones {
+      font-size: 14px;
+
+      .button_inner {
+        padding-bottom: 3px;
+      }
     }
   }
 }

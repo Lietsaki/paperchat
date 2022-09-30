@@ -115,7 +115,13 @@ const FindRooms = () => {
 
     return (
       <div className={bottom_btn_container}>
-        <Button onClick={() => router.push('/')} text="Retry" />
+        <Button
+          name="roomsQuery"
+          debounce={30}
+          debounceMounted
+          onClick={() => searchRooms()}
+          text="Search again"
+        />
       </div>
     )
   }
@@ -147,7 +153,7 @@ const FindRooms = () => {
 
           <div className={`${bottom_bottom} ${rooms.length ? 'justify_evenly' : ''}`}>
             <div className={bottom_btn_container}>
-              <Button debounce={30} onClick={() => router.push('/')} text="Cancel" />
+              <Button onClick={() => router.push('/')} text="Cancel" />
             </div>
 
             {renderRetryBtn()}

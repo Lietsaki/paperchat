@@ -113,3 +113,7 @@ a {
 .d_none {
   display: none;
 }
+
+.disabled_opacity {
+  filter: opacity(0.8);
+}
