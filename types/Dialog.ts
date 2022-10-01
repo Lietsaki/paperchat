@@ -1,13 +1,38 @@
+type dialogDebouncedActionNames = 'roomSearch' | 'retryRoomSearch'
+
 type dialogOptions = {
-  text: string
   open: boolean
+  text: string
   showSpinner: boolean
+
   leftBtnText?: string
-  rightBtnText?: string
   leftBtnFn?: () => void
-  rightBtnFn?: () => void
   hideOnLeftBtn?: boolean
+
+  rightBtnText?: string
+  rightBtnFn?: () => void
   hideOnRightBtn?: boolean
+
+  rightBtnDebounce?: number
+  rightBtnName?: dialogDebouncedActionNames
+  rightBtnDebounceMounted?: boolean
 }
 
-export type { dialogOptions }
+type DialogProps = {
+  text: string
+  showSpinner?: boolean
+
+  leftBtnText?: string
+  leftBtnFn?: () => void
+  hideOnLeftBtn?: boolean
+
+  rightBtnText?: string
+  rightBtnFn?: () => void
+  hideOnRightBtn?: boolean
+
+  rightBtnDebounce?: number
+  rightBtnName?: dialogDebouncedActionNames
+  rightBtnDebounceMounted?: boolean
+}
+
+export type { dialogOptions, DialogProps, dialogDebouncedActionNames }

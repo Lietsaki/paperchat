@@ -1,27 +1,22 @@
 import Spinner from './Spinner'
 import Button from './Button'
-import { dialogOptions } from 'types/Dialog'
-
-type DialogProps = {
-  text: string
-  showSpinner?: boolean
-  leftBtnText?: string
-  rightBtnText?: string
-  leftBtnFn?: () => void
-  rightBtnFn?: () => void
-  hideOnLeftBtn?: boolean
-  hideOnRightBtn?: boolean
-}
+import { dialogOptions, DialogProps } from 'types/Dialog'
 
 const Dialog = ({
   showSpinner,
   text,
+
   leftBtnText,
-  rightBtnText,
   leftBtnFn,
-  rightBtnFn,
   hideOnLeftBtn = true,
-  hideOnRightBtn = true
+
+  rightBtnText,
+  rightBtnFn,
+  hideOnRightBtn = true,
+
+  rightBtnDebounce,
+  rightBtnName,
+  rightBtnDebounceMounted
 }: DialogProps) => {
   const triggerLeftBtn = () => {
     if (!leftBtnFn) return
@@ -45,17 +40,23 @@ const Dialog = ({
     if (leftBtnFn || rightBtnFn) {
       return (
         <div className={`options ${leftBtnFn && rightBtnFn ? 'justify_between_around' : ''}`}>
-          {leftBtnFn ? (
+          {leftBtnFn && leftBtnText ? (
             <div className="options__left">
-              <Button text={leftBtnText!} onClick={triggerLeftBtn} />
+              <Button text={leftBtnText} onClick={triggerLeftBtn} />
             </div>
           ) : (
             ''
           )}
 
-          {rightBtnFn ? (
+          {rightBtnFn && rightBtnText ? (
             <div className="options__right">
-              <Button text={rightBtnText!} onClick={triggerRightBtn} />
+              <Button
+                text={rightBtnText}
+                onClick={triggerRightBtn}
+                debounce={rightBtnDebounce}
+                name={rightBtnName}
+                debounceMounted={rightBtnDebounceMounted}
+              />
             </div>
           ) : (
             ''

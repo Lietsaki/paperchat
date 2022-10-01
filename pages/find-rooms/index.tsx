@@ -59,11 +59,15 @@ const FindRooms = () => {
   const showNoRoomsDialog = () => {
     setDialogData({
       open: true,
-      text: 'Found no rooms. ',
+      text: 'Found no rooms.',
       showSpinner: false,
-      rightBtnText: 'Search again',
+      rightBtnText: 'Retry',
       rightBtnFn: () => searchRooms(),
       hideOnRightBtn: false,
+
+      rightBtnDebounce: 20,
+      rightBtnName: 'retryRoomSearch',
+      rightBtnDebounceMounted: true,
 
       leftBtnText: 'Create room',
       leftBtnFn: () => createPublicRoom(),
@@ -116,7 +120,7 @@ const FindRooms = () => {
     return (
       <div className={bottom_btn_container}>
         <Button
-          name="roomsQuery"
+          name="roomSearch"
           debounce={30}
           debounceMounted
           onClick={() => searchRooms()}

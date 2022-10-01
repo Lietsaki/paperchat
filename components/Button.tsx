@@ -1,5 +1,6 @@
 import styles from 'styles/components/button.module.scss'
 import { useState, useEffect } from 'react'
+import { dialogDebouncedActionNames } from 'types/Dialog'
 
 const { button_outer, button_inner, smaller_font } = styles
 
@@ -7,7 +8,7 @@ type ButtonProps = {
   text: string
   onClick: () => void
   debounce?: number
-  name?: string
+  name?: dialogDebouncedActionNames
   debounceMounted?: boolean
 }
 
@@ -17,16 +18,16 @@ const Button = ({ text, onClick, name, debounce = 0, debounceMounted }: ButtonPr
   useEffect(() => {
     if (debounceMounted && debounce && name) {
       const latestDebounce = localStorage.getItem(name)
-      setTime(latestDebounce ? Number(latestDebounce) : debounce)
+      setTime(Number(latestDebounce) ? Number(latestDebounce) : debounce)
     }
   }, [])
 
   useEffect(() => {
-    if (!time) return
+    if (!time || !name) return
 
     setTimeout(() => {
       setTime(time - 1)
-      localStorage.setItem(name, time - 1)
+      localStorage.setItem(name, time - 1 + '')
     }, 1000)
   }, [time])
 
