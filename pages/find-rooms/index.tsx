@@ -106,7 +106,7 @@ const FindRooms = () => {
               key={room.id}
               code={room.code}
               usersNumber={room.usersNumber}
-              onClick={() => attemptJoin(room.id!)}
+              onClick={() => goToRoom(room.id!)}
             />
           )
         })}
@@ -130,9 +130,7 @@ const FindRooms = () => {
     )
   }
 
-  const attemptJoin = async (roomID: string) => {
-    console.log('you want to join this room', roomID)
-  }
+  const goToRoom = async (roomID: string) => router.push('room/' + roomID)
 
   return (
     <div className="main">

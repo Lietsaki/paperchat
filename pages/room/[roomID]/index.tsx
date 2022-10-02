@@ -21,8 +21,10 @@ import emitter from 'helpers/MittEmitter'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser } from 'store/slices/userSlice'
 import {
-  getRoomData,
+  getMyRooms,
+  setRoomEntered,
   startMessageListener,
+  joinPublicRoom,
   sendMessageToRoom,
   getRoomMessages,
   leaveRoom
@@ -71,6 +73,7 @@ const Room = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
+  let loadedRoom = false
   let roomCode = ''
 
   const clearCanvas = () => emitter.emit('clearCanvas', '')
@@ -81,29 +84,30 @@ const Room = () => {
   const sendMessage = () => emitter.emit('sendMessage', '')
 
   useEffect(() => {
-    showLoadingDialog()
-    const createdRoomData = getRoomData()
-    if (!createdRoomData) {
-      console.log('HANDLE CURRENTLY EMPTY CURRENT ROOM')
-      // TODO: JOIN ROOM INSTEAD: check if it exists, then join (handle the case of it being private). If it doesn't exist, offer the user to create a new room.
-      return
-    }
-    const { code, color } = createdRoomData
-    roomCode = code
-    if (color && isValidColor(color)) setRoomColor(color)
+    if (!router.query.roomID) return
 
-    const checkForPreviousMessages = async () => {
-      const messages: firebaseMessage[] = await getRoomMessages(false)
-      const parsedMessages = await Promise.all(
-        messages.map((message) => parseToRoomContent(message, true))
-      )
-      setRoomContent([...roomContent, ...parsedMessages])
-      setTimeout(() => scrollContent(), 200)
-      startMessageListener(false)
-      setDialogData(baseDialogData)
+    showLoadingDialog()
+    const myRooms = getMyRooms()
+    const roomData = myRooms ? myRooms[router.query.roomID as string] : null
+
+    if (!myRooms || !roomData || (roomData && !roomData.justCreated)) {
+      console.log('must join')
+      // 1) Check if the current room exists
+      if (router.query.roomID.length !== 20) return showRoomNotFoundDialog()
+      tryToJoinPublicRoom(router.query.roomID as string)
+    } else {
+      console.log('passed')
+      const { code, color, id } = roomData
+      roomCode = code[0]
+      if (color && isValidColor(color)) setRoomColor(color)
+      setRoomEntered(id)
+      checkForPreviousMessages()
     }
-    checkForPreviousMessages()
-  }, [])
+
+    return () => {
+      if (loadedRoom) leaveRoom()
+    }
+  }, [router.isReady])
 
   useEffect(() => createActiveColorClass(roomColor), [roomColor])
 
@@ -117,6 +121,32 @@ const Room = () => {
       emitter.off('receivedFirebaseMessage')
     }
   }, [roomContent])
+
+  const tryToJoinPublicRoom = async (roomID: string) => {
+    const res = await joinPublicRoom(roomID)
+
+    if (res === '404') return showRoomNotFoundDialog(true)
+    if (res === 'error') return showErrorDialog()
+    if (res === 'full-room') return showFullRoomDialog()
+    if (res === 'joined-already') return showJoinedAlreadyDialog()
+  }
+
+  const checkForPreviousMessages = async () => {
+    const messages = await getRoomMessages()
+    if (messages === 'error') return showErrorDialog()
+
+    const parsedMessages = await Promise.all(
+      messages.map((message) => parseToRoomContent(message, true))
+    )
+
+    setRoomContent([...roomContent, ...parsedMessages])
+    setTimeout(() => scrollContent(), 200)
+    const messageListenerUnsubscribe = startMessageListener()
+    if (messageListenerUnsubscribe === 'error') return showErrorDialog()
+
+    setDialogData(baseDialogData)
+    loadedRoom = true
+  }
 
   const scrollContent = () => {
     const container = document.querySelector(`.${right_column}`)
@@ -214,6 +244,46 @@ const Room = () => {
     })
   }
 
+  const showErrorDialog = () => {
+    setDialogData({
+      open: true,
+      text: 'There was an error.',
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
+  const showFullRoomDialog = () => {
+    setDialogData({
+      open: true,
+      text: 'Sorry, but the room is full.',
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
+  const showJoinedAlreadyDialog = () => {
+    setDialogData({
+      open: true,
+      text: "You're already in this room",
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
+  const showRoomNotFoundDialog = (addMaybe?: boolean) => {
+    setDialogData({
+      open: true,
+      text: addMaybe ? 'Room not found. Maybe it was disbanded.' : 'Room not found.',
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
   const showAskExitRoomDialog = () => {
     setDialogData({
       open: true,
@@ -228,6 +298,16 @@ const Room = () => {
       leftBtnFn: () => {
         setDialogData(baseDialogData)
       }
+    })
+  }
+
+  const showDialogAlreadyInRoom = () => {
+    setDialogData({
+      open: true,
+      text: "You're already in this room",
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
     })
   }
 

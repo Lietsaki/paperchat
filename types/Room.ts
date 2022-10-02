@@ -21,6 +21,11 @@ type localStorageRoom = {
   code: string
   id: string
   color: string
+  justCreated?: boolean
+}
+
+type currentRooms = {
+  [key: string]: localStorageRoom
 }
 
 // Types used in Firebase Realtime DB
@@ -30,6 +35,13 @@ type room = {
   usersNumber: number
   privateCode?: string
   id?: string
+}
+
+type onlineUser = {
+  username: string
+  createdOn: number
+  publicRooms?: string[]
+  privateRooms?: string[]
 }
 
 type firebaseMessage = {
@@ -50,7 +62,9 @@ export type {
   contentIndicators,
   canvasData,
   room,
+  onlineUser,
   firebaseMessage,
   queryResult,
-  localStorageRoom
+  localStorageRoom,
+  currentRooms
 }
