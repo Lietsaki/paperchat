@@ -1,6 +1,7 @@
 type roomContent = {
   userEntering?: string
   userLeaving?: string
+  color?: string
   message?: string
   paperchatOctagon?: boolean
   animate?: boolean
@@ -29,6 +30,13 @@ type currentRooms = {
 }
 
 // Types used in Firebase Realtime DB
+type onlineUser = {
+  username: string
+  createdOn: number
+  publicRooms?: string[]
+  privateRooms?: string[]
+}
+
 type room = {
   code: string
   users: string[]
@@ -37,20 +45,18 @@ type room = {
   id?: string
 }
 
-type onlineUser = {
-  username: string
-  createdOn: number
-  publicRooms?: string[]
-  privateRooms?: string[]
-}
-
 type firebaseMessage = {
   imageURL?: string
+  color?: string
   author: string
   userEntering?: string
   userLeaving?: string
   localID: string
   createdOn: number
+}
+
+type roomMessages = {
+  messages: firebaseMessage[]
 }
 
 type queryResult<T> = {
@@ -61,9 +67,10 @@ export type {
   roomContent,
   contentIndicators,
   canvasData,
-  room,
   onlineUser,
+  room,
   firebaseMessage,
+  roomMessages,
   queryResult,
   localStorageRoom,
   currentRooms

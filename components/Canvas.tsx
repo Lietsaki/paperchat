@@ -38,6 +38,9 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
   const [divisionsHeight, setDivisionsHeight] = useState(0)
 
   // COLOR DATA
+  const [canvasColor, setCanvasColor] = useState(roomColor)
+  const colorRef = useRef<string>('')
+  colorRef.current = canvasColor
   const canvasBgColor = '#FDFDFD'
   const strokeColor = '#111'
   const strokeRGBArray = [17, 17, 17]
@@ -216,7 +219,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     if (!ctx) return
     ctx.fillStyle = canvasBgColor
     ctx.fillRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
-    ctx.strokeStyle = roomColor.replace('1.0', '0.6')
+    ctx.strokeStyle = colorRef.current.replace('1.0', '0.6')
     ctx.lineWidth = 1
 
     for (let i = 1; i < 5; i++) {
@@ -228,6 +231,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
 
     const data_url = canvasRef.current!.toDataURL('image/png')
     const img = new Image()
+    img.id = 'canvasDivisions'
     img.src = data_url
     containerRef.current!.append(img)
     ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
@@ -240,8 +244,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     ctx.imageSmoothingEnabled = false
     let pixelBorderSize = canvasRef.current!.width >= 400 ? 3 : 2
     ctx.lineWidth = 1
-    ctx.fillStyle = roomColor.replace('1.0', '0.3')
-    ctx.strokeStyle = roomColor
+    ctx.fillStyle = colorRef.current.replace('1.0', '0.3')
+    ctx.strokeStyle = colorRef.current
     ctx.beginPath()
     ctx.moveTo(0, divisionsHeight)
     ctx.lineTo(nameContainerWidth, divisionsHeight)
@@ -254,12 +258,12 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     ctx.lineTo(0, -5)
     ctx.fill()
     ctx.stroke()
+    ctx.fillStyle = colorRef.current
 
     // Write username making sure our font loaded first
     const f = new FontFace('nds', 'url(/fonts/nds.ttf)')
 
     const writeUsername = () => {
-      ctx.fillStyle = roomColor
       ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       const firstLineY = getPercentage(80, divisionsHeight)
       ctx.fillText(username, 8, firstLineY - 1.5)
@@ -439,6 +443,15 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
 
   useEffect(() => drawDivisions(), [divisionsHeight])
   useEffect(() => drawUsernameRectangle(ctx!, true), [nameContainerWidth])
+  useEffect(() => {
+    drawDivisions()
+    const oldDivisions = document.getElementById('canvasDivisions')
+    oldDivisions?.remove()
+    clearCanvas()
+  }, [canvasColor])
+  useEffect(() => {
+    setCanvasColor(roomColor)
+  }, [roomColor])
   useEffect(() => {
     emitter.on('clearCanvas', clearCanvas)
     emitter.on('draggingKey', (key: string) => setDraggingKey(key))

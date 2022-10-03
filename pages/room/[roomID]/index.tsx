@@ -22,8 +22,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { selectUser } from 'store/slices/userSlice'
 import {
   getMyRooms,
-  setRoomEntered,
-  startMessageListener,
+  setEnteredCreatedRoom,
   joinPublicRoom,
   sendMessageToRoom,
   getRoomMessages,
@@ -91,16 +90,16 @@ const Room = () => {
     const roomData = myRooms ? myRooms[router.query.roomID as string] : null
 
     if (!myRooms || !roomData || (roomData && !roomData.justCreated)) {
-      console.log('must join')
+      console.log('must join room')
       // 1) Check if the current room exists
       if (router.query.roomID.length !== 20) return showRoomNotFoundDialog()
       tryToJoinPublicRoom(router.query.roomID as string)
     } else {
-      console.log('passed')
+      console.log('created room')
       const { code, color, id } = roomData
       roomCode = code[0]
       if (color && isValidColor(color)) setRoomColor(color)
-      setRoomEntered(id)
+      setEnteredCreatedRoom(id)
       checkForPreviousMessages()
     }
 
@@ -129,6 +128,14 @@ const Room = () => {
     if (res === 'error') return showErrorDialog()
     if (res === 'full-room') return showFullRoomDialog()
     if (res === 'joined-already') return showJoinedAlreadyDialog()
+
+    const myRooms = getMyRooms()
+    const roomData = myRooms![router.query.roomID as string]
+    const { code, color } = roomData
+    roomCode = code[0]
+    if (color && isValidColor(color)) setRoomColor(color)
+
+    checkForPreviousMessages()
   }
 
   const checkForPreviousMessages = async () => {
@@ -141,8 +148,6 @@ const Room = () => {
 
     setRoomContent([...roomContent, ...parsedMessages])
     setTimeout(() => scrollContent(), 200)
-    const messageListenerUnsubscribe = startMessageListener()
-    if (messageListenerUnsubscribe === 'error') return showErrorDialog()
 
     setDialogData(baseDialogData)
     loadedRoom = true
@@ -154,9 +159,9 @@ const Room = () => {
   }
 
   const parseToRoomContent = async (message: firebaseMessage, animate?: boolean) => {
-    const { imageURL, userEntering, userLeaving, localID } = message
+    const { imageURL, userEntering, userLeaving, localID, color } = message
 
-    const roomMessage: roomContent = { id: localID }
+    const roomMessage: roomContent = { id: localID, color }
 
     let messageHeight = 0
 
@@ -196,11 +201,11 @@ const Room = () => {
       height
     )
     const localID = getSimpleId()
-    sendMessageToRoom(dataUrl, localID)
+    sendMessageToRoom(dataUrl, localID, roomColor)
 
     setRoomContent([
       ...roomContent,
-      { message: dataUrl, id: localID, animate: !messagesWillTriggerScroll }
+      { message: dataUrl, id: localID, animate: !messagesWillTriggerScroll, color: roomColor }
     ])
   }
 
@@ -218,13 +223,13 @@ const Room = () => {
         )
       }
 
-      if (item.message) {
+      if (item.message && item.color) {
         return (
           <MessageOctagon
             key={item.id}
             id={item.id}
+            color={item.color}
             img_uri={item.message}
-            color={roomColor}
             shouldAnimate={!!item.animate}
           />
         )
