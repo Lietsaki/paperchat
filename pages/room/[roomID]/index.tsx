@@ -161,7 +161,8 @@ const Room = () => {
   const parseToRoomContent = async (message: firebaseMessage, animate?: boolean) => {
     const { imageURL, userEntering, userLeaving, localID, color } = message
 
-    const roomMessage: roomContent = { id: localID, color }
+    const roomMessage: roomContent = { id: localID }
+    if (color) roomMessage.color = color
 
     let messageHeight = 0
 

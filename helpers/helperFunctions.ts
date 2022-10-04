@@ -2,7 +2,7 @@ import { positionObj } from 'types/Position'
 
 const getRandomNumber = (min: number, max: number) => Math.round(Math.random() * (max - min) + min)
 
-const getSimpleId = () => Date.now() + '' + (getRandomNumber(1, 999) + '')
+const getSimpleId = () => Date.now() + '-' + (getRandomNumber(100, 999) + '')
 
 const getRandomColor = () => {
   return `hsla(${getRandomNumber(0, 255)}, ${getRandomNumber(30, 65)}%, ${getRandomNumber(

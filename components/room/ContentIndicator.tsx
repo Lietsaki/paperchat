@@ -35,9 +35,9 @@ const ContentIndicator = ({ roomContent }: ContentIndicatorProps) => {
 
   const oldestIndicators = [overflowed2OldestIndicator, overflowed1OldestIndicator]
   const newestIndicators = [overflowed1NewestIndicator, overflowed2NewestIndicator]
-  const middleIndicatorKeys = Object.keys(indicators).filter(
-    (key) => !oldestIndicators.includes(key) && !newestIndicators.includes(key)
-  )
+  const middleIndicatorKeys = Object.keys(indicators)
+    .filter((key) => !oldestIndicators.includes(key) && !newestIndicators.includes(key))
+    .sort((a, b) => Number(a.split('-')[0]) - Number(b.split('-')[0])) // ids are saved as Date.now()-123 where 123 are random.
 
   const setupObserver = () => {
     observer = new IntersectionObserver(
