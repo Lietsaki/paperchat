@@ -41,6 +41,7 @@ type room = {
   code: string
   users: string[]
   usersNumber: number
+  createdOn: number
   privateCode?: string
   id?: string
 }

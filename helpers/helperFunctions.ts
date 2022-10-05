@@ -120,6 +120,7 @@ const willContainerBeOverflowed = (
   childrenMargin?: number,
   newItemHeight?: number
 ) => {
+  if (!container) return false
   const children = Array.from(container.children)
   const baseHeight = newItemHeight || children[0] ? children[0].clientHeight : 0
   const childMargin = childrenMargin || children[0] ? children[0].clientHeight + 1 : 0
