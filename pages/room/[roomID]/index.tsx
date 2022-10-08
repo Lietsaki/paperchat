@@ -61,6 +61,7 @@ const {
 const Room = () => {
   const defaultColor = 'hsla(204, 44%, 52%, 1.0)'
   const router = useRouter()
+  const [roomUsers, setRoomUsers] = useState<string[]>([])
   const [usingPencil, setUsingPencil] = useState(true)
   const [usingThickStroke, setUsingThickStroke] = useState(true)
   const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('Alphanumeric')
@@ -89,21 +90,39 @@ const Room = () => {
     const myRooms = getMyRooms()
     const roomData = myRooms ? myRooms[router.query.roomID as string] : null
 
-    if (!myRooms || !roomData || (roomData && !roomData.justCreated)) {
+    if (!myRooms || !roomData || (roomData && !roomData.enteringMessage)) {
       console.log('must join room')
       // 1) Check if the current room exists
       if (router.query.roomID.length !== 20) return showRoomNotFoundDialog()
       tryToJoinPublicRoom(router.query.roomID as string)
     } else {
       console.log('created room')
-      const { code, color, id } = roomData
+      const { code, color, id, enteringMessage } = roomData
       roomCode = code[0]
       if (color && isValidColor(color)) setRoomColor(color)
+
+      if (enteringMessage) {
+        setRoomContent([
+          ...roomContent,
+          { animate: true, id: enteringMessage.localID, userEntering: enteringMessage.userEntering }
+        ])
+      }
+
+      setRoomUsers([user.username])
+      setDialogData(baseDialogData)
+      loadedRoom = true
+
       setEnteredCreatedRoom(id)
-      checkForPreviousMessages()
     }
 
+    emitter.on('lostConnection', showLostConnectionDialog)
+    emitter.on('backOnline', showBackOnlineDialog)
+    emitter.on('disbandedRoom', showBackOnlineDisbandedDialog)
+
     return () => {
+      emitter.off('disbandedRoom')
+      emitter.off('backOnline')
+      emitter.off('canvasData')
       if (loadedRoom) leaveRoom()
     }
   }, [router.isReady])
@@ -134,7 +153,6 @@ const Room = () => {
     const { code, color } = roomData
     roomCode = code[0]
     if (color && isValidColor(color)) setRoomColor(color)
-
     checkForPreviousMessages()
   }
 
@@ -148,14 +166,21 @@ const Room = () => {
 
     setRoomContent([...roomContent, ...parsedMessages])
     setTimeout(() => scrollContent(), 200)
-
-    setDialogData(baseDialogData)
     loadedRoom = true
+    setDialogData(baseDialogData)
   }
 
   const scrollContent = () => {
     const container = document.querySelector(`.${right_column}`)
     container!.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
+  }
+
+  const receiveFirebaseMessage = async (receivedMessage: firebaseMessage) => {
+    const isAlreadyPresent = roomContent.find((item) => item.id === receivedMessage.localID)
+    if (isAlreadyPresent) return
+
+    const roomMessage = await parseToRoomContent(receivedMessage)
+    setRoomContent([...roomContent, roomMessage])
   }
 
   const parseToRoomContent = async (message: firebaseMessage, animate?: boolean) => {
@@ -167,8 +192,21 @@ const Room = () => {
     let messageHeight = 0
 
     if (userEntering || userLeaving) {
-      if (userEntering) roomMessage.userEntering = userEntering
-      if (userLeaving) roomMessage.userLeaving = userLeaving
+      if (userEntering) {
+        roomMessage.userEntering = userEntering
+        setRoomUsers([...roomUsers, userEntering])
+      }
+
+      if (userLeaving) {
+        roomMessage.userLeaving = userLeaving
+
+        // Filter this way to remove only the first occurrence of a name (in case there are users with the same name)
+        const i = roomUsers.findIndex((user) => user === userLeaving)
+        const filteredUsers = [...roomUsers]
+        filteredUsers.splice(i, 1)
+        setRoomUsers(filteredUsers)
+      }
+
       messageHeight = window.innerWidth > 500 ? 43 : 28
     }
 
@@ -184,14 +222,6 @@ const Room = () => {
         : !willContainerBeOverflowed(messagesContainerRef.current!, 0, 4.5, messageHeight)
 
     return roomMessage
-  }
-
-  const receiveFirebaseMessage = async (receivedMessage: firebaseMessage) => {
-    const isAlreadyPresent = roomContent.find((item) => item.id === receivedMessage.localID)
-    if (isAlreadyPresent) return
-
-    const roomMessage = await parseToRoomContent(receivedMessage)
-    setRoomContent([...roomContent, roomMessage])
   }
 
   const receiveCanvasData = ({ dataUrl, height }: canvasData) => {
@@ -307,10 +337,27 @@ const Room = () => {
     })
   }
 
-  const showDialogAlreadyInRoom = () => {
+  const showLostConnectionDialog = () => {
     setDialogData({
       open: true,
-      text: "You're already in this room",
+      text: 'Connection lost. Reconnecting...',
+      showSpinner: true
+    })
+  }
+
+  const showBackOnlineDialog = () => {
+    setDialogData({
+      open: true,
+      text: 'Back online!',
+      showSpinner: false
+    })
+    setTimeout(() => setDialogData(baseDialogData), 2000)
+  }
+
+  const showBackOnlineDisbandedDialog = () => {
+    setDialogData({
+      open: true,
+      text: 'Back online. Your room was disbanded since it was empty.',
       showSpinner: false,
       rightBtnText: 'Go home',
       rightBtnFn: () => router.push('/')

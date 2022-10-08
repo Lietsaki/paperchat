@@ -22,7 +22,7 @@ type localStorageRoom = {
   code: string
   id: string
   color: string
-  justCreated?: boolean
+  enteringMessage?: firebaseMessage
 }
 
 type currentRooms = {

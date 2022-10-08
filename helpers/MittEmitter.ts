@@ -11,6 +11,9 @@ type Events = {
   sendMessage: string
   canvasData: canvasData
   receivedFirebaseMessage: firebaseMessage
+  lostConnection: string
+  backOnline: string
+  disbandedRoom: string
 }
 
 const emitter: Emitter<Events> = mitt<Events>()
