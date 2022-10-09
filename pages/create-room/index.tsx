@@ -4,7 +4,7 @@ import Button from 'components/Button'
 import { useRouter } from 'next/router'
 import page_styles from 'styles/create-room/create-room.module.scss'
 import { useState } from 'react'
-import { createRoom } from 'firebase-config/realtimeDB'
+import { createRoom, ROOMS_LIMIT } from 'firebase-config/realtimeDB'
 import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 
@@ -34,6 +34,7 @@ const JoinWithACode = () => {
     })
     const roomID = await createRoom(false)
     if (roomID === 'error') return showErrorDialog()
+    if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
     setDialogData(baseDialogData)
     router.push(`room/${roomID}`)
   }
@@ -57,6 +58,16 @@ const JoinWithACode = () => {
       showSpinner: false,
       rightBtnFn: () => setDialogData(baseDialogData),
       rightBtnText: 'Accept'
+    })
+  }
+
+  const showRoomsLimitDialog = () => {
+    setDialogData({
+      open: true,
+      text: `You can be in up to ${ROOMS_LIMIT} rooms at the same time.`,
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
     })
   }
 

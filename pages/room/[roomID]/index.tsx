@@ -18,9 +18,10 @@ import {
 import { keyboard } from 'types/Keyboard'
 import { roomContent, canvasData, firebaseMessage } from 'types/Room'
 import emitter from 'helpers/MittEmitter'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { selectUser } from 'store/slices/userSlice'
 import {
+  ROOMS_LIMIT,
   getMyRooms,
   setEnteredCreatedRoom,
   joinPublicRoom,
@@ -151,6 +152,7 @@ const Room = () => {
     if (res === 'error') return showErrorDialog()
     if (res === 'full-room') return showFullRoomDialog()
     if (res === 'joined-already') return showJoinedAlreadyDialog()
+    if (res === 'hit-rooms-limit') return showRoomsLimitDialog()
 
     const myRooms = getMyRooms()
     const roomData = myRooms![router.query.roomID as string]
@@ -353,6 +355,16 @@ const Room = () => {
     setDialogData({
       open: true,
       text: "You're already in this room",
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
+  const showRoomsLimitDialog = () => {
+    setDialogData({
+      open: true,
+      text: `You can be in up to ${ROOMS_LIMIT} rooms at the same time.`,
       showSpinner: false,
       rightBtnText: 'Go home',
       rightBtnFn: () => router.push('/')
