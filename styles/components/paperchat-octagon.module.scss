@@ -29,6 +29,12 @@
     animation: go-up 0.2s linear;
   }
 
+  &.hide_while_loading {
+    opacity: 0;
+    height: 0;
+    margin-top: 0;
+  }
+
   &.paperchat_octagon {
     height: 12%;
     min-height: 12%;

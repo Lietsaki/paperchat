@@ -73,7 +73,7 @@ const Room = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
-  let loadedRoom = false
+  const [loadedRoom, setLoadedRoom] = useState(false)
   let roomCode = ''
 
   const clearCanvas = () => emitter.emit('clearCanvas', '')
@@ -110,8 +110,7 @@ const Room = () => {
 
       setRoomUsers([user.username])
       setDialogData(baseDialogData)
-      loadedRoom = true
-
+      setLoadedRoom(true)
       setEnteredCreatedRoom(id)
     }
 
@@ -123,22 +122,27 @@ const Room = () => {
       emitter.off('disbandedRoom')
       emitter.off('backOnline')
       emitter.off('canvasData')
-      if (loadedRoom) leaveRoom()
     }
   }, [router.isReady])
+
+  useEffect(() => {
+    return () => {
+      if (loadedRoom) leaveRoom()
+    }
+  }, [loadedRoom])
 
   useEffect(() => createActiveColorClass(roomColor), [roomColor])
 
   useEffect(() => {
     emitter.on('canvasData', receiveCanvasData)
-    emitter.on('receivedFirebaseMessage', receiveFirebaseMessage)
+    emitter.on('receivedFirebaseMessages', receiveFirebaseMessages)
     setTimeout(() => scrollContent(), 100)
 
     return () => {
       emitter.off('canvasData')
-      emitter.off('receivedFirebaseMessage')
+      emitter.off('receivedFirebaseMessages')
     }
-  }, [roomContent])
+  }, [roomContent, loadedRoom])
 
   const tryToJoinPublicRoom = async (roomID: string) => {
     const res = await joinPublicRoom(roomID)
@@ -160,13 +164,11 @@ const Room = () => {
     const messages = await getRoomMessages()
     if (messages === 'error') return showErrorDialog()
 
-    const parsedMessages = await Promise.all(
-      messages.map((message) => parseToRoomContent(message, true))
-    )
+    const parsedMessages = await Promise.all(messages.map((message) => parseToRoomContent(message)))
 
     setRoomContent([...roomContent, ...parsedMessages])
     setTimeout(() => scrollContent(), 200)
-    loadedRoom = true
+    setLoadedRoom(true)
     setDialogData(baseDialogData)
   }
 
@@ -175,20 +177,63 @@ const Room = () => {
     container!.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
   }
 
-  const receiveFirebaseMessage = async (receivedMessage: firebaseMessage) => {
-    const isAlreadyPresent = roomContent.find((item) => item.id === receivedMessage.localID)
-    if (isAlreadyPresent) return
+  const receiveFirebaseMessages = async (receivedMessages: firebaseMessage[]) => {
+    if (!loadedRoom) return
+    const updatedMessages = [...roomContent]
+    type posToSplice = { [key: number]: Promise<roomContent> }
+    const messagesToSplice: posToSplice = {}
 
-    const roomMessage = await parseToRoomContent(receivedMessage)
-    setRoomContent([...roomContent, roomMessage])
+    for (let i = 0; i < receivedMessages.length; i++) {
+      const msg = receivedMessages[i]
+      const msgInRoom = updatedMessages[i + 1] // account for the paperchat octagon
+
+      // Check for possible duplicate messages
+      if (updatedMessages.find((item) => item.id === msg.localID)) continue
+
+      // Insert the latest received message
+      if (i === receivedMessages.length - 1 && !msgInRoom) {
+        updatedMessages.push(await parseToRoomContent(msg))
+        break
+      }
+
+      // Check for previous messages we didn't sync (For example, if we lost our connection)
+      if (msg.userEntering && !msgInRoom.userEntering) {
+        updatedMessages.splice(i + 1, 0, {
+          id: msg.localID,
+          userEntering: msg.userEntering
+        })
+      }
+      if (msg.userLeaving && !msgInRoom.userLeaving) {
+        updatedMessages.splice(i + 1, 0, {
+          id: msg.localID,
+          userLeaving: msg.userLeaving
+        })
+      }
+
+      // Messages with imageURL need to pre-load their images. Do so in an async function with Promise.all
+      if (msg.imageURL && (!msgInRoom || !msgInRoom.message)) {
+        messagesToSplice[i + 1] = parseToRoomContent(msg)
+      }
+    }
+
+    const messagesToSpliceVals = Object.values(messagesToSplice)
+
+    if (messagesToSpliceVals.length) {
+      const spliceVals = await Promise.all(messagesToSpliceVals)
+      const spliceKeys = Object.keys(messagesToSplice)
+
+      for (let i = 0; i < spliceKeys.length; i++) {
+        updatedMessages.splice(Number(spliceKeys[i]), 0, spliceVals[i])
+      }
+    }
+
+    setRoomContent(updatedMessages)
   }
 
-  const parseToRoomContent = async (message: firebaseMessage, animate?: boolean) => {
+  const parseToRoomContent = async (message: firebaseMessage) => {
     const { imageURL, userEntering, userLeaving, localID, color } = message
 
     const roomMessage: roomContent = { id: localID }
-    if (color) roomMessage.color = color
-
     let messageHeight = 0
 
     if (userEntering || userLeaving) {
@@ -210,16 +255,20 @@ const Room = () => {
       messageHeight = window.innerWidth > 500 ? 43 : 28
     }
 
-    if (imageURL) {
+    if (imageURL && color) {
       roomMessage.message = imageURL
+      roomMessage.color = color
+
       const img = await getImageData(imageURL)
       messageHeight = img.height
     }
 
-    roomMessage.animate =
-      animate !== undefined
-        ? animate
-        : !willContainerBeOverflowed(messagesContainerRef.current!, 0, 4.5, messageHeight)
+    roomMessage.animate = !willContainerBeOverflowed(
+      messagesContainerRef.current!,
+      0,
+      4.5,
+      messageHeight
+    )
 
     return roomMessage
   }
@@ -329,7 +378,7 @@ const Room = () => {
       rightBtnText: 'Accept',
       rightBtnFn: () => {
         setDialogData(baseDialogData)
-        console.log('exit room!')
+        router.push('/')
       },
       leftBtnFn: () => {
         setDialogData(baseDialogData)
@@ -351,7 +400,10 @@ const Room = () => {
       text: 'Back online!',
       showSpinner: false
     })
-    setTimeout(() => setDialogData(baseDialogData), 2000)
+    setTimeout(() => {
+      setDialogData(baseDialogData)
+      setTimeout(() => scrollContent(), 200)
+    }, 2000)
   }
 
   const showBackOnlineDisbandedDialog = () => {
@@ -366,8 +418,7 @@ const Room = () => {
 
   const exitRoom = () => {
     leaveRoom()
-
-    // router.push('/')
+    router.push('/')
   }
 
   return (

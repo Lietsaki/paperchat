@@ -10,7 +10,7 @@ type Events = {
   draggingKey: string
   sendMessage: string
   canvasData: canvasData
-  receivedFirebaseMessage: firebaseMessage
+  receivedFirebaseMessages: firebaseMessage[]
   lostConnection: string
   backOnline: string
   disbandedRoom: string
