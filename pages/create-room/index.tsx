@@ -22,7 +22,7 @@ const {
 
 const { option_cards, card, card__inner, title_row, title, icon, description } = page_styles
 
-const JoinWithACode = () => {
+const CreateRoom = () => {
   const router = useRouter()
   const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
 
@@ -47,6 +47,7 @@ const JoinWithACode = () => {
     })
     const roomID = await createRoom(true)
     if (roomID === 'error') return showErrorDialog()
+    if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
     setDialogData(baseDialogData)
     router.push(`room/${roomID}`)
   }
@@ -144,4 +145,4 @@ const JoinWithACode = () => {
   )
 }
 
-export default JoinWithACode
+export default CreateRoom

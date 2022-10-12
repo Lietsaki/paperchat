@@ -46,6 +46,10 @@ type room = {
   id?: string
 }
 
+type roomCodes = {
+  [key: string]: string
+}
+
 type firebaseMessage = {
   imageURL?: string
   color?: string
@@ -70,6 +74,7 @@ export type {
   canvasData,
   onlineUser,
   room,
+  roomCodes,
   firebaseMessage,
   roomMessages,
   queryResult,

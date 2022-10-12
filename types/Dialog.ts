@@ -1,4 +1,4 @@
-type dialogDebouncedActionNames = 'roomSearch' | 'retryRoomSearch'
+type dialogDebouncedActionNames = 'roomSearch' | 'retryRoomSearch' | 'retryJoinPrivateRoomAttempt'
 
 type dialogOptions = {
   open: boolean

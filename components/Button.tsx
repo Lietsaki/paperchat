@@ -20,7 +20,7 @@ const Button = ({ text, onClick, name, debounce = 0, debounceMounted }: ButtonPr
       const latestDebounce = localStorage.getItem(name)
       setTime(Number(latestDebounce) ? Number(latestDebounce) : debounce)
     }
-  }, [])
+  }, [debounce])
 
   useEffect(() => {
     if (!time || !name) return
@@ -39,9 +39,7 @@ const Button = ({ text, onClick, name, debounce = 0, debounceMounted }: ButtonPr
   return (
     <button
       onClick={triggerBtn}
-      className={`${button_outer} ${debounce ? smaller_font : ''} ${
-        time ? 'disabled_opacity' : ''
-      }`}
+      className={`${button_outer} ${time ? smaller_font : ''} ${time ? 'disabled_opacity' : ''}`}
       disabled={!!time}
     >
       <div className={button_inner}>

@@ -24,7 +24,7 @@ import {
   ROOMS_LIMIT,
   getMyRooms,
   setEnteredCreatedRoom,
-  joinPublicRoom,
+  joinRoom,
   sendMessageToRoom,
   getRoomMessages,
   leaveRoom
@@ -95,7 +95,7 @@ const Room = () => {
       console.log('must join room')
       // 1) Check if the current room exists
       if (router.query.roomID.length !== 20) return showRoomNotFoundDialog()
-      tryToJoinPublicRoom(router.query.roomID as string)
+      tryToJoinRoom(router.query.roomID as string)
     } else {
       console.log('created room')
       const { code, color, id, enteringMessage } = roomData
@@ -145,14 +145,15 @@ const Room = () => {
     }
   }, [roomContent, loadedRoom])
 
-  const tryToJoinPublicRoom = async (roomID: string) => {
-    const res = await joinPublicRoom(roomID)
+  const tryToJoinRoom = async (roomID: string) => {
+    const res = await joinRoom(roomID)
 
     if (res === '404') return showRoomNotFoundDialog(true)
     if (res === 'error') return showErrorDialog()
     if (res === 'full-room') return showFullRoomDialog()
     if (res === 'joined-already') return showJoinedAlreadyDialog()
     if (res === 'hit-rooms-limit') return showRoomsLimitDialog()
+    if (res === 'invalid-code') return showRoomInvalidCodeDialog()
 
     const myRooms = getMyRooms()
     const roomData = myRooms![router.query.roomID as string]
@@ -371,6 +372,16 @@ const Room = () => {
     })
   }
 
+  const showRoomInvalidCodeDialog = () => {
+    setDialogData({
+      open: true,
+      text: 'Invalid code, please try again.',
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
   const showRoomNotFoundDialog = (addMaybe?: boolean) => {
     setDialogData({
       open: true,
@@ -426,11 +437,6 @@ const Room = () => {
       rightBtnText: 'Go home',
       rightBtnFn: () => router.push('/')
     })
-  }
-
-  const exitRoom = () => {
-    leaveRoom()
-    router.push('/')
   }
 
   return (
