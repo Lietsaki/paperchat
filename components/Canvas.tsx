@@ -354,7 +354,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
       }
 
       if (hPointNextToUsername) {
-        pic_canvas.height = lowestPoint[1] + margin
+        pic_canvas.height = lowestPoint[1] + margin + margin / 2
       }
 
       if (hPointUnderAndOutsideUsername && !conflictingPoints) {

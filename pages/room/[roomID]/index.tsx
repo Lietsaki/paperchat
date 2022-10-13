@@ -70,6 +70,7 @@ const Room = () => {
     { paperchatOctagon: true, id: 'paperchat_octagon' }
   ])
   const [roomColor, setRoomColor] = useState(defaultColor)
+  const [adjacentMessages, setAdjacentMessages] = useState({ up: '', down: '' })
   const [user] = useState(useSelector(selectUser))
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
@@ -280,7 +281,7 @@ const Room = () => {
     const messagesWillTriggerScroll = willContainerBeOverflowed(
       messagesContainerRef.current!,
       0,
-      4.5,
+      4,
       height
     )
     const localID = getSimpleId()
@@ -322,6 +323,12 @@ const Room = () => {
         return <PaperchatOctagon key={item.id} id={item.id} />
       }
     })
+  }
+
+  const scrollToAdjacent = (to: 'up' | 'down') => {
+    if (!adjacentMessages[to]) return
+    const target = document.getElementById(adjacentMessages[to])!
+    target.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }
 
   const showLoadingDialog = () => {
@@ -445,7 +452,7 @@ const Room = () => {
         <div className={`screen ${top}`}>
           <div className={left_column}>
             <div className={top_section}></div>
-            <ContentIndicator roomContent={roomContent} />
+            <ContentIndicator roomContent={roomContent} setAdjacentMessages={setAdjacentMessages} />
             <div className={bottom_section}></div>
           </div>
 
@@ -456,12 +463,18 @@ const Room = () => {
 
         <div className={`screen ${bottom}`}>
           <div className={tools_column}>
-            <div className={`${tool_container} ${top_arrow} ${active_on_click}`}>
+            <div
+              className={`${tool_container} ${top_arrow} ${active_on_click}`}
+              onClick={() => scrollToAdjacent('up')}
+            >
               <img src="/tool-buttons/top-arrow.png" alt="top arrow button" />
               <div className="active_color"></div>
             </div>
 
-            <div className={`${tool_container} ${down_arrow} ${active_on_click}`}>
+            <div
+              className={`${tool_container} ${down_arrow} ${active_on_click}`}
+              onClick={() => scrollToAdjacent('down')}
+            >
               <img
                 src="/tool-buttons/down-arrow.png"
                 alt="down arrow button"

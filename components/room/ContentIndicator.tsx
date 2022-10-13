@@ -13,11 +13,14 @@ const {
   indictor_container
 } = styles
 
+type adjacentIndicators = { up: string; down: string }
+
 type ContentIndicatorProps = {
   roomContent: roomContent[]
+  setAdjacentMessages: (adjacentIndicatorsData: adjacentIndicators) => void
 }
 
-const ContentIndicator = ({ roomContent }: ContentIndicatorProps) => {
+const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicatorProps) => {
   const indicatorIdPrefix = 'i-'
   const [indicators, setIndicators] = useState<contentIndicators>({})
   const [latestOverflowedLength, setLatestOverflowedLength] = useState(0)
@@ -209,6 +212,26 @@ const ContentIndicator = ({ roomContent }: ContentIndicatorProps) => {
     overflowed2NewestIndicator,
     latestOverflowedLength
   ])
+
+  useEffect(() => {
+    const adjacentIndicators = { up: '', down: '' }
+    const indKeys = Object.keys(indicators)
+    const visibleIndicators = indKeys.filter((key) => indicators[key].isVisible)
+
+    const firstVisibleIndicatorIndex = indKeys.indexOf(visibleIndicators[0])
+    const lastVisibleIndicatorIndex = indKeys.indexOf(
+      visibleIndicators[visibleIndicators.length - 1]
+    )
+
+    if (firstVisibleIndicatorIndex !== -1 && firstVisibleIndicatorIndex > 0) {
+      adjacentIndicators.up = indKeys[firstVisibleIndicatorIndex - 1]
+    }
+    if (lastVisibleIndicatorIndex !== -1 && lastVisibleIndicatorIndex !== indKeys.length - 1) {
+      adjacentIndicators.down = indKeys[lastVisibleIndicatorIndex + 1]
+    }
+
+    setAdjacentMessages(adjacentIndicators)
+  }, [indicators])
 
   const scrollMiddleIndicators = () => {
     const container = middleIndicatorsRef.current!

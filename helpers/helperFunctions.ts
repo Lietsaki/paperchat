@@ -114,6 +114,9 @@ const createActiveColorClass = (hslaColor: string) => {
   document.head.appendChild(style)
 }
 
+// Check if a container will be overflowed after adding a new item to it.
+// This operation is performed BEFORE adding the new item, that's why we
+// use it as the initial value for .reduce()
 const willContainerBeOverflowed = (
   container: HTMLDivElement,
   containerHeightOffset: number = 0,
@@ -122,8 +125,14 @@ const willContainerBeOverflowed = (
 ) => {
   if (!container) return false
   const children = Array.from(container.children)
-  const baseHeight = newItemHeight || children[0] ? children[0].clientHeight : 0
-  const childMargin = childrenMargin || children[0] ? children[0].clientHeight + 1 : 0
+
+  let baseHeight = 0
+  if (newItemHeight) baseHeight = newItemHeight
+  else baseHeight = children[0] ? children[0].clientHeight : 0
+
+  let childMargin = 0
+  if (childrenMargin) childMargin = childrenMargin
+  else childMargin = children[0] ? children[0].clientHeight + 1 : 0
 
   const computedStyle = getComputedStyle(container)
   const containerHeight =
