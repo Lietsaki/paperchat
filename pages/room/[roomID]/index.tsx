@@ -327,8 +327,23 @@ const Room = () => {
 
   const scrollToAdjacent = (to: 'up' | 'down') => {
     if (!adjacentMessages[to]) return
+    const margin = 4
     const target = document.getElementById(adjacentMessages[to])!
-    target.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    let offsetTop = target.offsetTop - messagesContainerRef.current!.offsetTop
+
+    // Offset top will scroll to the top of the target message
+    if (to === 'up') {
+      offsetTop -= margin
+    } else {
+      // Make sure messages are not scrolled to the top when using "down", they
+      // must be at the bottom of the container.
+      offsetTop -= messagesContainerRef.current!.clientHeight - target.offsetHeight - margin
+    }
+
+    messagesContainerRef.current!.scrollTo({
+      top: offsetTop,
+      behavior: 'smooth'
+    })
   }
 
   const showLoadingDialog = () => {

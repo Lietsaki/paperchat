@@ -51,7 +51,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
         for (const entry of entries) {
           const { id } = entry.target
 
-          if (entry.intersectionRatio > 0) {
+          if (entry.intersectionRatio >= 0.4) {
             if (!newIndicators[id]) {
               newIndicators[id] = { isVisible: true }
             } else {
@@ -81,7 +81,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
 
         setIndicators(newIndicators)
       },
-      { threshold: [0] }
+      { threshold: [0.4] }
     )
 
     roomContent.map((item) => {
