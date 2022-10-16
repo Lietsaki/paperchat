@@ -14,6 +14,7 @@ type Events = {
   lostConnection: string
   backOnline: string
   disbandedRoom: string
+  canvasToCopy: string
 }
 
 const emitter: Emitter<Events> = mitt<Events>()

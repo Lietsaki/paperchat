@@ -81,6 +81,20 @@ const getHighestAndLowestPoints = (
   return { highestPoint, lowestPoint, conflictingPoints }
 }
 
+// Takes an array with an rgb color. For example: [0, 0, 255] would remove blue.
+const removeColor = (ctx: CanvasRenderingContext2D, color: number[]) => {
+  const canvasData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)
+  const pix = canvasData.data
+
+  for (var i = 0, n = pix.length; i < n; i += 4) {
+    if (pix[i] === color[0] && pix[i + 1] === color[1] && pix[i + 2] === color[2]) {
+      pix[i + 3] = 0
+    }
+  }
+
+  ctx.putImageData(canvasData, 0, 0)
+}
+
 const createActiveColorClass = (hslaColor: string) => {
   const styleID = 'active_color_style'
   const previousStyle = document.getElementById(styleID)
@@ -179,5 +193,6 @@ export {
   createActiveColorClass,
   willContainerBeOverflowed,
   getImageData,
-  isValidColor
+  isValidColor,
+  removeColor
 }

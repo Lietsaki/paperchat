@@ -171,7 +171,7 @@ const Room = () => {
     const parsedMessages = await Promise.all(messages.map((message) => parseToRoomContent(message)))
 
     setRoomContent([...roomContent, ...parsedMessages])
-    setTimeout(() => scrollContent(), 200)
+    setTimeout(() => scrollContent(), 300)
     setLoadedRoom(true)
     setDialogData(baseDialogData)
   }
@@ -344,6 +344,13 @@ const Room = () => {
       top: offsetTop,
       behavior: 'smooth'
     })
+  }
+
+  const copyLastCanvas = () => {
+    const roomMessages = roomContent.filter((item) => item.message)
+    if (!roomMessages.length) return
+    const lastMessage = roomMessages[roomMessages.length - 1]
+    emitter.emit('canvasToCopy', lastMessage.message!)
   }
 
   const showLoadingDialog = () => {
@@ -607,8 +614,8 @@ const Room = () => {
                       className={active}
                     />
                   </div>
-                  <div className={`${last_canvas} ${active_on_click}`}>
-                    <img src="/send-buttons/LAST-CANVAS.png" alt="last canvas button" />
+                  <div className={`${last_canvas} ${active_on_click}`} onClick={copyLastCanvas}>
+                    <img src="/send-buttons/LAST-CANVAS.png" alt="last message button" />
                     <img
                       src="/send-buttons/active/LAST-CANVAS.png"
                       alt="active last canvas button"

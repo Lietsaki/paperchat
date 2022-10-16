@@ -117,11 +117,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
       setOverflowed1NewestIndicator(indicatorKeys[indicatorKeys.length - 1])
     }
 
-    if (
-      mustAssignOverflowed2ToOldestIndicator &&
-      latestOverflowedLength &&
-      indicatorKeys.length > latestOverflowedLength
-    ) {
+    if (mustAssignOverflowed2ToOldestIndicator) {
       indicators[indicatorKeys[0]].isOverflowedIndicator1 = false
       indicators[indicatorKeys[0]].isOverflowedIndicator2 = true
       indicators[indicatorKeys[1]].isOverflowedIndicator1 = true
@@ -209,8 +205,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     overflowed1OldestIndicator,
     overflowed1NewestIndicator,
     overflowed2OldestIndicator,
-    overflowed2NewestIndicator,
-    latestOverflowedLength
+    overflowed2NewestIndicator
   ])
 
   useEffect(() => {

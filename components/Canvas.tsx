@@ -2,7 +2,12 @@ import styles from 'styles/components/canvas.module.scss'
 import React, { useEffect, useState, useRef } from 'react'
 import emitter from 'helpers/MittEmitter'
 import { clientPos, positionObj } from 'types/Position'
-import { getPercentage, dropPosOffset, getHighestAndLowestPoints } from 'helpers/helperFunctions'
+import {
+  getPercentage,
+  dropPosOffset,
+  getHighestAndLowestPoints,
+  removeColor
+} from 'helpers/helperFunctions'
 
 const { canvas_outline, canvas_content } = styles
 
@@ -203,11 +208,11 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     setTextHistory(textHistory.slice(0, -1))
   }
 
-  const dropDraggingKey = (e: clientPos, draggingKey: string) => {
+  const dropDraggingKey = (pos: clientPos, draggingKey: string) => {
     if (!draggingKey || !ctx) return
 
     const { height, width } = canvasRef.current!
-    const offsetPos = dropPosOffset(getPosition(e), width, height)
+    const offsetPos = dropPosOffset(getPosition(pos), width, height)
     const { x, y } = offsetPos
     const droppedOutsideCanvas = y >= height || 8 >= y || x >= width || 8 >= x
 
@@ -309,6 +314,38 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     ctx.moveTo(posToUse.x, posToUse.y)
     ctx.lineTo(posToUse.x, posToUse.y)
     ctx.stroke()
+  }
+
+  const copyCanvas = (img_uri: string) => {
+    if (!ctx) return
+
+    const drawCopiedContent = (img: HTMLImageElement) => {
+      {
+        clearCanvas()
+        ctx.drawImage(
+          img,
+          0,
+          0,
+          img.width * (window.devicePixelRatio || 1),
+          img.height * (window.devicePixelRatio || 1),
+          0,
+          0,
+          img.width * (window.devicePixelRatio || 1),
+          img.height * (window.devicePixelRatio || 1)
+        )
+
+        removeColor(ctx, [253, 253, 253])
+        ctx.clearRect(0, 0, nameContainerWidth + 7, divisionsHeight)
+        drawUsernameRectangle(ctx)
+      }
+    }
+
+    const img = new Image()
+    img.src = img_uri
+    // Allow bringing data from a cross origin (image urls from firebase storage)
+    img.crossOrigin = 'Anonymous'
+    if (img.complete) return drawCopiedContent(img)
+    img.onload = () => drawCopiedContent(img)
   }
 
   const sendMessage = () => {
@@ -443,22 +480,27 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
 
   useEffect(() => drawDivisions(), [divisionsHeight])
   useEffect(() => drawUsernameRectangle(ctx!, true), [nameContainerWidth])
+
   useEffect(() => {
     drawDivisions()
     const oldDivisions = document.getElementById('canvasDivisions')
     oldDivisions?.remove()
     clearCanvas()
   }, [canvasColor])
+
   useEffect(() => {
     setCanvasColor(roomColor)
   }, [roomColor])
+
   useEffect(() => {
     emitter.on('clearCanvas', clearCanvas)
+    emitter.on('canvasToCopy', copyCanvas)
     emitter.on('draggingKey', (key: string) => setDraggingKey(key))
     emitter.on('sendMessage', sendMessage)
 
     return () => {
       emitter.off('clearCanvas')
+      emitter.off('canvasToCopy')
       emitter.off('draggingKey')
       emitter.off('sendMessage')
     }
