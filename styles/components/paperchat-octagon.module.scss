@@ -29,12 +29,6 @@
     animation: go-up 0.2s linear;
   }
 
-  &.hide_while_loading {
-    opacity: 0;
-    height: 0;
-    margin-top: 0;
-  }
-
   &.paperchat_octagon {
     height: 12%;
     min-height: 12%;
@@ -122,6 +116,64 @@
 
       .octagon_content {
         @include pixelated-rectangle-except-bottom-left;
+      }
+    }
+
+    .options_modal {
+      @include flexcenter;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      background-color: rgba(17, 17, 17, 0.7);
+      z-index: 1000;
+      color: $clear-bg;
+      font-size: 32px;
+      animation: opacityFadeIn 0.2s ease-in-out;
+
+      @include phones {
+        font-size: 25px;
+      }
+
+      .download_message {
+        transition: all 0.2s ease-in-out;
+        @include flexcenter;
+
+        img {
+          width: 30px;
+          height: 30px;
+          margin-left: 5px;
+
+          @include phones {
+            width: 25px;
+            height: 25px;
+          }
+        }
+
+        &:hover {
+          transform: scale(0.9);
+        }
+      }
+
+      &.smaller_options {
+        font-size: 22px;
+
+        .download_message img {
+          width: 20px;
+          height: 20px;
+        }
+
+        @include phones {
+          font-size: 15px;
+
+          .download_message img {
+            width: 14px;
+            height: 14px;
+          }
+        }
+      }
+
+      &.hide_options {
+        animation: opacityFadeOut 0.2s ease-in-out;
       }
     }
   }

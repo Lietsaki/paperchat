@@ -177,7 +177,7 @@ const Room = () => {
   }
 
   const scrollContent = () => {
-    const container = document.querySelector(`.${right_column}`)
+    const container = document.getElementById('messages-container')
     container!.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
   }
 
@@ -471,7 +471,7 @@ const Room = () => {
             <div className={bottom_section}></div>
           </div>
 
-          <div ref={messagesContainerRef} className={`${right_column}`}>
+          <div ref={messagesContainerRef} className={`${right_column}`} id="messages-container">
             {getRoomContent()}
           </div>
         </div>
