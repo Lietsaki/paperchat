@@ -10,9 +10,10 @@ type ButtonProps = {
   debounce?: number
   name?: dialogDebouncedActionNames
   debounceMounted?: boolean
+  classes?: string
 }
 
-const Button = ({ text, onClick, name, debounce = 0, debounceMounted }: ButtonProps) => {
+const Button = ({ text, onClick, name, debounce = 0, debounceMounted, classes }: ButtonProps) => {
   const [time, setTime] = useState<null | number>(null)
 
   useEffect(() => {
@@ -39,7 +40,9 @@ const Button = ({ text, onClick, name, debounce = 0, debounceMounted }: ButtonPr
   return (
     <button
       onClick={triggerBtn}
-      className={`${button_outer} ${time ? smaller_font : ''} ${time ? 'disabled_opacity' : ''}`}
+      className={`${button_outer} ${time ? smaller_font : ''} ${time ? 'disabled_opacity' : ''} ${
+        classes || ''
+      }`}
       disabled={!!time}
     >
       <div className={button_inner}>

@@ -1,5 +1,6 @@
 import general_styles from 'styles/options-screen/options.module.scss'
 import page_styles from 'styles/room/room.module.scss'
+import btn_styles from 'styles/components/button.module.scss'
 import PaperchatOctagon from 'components/PaperchatOctagon'
 import UserInfoOctagon from 'components/room/UserInfoOctagon'
 import MessageOctagon from 'components/room/MessageOctagon'
@@ -22,15 +23,18 @@ import { useSelector } from 'react-redux'
 import { selectUser } from 'store/slices/userSlice'
 import {
   ROOMS_LIMIT,
+  USERS_LIMIT,
   getMyRooms,
   setEnteredCreatedRoom,
   joinRoom,
   sendMessageToRoom,
   getRoomMessages,
-  leaveRoom
+  leaveRoom,
+  getPrivateCode
 } from 'firebase-config/realtimeDB'
 import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
+import Button from 'components/Button'
 
 const { top, left_column, right_column, top_section, bottom_section } = general_styles
 
@@ -56,7 +60,8 @@ const {
   thick_stroke,
   thin_stroke,
   margin_bottom_sm,
-  close_btn
+  close_btn,
+  top_buttons_row
 } = page_styles
 
 const Room = () => {
@@ -75,6 +80,8 @@ const Room = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
+  const [viewingUsers, setViewingUsers] = useState(false)
+  const [roomPrivateCode, setRoomPrivateCode] = useState('')
   const [loadedRoom, setLoadedRoom] = useState(false)
   let roomCode = ''
 
@@ -102,6 +109,7 @@ const Room = () => {
       const { code, color, id, enteringMessage } = roomData
       roomCode = code[0]
       if (color && isValidColor(color)) setRoomColor(color)
+      setRoomPrivateCode(getPrivateCode(router.query.roomID as string) || '')
 
       if (enteringMessage) {
         setRoomContent([
@@ -146,6 +154,23 @@ const Room = () => {
     }
   }, [roomContent, loadedRoom])
 
+  useEffect(() => {
+    // Refresh user list in the user dialog
+    if (viewingUsers) {
+      setDialogData({
+        open: true,
+        largeDialog: true,
+        text: getUserList(),
+        showSpinner: false,
+        rightBtnText: 'Accept',
+        rightBtnFn: () => {
+          setDialogData(baseDialogData)
+          setViewingUsers(false)
+        }
+      })
+    }
+  }, [roomUsers])
+
   const tryToJoinRoom = async (roomID: string) => {
     const res = await joinRoom(roomID)
 
@@ -161,6 +186,7 @@ const Room = () => {
     const { code, color } = roomData
     roomCode = code[0]
     if (color && isValidColor(color)) setRoomColor(color)
+    setRoomPrivateCode(getPrivateCode(router.query.roomID as string) || '')
     checkForPreviousMessages()
   }
 
@@ -353,6 +379,26 @@ const Room = () => {
     emitter.emit('canvasToCopy', lastMessage.message!)
   }
 
+  const getRoomLinkButton = () => {
+    if (roomPrivateCode) {
+      return (
+        <Button
+          classes={btn_styles.room_top_row_btn}
+          text={`Get Room Code`}
+          onClick={showPrivateCodeDialog}
+        />
+      )
+    }
+
+    return (
+      <Button
+        classes={btn_styles.room_top_row_btn}
+        text={`Get Room Link`}
+        onClick={() => router.push('/')}
+      />
+    )
+  }
+
   const showLoadingDialog = () => {
     setDialogData({
       open: true,
@@ -468,6 +514,47 @@ const Room = () => {
     })
   }
 
+  const getUserList = () => {
+    return (
+      <div className="user_list">
+        <div className="title">
+          Room users ({roomUsers.length}/{USERS_LIMIT})
+        </div>
+
+        <ol className="scrollify">
+          {roomUsers.map((user, i) => (
+            <li key={i}>{user}</li>
+          ))}
+        </ol>
+      </div>
+    )
+  }
+
+  const showUsersDialog = () => {
+    setViewingUsers(true)
+    setDialogData({
+      open: true,
+      largeDialog: true,
+      text: getUserList(),
+      showSpinner: false,
+      rightBtnText: 'Accept',
+      rightBtnFn: () => {
+        setDialogData(baseDialogData)
+        setViewingUsers(false)
+      }
+    })
+  }
+
+  const showPrivateCodeDialog = () => {
+    setDialogData({
+      open: true,
+      text: 'hey! ' + roomPrivateCode,
+      showSpinner: false,
+      rightBtnText: 'Accept',
+      rightBtnFn: () => setDialogData(baseDialogData)
+    })
+  }
+
   return (
     <div className="main">
       <div className="screens_section">
@@ -578,9 +665,19 @@ const Room = () => {
             </div>
           </div>
 
-          <div className={`${close_btn} ${active_on_click}`} onClick={showAskExitRoomDialog}>
-            <img src="/tool-buttons/close.png" alt="close button" />
-            <div className="active_color bright"></div>
+          <div className={top_buttons_row}>
+            {getRoomLinkButton()}
+
+            <Button
+              classes={btn_styles.room_top_row_btn}
+              text={`Room users (${roomUsers.length}/${USERS_LIMIT})`}
+              onClick={showUsersDialog}
+            />
+
+            <div className={`${close_btn} ${active_on_click}`} onClick={showAskExitRoomDialog}>
+              <img src="/tool-buttons/close.png" alt="close button" />
+              <div className="active_color bright"></div>
+            </div>
           </div>
 
           <div className={canvas_column}>

@@ -2,7 +2,8 @@ type dialogDebouncedActionNames = 'roomSearch' | 'retryRoomSearch' | 'retryJoinP
 
 type dialogOptions = {
   open: boolean
-  text: string
+  text: string | JSX.Element
+  largeDialog?: boolean
   showSpinner: boolean
 
   leftBtnText?: string
@@ -19,8 +20,9 @@ type dialogOptions = {
 }
 
 type DialogProps = {
-  text: string
+  text: string | JSX.Element
   showSpinner?: boolean
+  largeDialog?: boolean
 
   leftBtnText?: string
   leftBtnFn?: () => void

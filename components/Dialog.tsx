@@ -5,6 +5,7 @@ import { dialogOptions, DialogProps } from 'types/Dialog'
 const Dialog = ({
   showSpinner,
   text,
+  largeDialog,
 
   leftBtnText,
   leftBtnFn,
@@ -67,7 +68,7 @@ const Dialog = ({
   }
 
   return (
-    <div className="dialog_layer_1 go_up">
+    <div className={`dialog_layer_1 go_up ${largeDialog ? 'large_dialog' : ''}`}>
       <div className="dialog_layer_2">
         <div className="dialog_content">
           <div className="spinner-area-left">{showSpinner ? <Spinner /> : null}</div>

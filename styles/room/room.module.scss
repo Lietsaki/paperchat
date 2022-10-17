@@ -117,14 +117,20 @@
     }
   }
 
-  .close_btn {
-    position: relative;
-    justify-self: end;
-    align-self: center;
-    margin-right: 3px;
-    width: 4.4%;
-    height: 84%;
-    @include active-on-click;
+  .top_buttons_row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    .close_btn {
+      position: relative;
+      justify-self: end;
+      align-self: center;
+      margin-right: 3px;
+      width: 4.4%;
+      height: 84%;
+      @include active-on-click;
+    }
   }
 
   .canvas_column {

@@ -1,6 +1,4 @@
 .button_outer {
-  // height: 35px;
-  // width: 150px;
   height: 100%;
   width: 100%;
 
@@ -12,6 +10,23 @@
   border: 2px solid $dark-gray;
   background-color: $clear-bg;
   transition: all 0.2s ease-in-out;
+
+  &.room_top_row_btn {
+    width: 118px;
+    height: 84%;
+    font-size: 18px;
+    margin-right: 7px;
+    filter: blur(0.4px);
+    text-transform: capitalize;
+
+    .button_inner {
+      border-top: 1px solid #cdcdcd;
+    }
+
+    @include phones {
+      font-size: 14px;
+    }
+  }
 
   clip-path: polygon(
     0px 2px,

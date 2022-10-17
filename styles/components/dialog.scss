@@ -100,6 +100,49 @@
       }
     }
   }
+
+  &.large_dialog {
+    height: 230px;
+    width: 400px;
+
+    .dialog_layer_2 {
+      height: 95%;
+
+      .dialog_content {
+        width: 98%;
+        height: 96%;
+
+        .options {
+          align-self: flex-end;
+          margin-bottom: 15px;
+        }
+      }
+    }
+
+    @include phones {
+      height: 230px;
+      width: 280px;
+
+      .options {
+        margin-top: 10px;
+      }
+    }
+  }
+}
+
+.user_list {
+  .title {
+    margin: 12px 0;
+  }
+
+  ol {
+    height: 120px;
+    margin: 5px 0;
+
+    li {
+      text-align: left;
+    }
+  }
 }
 
 .go_up {
