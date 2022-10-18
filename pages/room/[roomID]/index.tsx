@@ -394,7 +394,7 @@ const Room = () => {
       <Button
         classes={btn_styles.room_top_row_btn}
         text={`Get Room Link`}
-        onClick={() => router.push('/')}
+        onClick={showRoomLinkDialog}
       />
     )
   }
@@ -548,10 +548,48 @@ const Room = () => {
   const showPrivateCodeDialog = () => {
     setDialogData({
       open: true,
-      text: 'hey! ' + roomPrivateCode,
+      text: 'Share your code with others to let them join your room!',
       showSpinner: false,
-      rightBtnText: 'Accept',
-      rightBtnFn: () => setDialogData(baseDialogData)
+      rightBtnText: 'Copy Code',
+      hideOnRightBtn: false,
+      rightBtnFn: () => {
+        navigator.clipboard.writeText(roomPrivateCode)
+
+        setDialogData({
+          open: true,
+          text: 'Copied to clipboard!',
+          showSpinner: false
+        })
+
+        setTimeout(() => {
+          document.querySelector('.dialog_layer_1')?.classList.add('go_down')
+          setTimeout(() => setDialogData(baseDialogData), 400)
+        }, 2000)
+      }
+    })
+  }
+
+  const showRoomLinkDialog = () => {
+    setDialogData({
+      open: true,
+      text: 'Get your room link. Share it, anyone can join :)',
+      showSpinner: false,
+      rightBtnText: 'Copy Link',
+      hideOnRightBtn: false,
+      rightBtnFn: () => {
+        navigator.clipboard.writeText(window.location.href)
+
+        setDialogData({
+          open: true,
+          text: 'Copied to clipboard!',
+          showSpinner: false
+        })
+
+        setTimeout(() => {
+          document.querySelector('.dialog_layer_1')?.classList.add('go_down')
+          setTimeout(() => setDialogData(baseDialogData), 400)
+        }, 2000)
+      }
     })
   }
 
