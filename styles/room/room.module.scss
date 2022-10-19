@@ -1,3 +1,39 @@
+.code_badge {
+  @include flexcenter;
+  background-color: #e3e3e3;
+  border: 3px solid #a3a3a3;
+  width: 75%;
+  height: 75%;
+  filter: blur(0.4px);
+  border-radius: 1px;
+
+  .letter {
+    text-transform: uppercase;
+    font-size: 35px;
+    position: relative;
+    top: -1px;
+    left: 1px;
+    color: $clear-bg;
+    text-shadow: 2px 0 $code-badge-outline, -2px 0 $code-badge-outline, 0 2px $code-badge-outline,
+      0 -2px $code-badge-outline, 1px 1px $code-badge-outline, -1px -1px $code-badge-outline,
+      1px -1px $code-badge-outline, -1px 1px $code-badge-outline;
+
+    @include phones {
+      top: 0px;
+      left: 0.5px;
+      font-size: 25px;
+    }
+
+    @include small-phones {
+      font-size: 22px;
+    }
+  }
+
+  @include phones {
+    border-width: 2px;
+  }
+}
+
 .bottom {
   background-color: $clear-bg;
   display: grid;

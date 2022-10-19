@@ -36,7 +36,8 @@ import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 import Button from 'components/Button'
 
-const { top, left_column, right_column, top_section, bottom_section } = general_styles
+const { top, left_column, right_column, top_section, bottom_section, dotted_border } =
+  general_styles
 
 const {
   bottom,
@@ -61,7 +62,9 @@ const {
   thin_stroke,
   margin_bottom_sm,
   close_btn,
-  top_buttons_row
+  top_buttons_row,
+  code_badge,
+  letter
 } = page_styles
 
 const Room = () => {
@@ -83,7 +86,7 @@ const Room = () => {
   const [viewingUsers, setViewingUsers] = useState(false)
   const [roomPrivateCode, setRoomPrivateCode] = useState('')
   const [loadedRoom, setLoadedRoom] = useState(false)
-  let roomCode = ''
+  const [roomCode, setRoomCode] = useState('?')
 
   const clearCanvas = () => emitter.emit('clearCanvas', '')
   const typeKey = (key: string) => emitter.emit('typeKey', key)
@@ -106,7 +109,7 @@ const Room = () => {
     } else {
       console.log('created room')
       const { code, color, id, enteringMessage } = roomData
-      roomCode = code[0]
+      setRoomCode(code[0])
       if (color && isValidColor(color)) setRoomColor(color)
       setRoomPrivateCode(getPrivateCode(router.query.roomID as string) || '')
 
@@ -183,7 +186,7 @@ const Room = () => {
     const myRooms = getMyRooms()
     const roomData = myRooms![router.query.roomID as string]
     const { code, color } = roomData
-    roomCode = code[0]
+    setRoomCode(code[0])
     if (color && isValidColor(color)) setRoomColor(color)
     setRoomPrivateCode(getPrivateCode(router.query.roomID as string) || '')
     checkForPreviousMessages()
@@ -192,9 +195,22 @@ const Room = () => {
   const checkForPreviousMessages = async () => {
     const messages = await getRoomMessages()
     if (messages === 'error') return showErrorDialog()
-
     const parsedMessages = await Promise.all(messages.map((message) => parseToRoomContent(message)))
 
+    // Set room users
+    const leaveEnterMessages = parsedMessages.filter((msg) => msg.userEntering || msg.userLeaving)
+    const users = []
+    for (const msg of leaveEnterMessages) {
+      if (msg.userEntering) {
+        users.push(msg.userEntering)
+      }
+      if (msg.userLeaving) {
+        const index = users.indexOf(msg.userLeaving)
+        users.splice(index, 1)
+      }
+    }
+
+    setRoomUsers(users)
     setRoomContent([...roomContent, ...parsedMessages])
     setTimeout(() => scrollContent(), 300)
     setLoadedRoom(true)
@@ -598,8 +614,14 @@ const Room = () => {
         <div className={`screen ${top}`}>
           <div className={left_column}>
             <div className={top_section}></div>
+            <div className={dotted_border}></div>
             <ContentIndicator roomContent={roomContent} setAdjacentMessages={setAdjacentMessages} />
-            <div className={bottom_section}></div>
+            <div className={dotted_border}></div>
+            <div className={bottom_section}>
+              <div className={code_badge}>
+                <div className={letter}>{roomCode}</div>
+              </div>
+            </div>
           </div>
 
           <div ref={messagesContainerRef} className={`${right_column}`} id="messages-container">

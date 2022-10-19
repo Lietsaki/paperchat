@@ -20,6 +20,7 @@ $now-entering: #ddec00;
 $now-leaving: #18e0c5;
 $strong-orange: #fb6900;
 $scrollbar-color-2: rgba(228, 228, 228, 0.6);
+$code-badge-outline: #4e5c89;
 
 @font-face {
   font-family: 'nds';
@@ -86,18 +87,15 @@ $scrollbar-color-2: rgba(228, 228, 228, 0.6);
   background-size: cover;
 }
 
-@mixin left-column-dotted-border {
-  &::after {
-    content: '';
-    display: block;
-    border-top: dotted 3px $green-border;
-    width: 100%;
-    filter: blur(0.6px);
-    @content;
+@mixin left-column-dotted-separator {
+  height: 0;
+  width: 100%;
+  display: block;
+  border-top: dotted 3px $green-border;
+  filter: blur(0.6px);
 
-    @include phones {
-      border-width: 2px;
-    }
+  @include phones {
+    border-width: 2px;
   }
 }
 

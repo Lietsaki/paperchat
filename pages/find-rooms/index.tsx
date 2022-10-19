@@ -24,7 +24,8 @@ const {
   bottom_top,
   room_list,
   bottom_bottom,
-  bottom_btn_container
+  bottom_btn_container,
+  dotted_border
 } = general_styles
 
 const FindRooms = () => {
@@ -176,7 +177,9 @@ const FindRooms = () => {
         <div className={`screen ${top}`}>
           <div className={left_column}>
             <div className={top_section}></div>
-            <div className="mid_section"></div>
+            <div className={dotted_border}></div>
+            <div className=""></div>
+            <div className={dotted_border}></div>
             <div className={bottom_section}></div>
           </div>
           <div className={right_column}>

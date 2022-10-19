@@ -8,15 +8,14 @@
     z-index: 1;
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 12% auto 12%;
+    grid-template-rows: 10% 3px auto 3px 10%;
+
+    .dotted_border {
+      @include left-column-dotted-separator;
+    }
 
     .top_section {
       position: relative;
-
-      @include left-column-dotted-border {
-        position: absolute;
-        bottom: 1px;
-      }
     }
 
     .content_indicator {
@@ -24,7 +23,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      padding: 8px 0 50% 0;
+      padding: 8px 0 25% 0;
       height: 310px;
 
       @include small-height-devices {
@@ -118,7 +117,7 @@
     }
 
     .bottom_section {
-      @include left-column-dotted-border;
+      @include flexcenter;
     }
   }
 
