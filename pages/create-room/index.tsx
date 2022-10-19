@@ -4,7 +4,7 @@ import Button from 'components/Button'
 import { useRouter } from 'next/router'
 import page_styles from 'styles/create-room/create-room.module.scss'
 import { useState } from 'react'
-import { createRoom, ROOMS_LIMIT } from 'firebase-config/realtimeDB'
+import { createRoom, SIMULTANEOUS_ROOMS_LIMIT, DAILY_ROOMS_LIMIT } from 'firebase-config/realtimeDB'
 import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 
@@ -33,8 +33,10 @@ const CreateRoom = () => {
       showSpinner: true
     })
     const roomID = await createRoom(false)
-    if (roomID === 'error') return showErrorDialog()
+    if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
+    if (roomID === 'joined-already') return showJoinedAlreadyDialog()
     if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
+    if (roomID === 'error') return showErrorDialog()
     setDialogData(baseDialogData)
     router.push(`room/${roomID}`)
   }
@@ -46,10 +48,42 @@ const CreateRoom = () => {
       showSpinner: true
     })
     const roomID = await createRoom(true)
-    if (roomID === 'error') return showErrorDialog()
+    if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
+    if (roomID === 'joined-already') return showJoinedAlreadyDialog()
     if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
+    if (roomID === 'error') return showErrorDialog()
     setDialogData(baseDialogData)
     router.push(`room/${roomID}`)
+  }
+
+  const showCreationLimitDialog = () => {
+    setDialogData({
+      open: true,
+      text: `You can create up to ${DAILY_ROOMS_LIMIT} rooms per day. Try again tomorrow.`,
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
+  const showJoinedAlreadyDialog = () => {
+    setDialogData({
+      open: true,
+      text: "You're already in this room",
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
+  const showRoomsLimitDialog = () => {
+    setDialogData({
+      open: true,
+      text: `You can be in up to ${SIMULTANEOUS_ROOMS_LIMIT} rooms at the same time.`,
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
   }
 
   const showErrorDialog = () => {
@@ -59,16 +93,6 @@ const CreateRoom = () => {
       showSpinner: false,
       rightBtnFn: () => setDialogData(baseDialogData),
       rightBtnText: 'Accept'
-    })
-  }
-
-  const showRoomsLimitDialog = () => {
-    setDialogData({
-      open: true,
-      text: `You can be in up to ${ROOMS_LIMIT} rooms at the same time.`,
-      showSpinner: false,
-      rightBtnText: 'Go home',
-      rightBtnFn: () => router.push('/')
     })
   }
 

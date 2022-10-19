@@ -22,7 +22,7 @@ import emitter from 'helpers/MittEmitter'
 import { useSelector } from 'react-redux'
 import { selectUser } from 'store/slices/userSlice'
 import {
-  ROOMS_LIMIT,
+  SIMULTANEOUS_ROOMS_LIMIT,
   USERS_LIMIT,
   getMyRooms,
   setEnteredCreatedRoom,
@@ -101,7 +101,6 @@ const Room = () => {
 
     if (!myRooms || !roomData || (roomData && !roomData.enteringMessage)) {
       console.log('must join room')
-      // 1) Check if the current room exists
       if (router.query.roomID.length !== 20) return showRoomNotFoundDialog()
       tryToJoinRoom(router.query.roomID as string)
     } else {
@@ -440,7 +439,7 @@ const Room = () => {
   const showRoomsLimitDialog = () => {
     setDialogData({
       open: true,
-      text: `You can be in up to ${ROOMS_LIMIT} rooms at the same time.`,
+      text: `You can be in up to ${SIMULTANEOUS_ROOMS_LIMIT} rooms at the same time.`,
       showSpinner: false,
       rightBtnText: 'Go home',
       rightBtnFn: () => router.push('/')

@@ -9,7 +9,7 @@ const initializer = () => {
   const savedUsername = localStorage.getItem('username')
 
   if (savedUsername) {
-    store.dispatch(setUsername(savedUsername))
+    store.dispatch(setUsername(savedUsername.substring(0, usernameMaxLength).trim()))
   } else {
     const username = getRandomUsername()
     localStorage.setItem('username', username)

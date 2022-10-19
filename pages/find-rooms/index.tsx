@@ -7,7 +7,12 @@ import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
-import { searchForRooms, createRoom } from 'firebase-config/realtimeDB'
+import {
+  searchForRooms,
+  createRoom,
+  SIMULTANEOUS_ROOMS_LIMIT,
+  DAILY_ROOMS_LIMIT
+} from 'firebase-config/realtimeDB'
 
 const {
   top,
@@ -75,6 +80,36 @@ const FindRooms = () => {
     })
   }
 
+  const showCreationLimitDialog = () => {
+    setDialogData({
+      open: true,
+      text: `You can create up to ${DAILY_ROOMS_LIMIT} rooms per day. Try again tomorrow.`,
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
+  const showJoinedAlreadyDialog = () => {
+    setDialogData({
+      open: true,
+      text: "You're already in this room",
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
+  const showRoomsLimitDialog = () => {
+    setDialogData({
+      open: true,
+      text: `You can be in up to ${SIMULTANEOUS_ROOMS_LIMIT} rooms at the same time.`,
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
   const showCreateRoomErrorDialog = () => {
     setDialogData({
       open: true,
@@ -92,6 +127,9 @@ const FindRooms = () => {
       showSpinner: true
     })
     const roomID = await createRoom(false)
+    if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
+    if (roomID === 'joined-already') return showJoinedAlreadyDialog()
+    if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
     if (roomID === 'error') return showCreateRoomErrorDialog()
     setDialogData(baseDialogData)
     router.push(`room/${roomID}`)
