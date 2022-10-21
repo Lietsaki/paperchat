@@ -91,6 +91,12 @@
   }
 
   &.message {
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      cursor: pointer;
+    }
+
     .octagon_outline {
       height: 98%;
       width: 99.4%;

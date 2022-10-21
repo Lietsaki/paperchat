@@ -7,6 +7,7 @@ import MessageOctagon from 'components/room/MessageOctagon'
 import Keyboard from 'components/Keyboard'
 import Canvas from 'components/Canvas'
 import ContentIndicator from 'components/room/ContentIndicator'
+import ConnectionIndicator from 'components/room/ConnectionIndicator'
 import { useRouter } from 'next/router'
 import { useState, useEffect, useRef } from 'react'
 import {
@@ -613,7 +614,9 @@ const Room = () => {
       <div className="screens_section">
         <div className={`screen ${top}`}>
           <div className={left_column}>
-            <div className={top_section}></div>
+            <div className={top_section}>
+              <ConnectionIndicator />
+            </div>
             <div className={dotted_border}></div>
             <ContentIndicator roomContent={roomContent} setAdjacentMessages={setAdjacentMessages} />
             <div className={dotted_border}></div>

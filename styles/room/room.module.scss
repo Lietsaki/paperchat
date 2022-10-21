@@ -14,9 +14,9 @@
     top: -1px;
     left: 1px;
     color: $clear-bg;
-    text-shadow: 2px 0 $code-badge-outline, -2px 0 $code-badge-outline, 0 2px $code-badge-outline,
-      0 -2px $code-badge-outline, 1px 1px $code-badge-outline, -1px -1px $code-badge-outline,
-      1px -1px $code-badge-outline, -1px 1px $code-badge-outline;
+    text-shadow: 2px 0 $content-visible, -2px 0 $content-visible, 0 2px $content-visible,
+      0 -2px $content-visible, 1px 1px $content-visible, -1px -1px $content-visible,
+      1px -1px $content-visible, -1px 1px $content-visible;
 
     @include phones {
       top: 0px;
@@ -31,6 +31,160 @@
 
   @include phones {
     border-width: 2px;
+  }
+}
+
+.connection_indicator {
+  width: 85%;
+  height: 80%;
+  background-color: #000;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  padding: 2px;
+  filter: blur(0.6px);
+
+  .top_line,
+  .bottom_line {
+    width: 98%;
+    height: 2px;
+    background-color: $wifi-bg;
+  }
+
+  .center {
+    display: grid;
+    grid-template-columns: 6px repeat(3, 4px);
+    gap: 2px;
+    align-items: flex-end;
+    align-content: center;
+
+    .antenna {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .head {
+        width: 6px;
+        height: 6px;
+        background-color: #000;
+        border: 2px solid $wifi-antenna;
+      }
+
+      .stick {
+        width: 1.5px;
+        height: 10px;
+        background-color: $wifi-antenna;
+      }
+    }
+
+    .low_bar,
+    .mid_bar,
+    .high_bar {
+      background-color: $clear-bg;
+    }
+
+    .low_bar {
+      height: 4px;
+    }
+    .mid_bar {
+      height: 10px;
+    }
+    .high_bar {
+      height: 16px;
+    }
+  }
+
+  &.mid_connection {
+    .top_line,
+    .bottom_line {
+      background-color: $now-entering;
+    }
+
+    .high_bar {
+      background-color: $wifi-antenna;
+    }
+  }
+
+  &.no_connection {
+    .top_line,
+    .bottom_line {
+      width: 98%;
+      height: 2px;
+      background-color: crimson;
+    }
+
+    .high_bar,
+    .mid_bar,
+    .low_bar {
+      background-color: $wifi-antenna;
+    }
+  }
+
+  @include phones {
+    .top_line,
+    .bottom_line {
+      height: 1.5px;
+    }
+
+    .center {
+      grid-template-columns: 4px repeat(3, 2.5px);
+      gap: 2px;
+
+      .antenna {
+        .head {
+          width: 5px;
+          height: 5px;
+        }
+
+        .stick {
+          height: 8px;
+        }
+      }
+
+      .low_bar {
+        height: 4px;
+      }
+      .mid_bar {
+        height: 8px;
+      }
+      .high_bar {
+        height: 12px;
+      }
+    }
+  }
+
+  @include small-phones {
+    padding: 2px 1px;
+
+    .center {
+      grid-template-columns: 4px repeat(3, 2.5px);
+      gap: 2px;
+
+      .antenna {
+        .head {
+          width: 4px;
+          height: 4px;
+        }
+
+        .stick {
+          height: 5px;
+        }
+      }
+
+      .low_bar {
+        height: 3px;
+      }
+      .mid_bar {
+        height: 7px;
+      }
+      .high_bar {
+        height: 10px;
+      }
+    }
+  }
+
+  @media (max-width: 360px) {
+    padding: 2px;
   }
 }
 

@@ -16,6 +16,7 @@
 
     .top_section {
       position: relative;
+      @include flexcenter;
     }
 
     .content_indicator {
@@ -31,7 +32,7 @@
       }
 
       @include phones {
-        height: 218px;
+        height: 210px;
       }
 
       @include small-phones {
