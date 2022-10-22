@@ -58,6 +58,9 @@ const FindRooms = () => {
       showSpinner: false,
       rightBtnText: 'Accept',
       rightBtnFn: () => searchRooms(),
+
+      leftBtnText: 'Go home',
+      leftBtnFn: () => router.push('/'),
       hideOnRightBtn: false
     })
   }

@@ -130,11 +130,13 @@ const Room = () => {
     emitter.on('lostConnection', showLostConnectionDialog)
     emitter.on('backOnline', showBackOnlineDialog)
     emitter.on('disbandedRoom', showBackOnlineDisbandedDialog)
+    emitter.on('otherError', showErrorDialog)
 
     return () => {
       emitter.off('lostConnection')
       emitter.off('backOnline')
       emitter.off('disbandedRoom')
+      emitter.off('otherError')
     }
   }, [router.isReady])
 

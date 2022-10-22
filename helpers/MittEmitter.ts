@@ -14,6 +14,7 @@ type Events = {
   lostConnection: string
   backOnline: string
   disbandedRoom: string
+  otherError: string
   canvasToCopy: string
 }
 
