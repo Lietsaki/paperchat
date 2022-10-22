@@ -15,7 +15,7 @@
     filter: blur(0.5px);
   }
 
-  @keyframes go-up {
+  @keyframes goUp {
     0% {
       max-height: 0;
       min-height: 0;
@@ -26,7 +26,7 @@
   }
 
   &.animate_growth {
-    animation: go-up 0.2s linear;
+    animation: goUp 0.2s linear;
   }
 
   &.paperchat_octagon {

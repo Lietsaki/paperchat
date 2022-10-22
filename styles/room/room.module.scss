@@ -6,6 +6,7 @@
   height: 75%;
   filter: blur(0.4px);
   border-radius: 1px;
+  animation: appearFromBottom 0.5s ease-in-out;
 
   .letter {
     text-transform: uppercase;
@@ -43,6 +44,7 @@
   justify-items: center;
   padding: 2px;
   filter: blur(0.6px);
+  animation: appearFromTop 0.5s ease-in-out;
 
   .top_line,
   .bottom_line {
@@ -476,5 +478,22 @@
         }
       }
     }
+  }
+}
+
+@keyframes appearFromBottom {
+  0% {
+    transform: translateY(45px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+@keyframes appearFromTop {
+  0% {
+    transform: translateY(-45px);
+  }
+  100% {
+    transform: translateY(0px);
   }
 }

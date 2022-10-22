@@ -132,9 +132,9 @@ const Room = () => {
     emitter.on('disbandedRoom', showBackOnlineDisbandedDialog)
 
     return () => {
-      emitter.off('disbandedRoom')
+      emitter.off('lostConnection')
       emitter.off('backOnline')
-      emitter.off('canvasData')
+      emitter.off('disbandedRoom')
     }
   }, [router.isReady])
 
@@ -196,7 +196,22 @@ const Room = () => {
   const checkForPreviousMessages = async () => {
     const messages = await getRoomMessages()
     if (messages === 'error') return showErrorDialog()
-    const parsedMessages = await Promise.all(messages.map((message) => parseToRoomContent(message)))
+
+    await receiveFirebaseMessages(messages)
+    setTimeout(() => scrollContent(), 300)
+    setLoadedRoom(true)
+    setDialogData(baseDialogData)
+  }
+
+  const scrollContent = () => {
+    const container = document.getElementById('messages-container')
+    container!.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
+  }
+
+  const receiveFirebaseMessages = async (receivedMessages: firebaseMessage[]) => {
+    const parsedMessages = await Promise.all(
+      receivedMessages.map((message) => parseToRoomContent(message))
+    )
 
     // Set room users
     const leaveEnterMessages = parsedMessages.filter((msg) => msg.userEntering || msg.userLeaving)
@@ -211,69 +226,8 @@ const Room = () => {
       }
     }
 
+    setRoomContent([{ paperchatOctagon: true, id: 'paperchat_octagon' }, ...parsedMessages])
     setRoomUsers(users)
-    setRoomContent([...roomContent, ...parsedMessages])
-    setTimeout(() => scrollContent(), 300)
-    setLoadedRoom(true)
-    setDialogData(baseDialogData)
-  }
-
-  const scrollContent = () => {
-    const container = document.getElementById('messages-container')
-    container!.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
-  }
-
-  const receiveFirebaseMessages = async (receivedMessages: firebaseMessage[]) => {
-    if (!loadedRoom) return
-    const updatedMessages = [...roomContent]
-    type posToSplice = { [key: number]: Promise<roomContent> }
-    const messagesToSplice: posToSplice = {}
-
-    for (let i = 0; i < receivedMessages.length; i++) {
-      const msg = receivedMessages[i]
-      const msgInRoom = updatedMessages[i + 1] // account for the paperchat octagon
-
-      // Check for possible duplicate messages
-      if (updatedMessages.find((item) => item.id === msg.localID)) continue
-
-      // Insert the latest received message
-      if (i === receivedMessages.length - 1 && !msgInRoom) {
-        updatedMessages.push(await parseToRoomContent(msg))
-        break
-      }
-
-      // Check for previous messages we didn't sync (For example, if we lost our connection)
-      if (msg.userEntering && !msgInRoom.userEntering) {
-        updatedMessages.splice(i + 1, 0, {
-          id: msg.localID,
-          userEntering: msg.userEntering
-        })
-      }
-      if (msg.userLeaving && !msgInRoom.userLeaving) {
-        updatedMessages.splice(i + 1, 0, {
-          id: msg.localID,
-          userLeaving: msg.userLeaving
-        })
-      }
-
-      // Messages with imageURL need to pre-load their images. Do so in an async function with Promise.all
-      if (msg.imageURL && (!msgInRoom || !msgInRoom.message)) {
-        messagesToSplice[i + 1] = parseToRoomContent(msg)
-      }
-    }
-
-    const messagesToSpliceVals = Object.values(messagesToSplice)
-
-    if (messagesToSpliceVals.length) {
-      const spliceVals = await Promise.all(messagesToSpliceVals)
-      const spliceKeys = Object.keys(messagesToSplice)
-
-      for (let i = 0; i < spliceKeys.length; i++) {
-        updatedMessages.splice(Number(spliceKeys[i]), 0, spliceVals[i])
-      }
-    }
-
-    setRoomContent(updatedMessages)
   }
 
   const parseToRoomContent = async (message: firebaseMessage) => {
@@ -285,17 +239,10 @@ const Room = () => {
     if (userEntering || userLeaving) {
       if (userEntering) {
         roomMessage.userEntering = userEntering
-        setRoomUsers([...roomUsers, userEntering])
       }
 
       if (userLeaving) {
         roomMessage.userLeaving = userLeaving
-
-        // Filter this way to remove only the first occurrence of a name (in case there are users with the same name)
-        const i = roomUsers.findIndex((user) => user === userLeaving)
-        const filteredUsers = [...roomUsers]
-        filteredUsers.splice(i, 1)
-        setRoomUsers(filteredUsers)
       }
 
       messageHeight = window.innerWidth > 500 ? 43 : 28
