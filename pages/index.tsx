@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser, setUsername } from 'store/slices/userSlice'
 import { usernameMinLength } from 'store/initializer'
+import { playSound } from 'helpers/helperFunctions'
 
 const {
   top,
@@ -14,6 +15,7 @@ const {
   btn_search_rooms,
   btn_create_room,
   btn_join,
+  pressed,
   username_form,
   username_input,
   editing_username,
@@ -65,19 +67,37 @@ const Home = () => {
     }
   }, [usernameInputValue])
 
+  const goToFindRooms = () => {
+    document.querySelector(`.${btn_search_rooms}`)?.classList.add(pressed)
+    playSound('main-selection', 0.3)
+    setTimeout(() => router.push('/find-rooms'), 280)
+  }
+
+  const goToCreateRoom = () => {
+    document.querySelector(`.${btn_create_room}`)?.classList.add(pressed)
+    playSound('main-selection', 0.3)
+    setTimeout(() => router.push('/create-room'), 380)
+  }
+
+  const goToJoinRoom = () => {
+    document.querySelector(`.${btn_join}`)?.classList.add(pressed)
+    playSound('main-selection', 0.3)
+    setTimeout(() => router.push('/join-room'), 390)
+  }
+
   return (
     <div className="main">
       <div className="screens_section">
         <div className={`screen ${top}`}></div>
         <div className={`screen ${bottom}`}>
           <div className={btn_search_rooms}>
-            <MenuButton onClick={() => router.push('/find-rooms')} text="Search rooms" />
+            <MenuButton onClick={goToFindRooms} text="Search rooms" />
           </div>
           <div className={btn_create_room}>
-            <MenuButton onClick={() => router.push('/create-room')} text="Create a room" />
+            <MenuButton onClick={goToCreateRoom} text="Create a room" />
           </div>
           <div className={btn_join}>
-            <MenuButton onClick={() => router.push('/join-room')} text="Join with a code" />
+            <MenuButton onClick={goToJoinRoom} text="Join with a code" />
           </div>
 
           <div onClick={editUsername} className={usernameAreaClasses}>

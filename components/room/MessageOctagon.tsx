@@ -57,14 +57,31 @@ const messageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonPro
     container!.addEventListener('scroll', hideOptions)
   }
 
+  const downloadImage = (uri: string) => {
+    fetch(uri)
+      .then((resp) => resp.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.style.display = 'none'
+        a.href = url
+        a.download = `paperchat-${id}.png`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        a.remove()
+      })
+      .catch((error) => console.log('error during img download', error))
+  }
+
   const renderOptionsModal = () => {
     if (showingOptions) {
       return (
         <div className={`${options_modal} ${shortMessage ? smaller_options : ''}`}>
-          <a className={download_message} href={img_uri} download={`paperchat-${id}.png`}>
+          <div className={download_message} onClick={() => downloadImage(img_uri)}>
             <span>Save Image</span>
             <img src="/icons/download-arrow.svg" />
-          </a>
+          </div>
         </div>
       )
     }

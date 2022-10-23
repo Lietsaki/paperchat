@@ -13,6 +13,7 @@ import {
   SIMULTANEOUS_ROOMS_LIMIT,
   DAILY_ROOMS_LIMIT
 } from 'firebase-config/realtimeDB'
+import { playSound } from 'helpers/helperFunctions'
 
 const {
   top,
@@ -25,7 +26,8 @@ const {
   room_list,
   bottom_bottom,
   bottom_btn_container,
-  dotted_border
+  dotted_border,
+  higher_z_index
 } = general_styles
 
 const FindRooms = () => {
@@ -76,11 +78,7 @@ const FindRooms = () => {
 
       rightBtnDebounce: 20,
       rightBtnName: 'retryRoomSearch',
-      rightBtnDebounceMounted: true,
-
-      leftBtnText: 'Create room',
-      leftBtnFn: () => createPublicRoom(),
-      hideOnLeftBtn: false
+      rightBtnDebounceMounted: true
     })
   }
 
@@ -156,8 +154,13 @@ const FindRooms = () => {
     )
   }
 
-  const renderRetryBtn = () => {
-    if (!rooms.length) return ''
+  const renderRightBtn = () => {
+    if (!rooms.length)
+      return (
+        <div className={bottom_btn_container}>
+          <Button name="roomSearch" onClick={() => createPublicRoom()} text="Create room" />
+        </div>
+      )
 
     return (
       <div className={bottom_btn_container}>
@@ -173,6 +176,11 @@ const FindRooms = () => {
   }
 
   const goToRoom = async (roomID: string) => router.push('room/' + roomID)
+
+  const goHome = () => {
+    playSound('cancel', 0.5)
+    router.push('/')
+  }
 
   return (
     <div className="main">
@@ -197,12 +205,12 @@ const FindRooms = () => {
 
           {renderRooms()}
 
-          <div className={`${bottom_bottom} ${rooms.length ? 'justify_evenly' : ''}`}>
+          <div className={`${bottom_bottom} ${higher_z_index} justify_evenly`}>
             <div className={bottom_btn_container}>
-              <Button onClick={() => router.push('/')} text="Cancel" />
+              <Button onClick={goHome} text="Cancel" />
             </div>
 
-            {renderRetryBtn()}
+            {renderRightBtn()}
           </div>
 
           {shouldDisplayDialog(dialogData)}

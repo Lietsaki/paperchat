@@ -15,7 +15,8 @@ import {
   createActiveColorClass,
   willContainerBeOverflowed,
   getImageData,
-  isValidColor
+  isValidColor,
+  playSound
 } from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
 import { roomContent, canvasData, firebaseMessage } from 'types/Room'
@@ -124,6 +125,7 @@ const Room = () => {
       setRoomUsers([user.username])
       setDialogData(baseDialogData)
       setLoadedRoom(true)
+      playEnteredSound()
       setEnteredCreatedRoom(id)
     }
 
@@ -202,6 +204,7 @@ const Room = () => {
     await receiveFirebaseMessages(messages)
     setTimeout(() => scrollContent(), 300)
     setLoadedRoom(true)
+    playEnteredSound()
     setDialogData(baseDialogData)
   }
 
@@ -335,11 +338,12 @@ const Room = () => {
       top: offsetTop,
       behavior: 'smooth'
     })
+    playSound('move-messages', 0.2)
   }
 
   const copyLastCanvas = () => {
     const roomMessages = roomContent.filter((item) => item.message)
-    if (!roomMessages.length) return
+    if (!roomMessages.length) return playSound('right-btn-denied', 0.4)
     const lastMessage = roomMessages[roomMessages.length - 1]
     emitter.emit('canvasToCopy', lastMessage.message!)
   }
@@ -433,6 +437,8 @@ const Room = () => {
   }
 
   const showAskExitRoomDialog = () => {
+    playSound('cancel', 0.5)
+
     setDialogData({
       open: true,
       text: 'Leave room?',
@@ -440,6 +446,7 @@ const Room = () => {
       leftBtnText: 'Cancel',
       rightBtnText: 'Accept',
       rightBtnFn: () => {
+        playSound('leave-room', 0.3)
         setDialogData(baseDialogData)
         router.push('/')
       },
@@ -558,6 +565,35 @@ const Room = () => {
     })
   }
 
+  const playEnteredSound = () => {
+    playSound('entering-room')
+  }
+
+  const selectKeyboard = (newKeyboard: keyboard) => {
+    playSound('select-keyboard', 0.1)
+    setCurrentKeyboard(newKeyboard)
+  }
+
+  const selectPencil = () => {
+    setUsingPencil(true)
+    playSound('select-pencil', 0.2)
+  }
+
+  const selectEraser = () => {
+    setUsingPencil(false)
+    playSound('select-eraser', 0.1)
+  }
+
+  const selectThickStroke = () => {
+    setUsingThickStroke(true)
+    playSound('select-thick-stroke', 0.2)
+  }
+
+  const selectThinStroke = () => {
+    setUsingThickStroke(false)
+    playSound('select-thin-stroke', 0.15)
+  }
+
   return (
     <div className="main">
       <div className="screens_section">
@@ -605,7 +641,7 @@ const Room = () => {
 
             <div
               className={`${tool_container} ${pencil} ${usingPencil ? active : ''}`}
-              onClick={() => setUsingPencil(true)}
+              onClick={() => selectPencil()}
             >
               <img src={`/tool-buttons/pencil.png`} alt="pencil button" />
               <div className="active_color bright"></div>
@@ -613,7 +649,7 @@ const Room = () => {
 
             <div
               className={`${tool_container} ${eraser} ${!usingPencil ? active : ''}`}
-              onClick={() => setUsingPencil(false)}
+              onClick={() => selectEraser()}
             >
               <img src={`/tool-buttons/eraser.png`} alt="eraser button" />
               <div className="active_color bright"></div>
@@ -621,7 +657,7 @@ const Room = () => {
 
             <div
               className={`${tool_container} ${thick_stroke} ${usingThickStroke ? active : ''}`}
-              onClick={() => setUsingThickStroke(true)}
+              onClick={() => selectThickStroke()}
             >
               <img src={`/tool-buttons/thick-stroke.png`} alt="thick stroke button" />
               <div className="active_color bright"></div>
@@ -629,7 +665,7 @@ const Room = () => {
 
             <div
               className={`${tool_container} ${thin_stroke} ${!usingThickStroke ? active : ''}`}
-              onClick={() => setUsingThickStroke(false)}
+              onClick={() => selectThinStroke()}
             >
               <img src={`/tool-buttons/thin-stroke.png`} alt="thin stroke button" />
               <div className="active_color bright"></div>
@@ -639,7 +675,7 @@ const Room = () => {
               className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm}  ${
                 currentKeyboard === 'Alphanumeric' ? active : ''
               }`}
-              onClick={() => setCurrentKeyboard('Alphanumeric')}
+              onClick={() => selectKeyboard('Alphanumeric')}
             >
               <img src={`/tool-buttons/alphanumeric.png`} alt="alphanumeric button" />
               <div className="active_color bright"></div>
@@ -649,7 +685,7 @@ const Room = () => {
               className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm} ${
                 currentKeyboard === 'Accents' ? active : ''
               }`}
-              onClick={() => setCurrentKeyboard('Accents')}
+              onClick={() => selectKeyboard('Accents')}
             >
               <img src={`/tool-buttons/accents.png`} alt="accents button" />
               <div className="active_color bright"></div>
@@ -659,7 +695,7 @@ const Room = () => {
               className={`${tool_container} ${pixelated_top_left} ${margin_bottom_sm} ${
                 currentKeyboard === 'Symbols' ? active : ''
               }`}
-              onClick={() => setCurrentKeyboard('Symbols')}
+              onClick={() => selectKeyboard('Symbols')}
             >
               <img src={`/tool-buttons/symbols.png`} alt="symbols button" />
               <div className="active_color bright"></div>
@@ -669,7 +705,7 @@ const Room = () => {
               className={`${tool_container} ${pixelated_top_left} ${
                 currentKeyboard === 'Smileys' ? active : ''
               }`}
-              onClick={() => setCurrentKeyboard('Smileys')}
+              onClick={() => selectKeyboard('Smileys')}
             >
               <img src={`/tool-buttons/smileys.png`} alt="smileys button" />
               <div className="active_color bright"></div>

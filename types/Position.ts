@@ -14,4 +14,10 @@ interface positionObj {
   y: number
 }
 
-export type { eventPos, clientPos, positionObj }
+interface historyStroke {
+  x: number
+  y: number
+  ts: number
+}
+
+export type { eventPos, clientPos, positionObj, historyStroke }

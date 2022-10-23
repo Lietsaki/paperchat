@@ -179,6 +179,10 @@
     z-index: 100;
     @include flexcenter;
 
+    &.higher_z_index {
+      z-index: 2000;
+    }
+
     .bottom_btn_container {
       height: 70%;
       width: 150px;

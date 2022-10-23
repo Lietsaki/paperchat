@@ -1,9 +1,10 @@
 import styles from 'styles/components/keyboard.module.scss'
 import { createFloatingKey, removeFloatingKey } from 'helpers/floatingKey'
-import React, { useState } from 'react'
+import { useState, useRef } from 'react'
 import { eventPos } from 'types/Position'
 import { regularAlphaKey } from 'types/Keyboard'
 import { Alphanumeric } from 'static/KeyboardsData'
+import { playSound } from 'helpers/helperFunctions'
 
 const { alphanumeric, key_row, key_container, regular_key, dragging } = styles
 
@@ -19,6 +20,8 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
   const [usingShift, setShift] = useState(false)
   const [activeKey, setActiveKey] = useState('')
   const [draggingKey, setDragginKey] = useState('')
+  const draggingKeyRef = useRef('')
+  draggingKeyRef.current = draggingKey
 
   const specialKeyMethods = {
     DEL: () => {
@@ -62,6 +65,7 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
     document.addEventListener('mouseup', handleMouseUp)
     document.addEventListener('touchend', handleMouseUp)
     document.body.style.cursor = 'grabbing'
+    playSound('keydown', 0.1)
   }
 
   const handleKeyLeave = (key: string, e: eventPos) => {
@@ -78,6 +82,7 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
   }
 
   const handleMouseUp = () => {
+    if (!draggingKeyRef.current) playSound('keyup', 0.1)
     setActiveKey('')
     setDragginKey('')
     document.removeEventListener('mouseup', handleMouseUp)

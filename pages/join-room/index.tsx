@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
+import { playSound } from 'helpers/helperFunctions'
 
 const {
   top,
@@ -80,6 +81,11 @@ const JoinWithACode = () => {
     })
   }
 
+  const goHome = () => {
+    playSound('cancel', 0.5)
+    router.push('/')
+  }
+
   return (
     <div className="main">
       <div className="screens_section">
@@ -105,7 +111,7 @@ const JoinWithACode = () => {
           </div>
           <div className={bottom_bottom}>
             <div className={bottom_btn_container}>
-              <Button onClick={() => router.push('/')} text="Cancel" />
+              <Button onClick={goHome} text="Cancel" />
             </div>
           </div>
 

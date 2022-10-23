@@ -41,16 +41,31 @@
   .btn_search_rooms {
     grid-row: 2 / 3;
     grid-column: 2 / 6;
+
+    &.pressed {
+      animation: moveUp1 0.3s linear;
+      transform: translateY(-180%);
+    }
   }
 
   .btn_create_room {
     grid-row: 3 / 4;
     grid-column: 2 / 6;
+
+    &.pressed {
+      animation: moveUp2 0.4s linear;
+      transform: translateY(-300%);
+    }
   }
 
   .btn_join {
     grid-row: 4 / 5;
     grid-column: 2 / 6;
+
+    &.pressed {
+      animation: moveUp3 0.4s linear;
+      transform: translateY(-400%);
+    }
   }
 
   .username_form {
@@ -158,6 +173,33 @@
       100% {
         transform: translateY(0px);
       }
+    }
+  }
+
+  @keyframes moveUp1 {
+    0% {
+      transform: translateY(0%);
+    }
+    100% {
+      transform: translateY(-180%);
+    }
+  }
+
+  @keyframes moveUp2 {
+    0% {
+      transform: translateY(0%);
+    }
+    100% {
+      transform: translateY(-300%);
+    }
+  }
+
+  @keyframes moveUp3 {
+    0% {
+      transform: translateY(0%);
+    }
+    100% {
+      transform: translateY(-400%);
     }
   }
 }

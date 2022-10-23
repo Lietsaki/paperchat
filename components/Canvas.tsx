@@ -1,12 +1,13 @@
 import styles from 'styles/components/canvas.module.scss'
 import React, { useEffect, useState, useRef } from 'react'
 import emitter from 'helpers/MittEmitter'
-import { clientPos, positionObj } from 'types/Position'
+import { clientPos, positionObj, historyStroke } from 'types/Position'
 import {
   getPercentage,
   dropPosOffset,
   getHighestAndLowestPoints,
-  removeColor
+  removeColor,
+  playSound
 } from 'helpers/helperFunctions'
 
 const { canvas_outline, canvas_content } = styles
@@ -41,6 +42,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
   const [ctx, setCanvasCtx] = useState<CanvasRenderingContext2D | null>(null)
   const [nameContainerWidth, setNameContainerWidth] = useState(0)
   const [divisionsHeight, setDivisionsHeight] = useState(0)
+  const [consecutiveStrokes, setConsecutiveStrokes] = useState<historyStroke[]>([])
+  const [latestFiredStrokeSound, setLatestFiredStrokeSound] = useState(0)
 
   // COLOR DATA
   const [canvasColor, setCanvasColor] = useState(roomColor)
@@ -208,16 +211,17 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     setTextHistory(textHistory.slice(0, -1))
   }
 
-  const dropDraggingKey = (pos: clientPos, draggingKey: string) => {
+  const dropDraggingKey = (posToDropIn: clientPos, draggingKey: string) => {
     if (!draggingKey || !ctx) return
 
     const { height, width } = canvasRef.current!
-    const offsetPos = dropPosOffset(getPosition(pos), width, height)
+    const offsetPos = dropPosOffset(getPosition(posToDropIn), width, height)
     const { x, y } = offsetPos
     const droppedOutsideCanvas = y >= height || 8 >= y || x >= width || 8 >= x
 
     if (isWithinUsername(offsetPos) || droppedOutsideCanvas) return
     handleTextInsert(draggingKey, offsetPos)
+    playSound('drop-key', 0.2)
   }
 
   const drawDivisions = () => {
@@ -295,6 +299,37 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     setPos(newPos)
     ctx.lineTo(newPos.x, newPos.y)
     ctx.stroke()
+
+    const updatedStrokes = [...consecutiveStrokes, { ...newPos, ts: Date.now() }]
+    setConsecutiveStrokes(updatedStrokes)
+    checkLatestStrokes(updatedStrokes)
+  }
+
+  const checkLatestStrokes = (strokes: historyStroke[]) => {
+    const lastHalfSecond = Date.now() - 500
+    const timespanStrokes = strokes.filter((stroke) => stroke.ts > lastHalfSecond)
+
+    const firstStroke = timespanStrokes[0]
+    const lastStroke = timespanStrokes[timespanStrokes.length - 1]
+    const prudentialWait = 200
+    if (latestFiredStrokeSound && lastStroke.ts < latestFiredStrokeSound + prudentialWait) return
+
+    const xDiff = Math.abs(lastStroke.x - firstStroke.x)
+    const yDiff = Math.abs(lastStroke.y - firstStroke.y)
+
+    const distanceToUse = xDiff > yDiff ? xDiff : yDiff
+    const unit = 25
+
+    if (distanceToUse >= unit) {
+      setLatestFiredStrokeSound(lastStroke.ts)
+      const volume = usingThickStroke ? 0.2 : 0.1
+      if (usingPencil) return playSound('pencil-stroke', volume)
+      return playSound('eraser-stroke', volume)
+    }
+  }
+
+  const endDrawing = () => {
+    setConsecutiveStrokes([])
   }
 
   const drawDot = (e: React.PointerEvent) => {
@@ -314,6 +349,12 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     ctx.moveTo(posToUse.x, posToUse.y)
     ctx.lineTo(posToUse.x, posToUse.y)
     ctx.stroke()
+
+    if (usingPencil) {
+      playSound('draw-dot', 0.04)
+    } else {
+      playSound('erase-dot', 0.04)
+    }
   }
 
   const copyCanvas = (img_uri: string) => {
@@ -337,6 +378,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
         removeColor(ctx, [253, 253, 253])
         ctx.clearRect(0, 0, nameContainerWidth + 7, divisionsHeight)
         drawUsernameRectangle(ctx)
+        playSound('copy-last-canvas', 0.3)
       }
     }
 
@@ -462,7 +504,23 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
 
       emitter.emit('canvasData', { dataUrl: pic_canvas.toDataURL(), height: pic_canvas.height })
       clearCanvas()
+      playSound('send-message', 0.5)
+    } else {
+      playSound('right-btn-denied', 0.4)
     }
+  }
+
+  const clearCanvasBtn = () => {
+    const nameContainerPos = { x: nameContainerWidth, y: divisionsHeight }
+    const { highestPoint, lowestPoint } = getHighestAndLowestPoints(
+      ctx!,
+      strokeRGBArray,
+      nameContainerPos
+    )
+
+    if (!highestPoint && !lowestPoint) return playSound('right-btn-denied', 0.4)
+    clearCanvas()
+    playSound('clear-canvas', 0.4)
   }
 
   // CANVAS SETUP - Happens on mounted
@@ -493,7 +551,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
   }, [roomColor])
 
   useEffect(() => {
-    emitter.on('clearCanvas', clearCanvas)
+    emitter.on('clearCanvas', clearCanvasBtn)
     emitter.on('canvasToCopy', copyCanvas)
     emitter.on('draggingKey', (key: string) => setDraggingKey(key))
     emitter.on('sendMessage', sendMessage)
@@ -539,6 +597,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     <div className={`${canvas_outline} active_bg_color`}>
       <div ref={containerRef} className={canvas_content}>
         <canvas
+          onPointerUp={endDrawing}
           onPointerDown={drawDot}
           onPointerMove={draw}
           onMouseEnter={(e) => setPos(getPosition(e))}

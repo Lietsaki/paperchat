@@ -191,6 +191,12 @@ const areDatesOnTheSameDay = (first: Date, second: Date) => {
   )
 }
 
+const playSound = (filename: string, volume = 1) => {
+  const audio = new Audio(`/sounds/${filename}.m4a`)
+  audio.volume = volume
+  audio.play()
+}
+
 export {
   getRandomNumber,
   getSimpleId,
@@ -203,5 +209,6 @@ export {
   getImageData,
   isValidColor,
   removeColor,
-  areDatesOnTheSameDay
+  areDatesOnTheSameDay,
+  playSound
 }

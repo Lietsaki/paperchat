@@ -1,6 +1,7 @@
 import Spinner from './Spinner'
 import Button from './Button'
 import { dialogOptions, DialogProps } from 'types/Dialog'
+import { useState, useEffect } from 'react'
 
 const Dialog = ({
   showSpinner,
@@ -19,6 +20,31 @@ const Dialog = ({
   rightBtnName,
   rightBtnDebounceMounted
 }: DialogProps) => {
+  const [audio, setAudio] = useState<null | HTMLAudioElement>(null)
+
+  useEffect(() => {
+    if (showSpinner) {
+      setAudio(new Audio('/sounds/loading.m4a'))
+    } else {
+      audio?.pause()
+      setAudio(null)
+    }
+  }, [showSpinner])
+
+  useEffect(() => {
+    if (audio) {
+      audio.loop = true
+      audio.play()
+    }
+
+    return () => {
+      if (audio) {
+        audio.loop = false
+        audio.currentTime = 1
+      }
+    }
+  }, [audio])
+
   const triggerLeftBtn = () => {
     if (!leftBtnFn) return
     if (hideOnLeftBtn) {

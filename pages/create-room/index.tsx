@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { createRoom, SIMULTANEOUS_ROOMS_LIMIT, DAILY_ROOMS_LIMIT } from 'firebase-config/realtimeDB'
 import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
+import { playSound } from 'helpers/helperFunctions'
 
 const {
   top,
@@ -33,6 +34,7 @@ const CreateRoom = () => {
       text: 'Creating your public room',
       showSpinner: true
     })
+
     const roomID = await createRoom(false)
     if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
     if (roomID === 'joined-already') return showJoinedAlreadyDialog()
@@ -95,6 +97,11 @@ const CreateRoom = () => {
       rightBtnFn: () => setDialogData(baseDialogData),
       rightBtnText: 'Accept'
     })
+  }
+
+  const goHome = () => {
+    playSound('cancel', 0.5)
+    router.push('/')
   }
 
   return (
@@ -161,7 +168,7 @@ const CreateRoom = () => {
 
           <div className={bottom_bottom}>
             <div className={bottom_btn_container}>
-              <Button onClick={() => router.push('/')} text="Cancel" />
+              <Button onClick={goHome} text="Cancel" />
             </div>
           </div>
 
