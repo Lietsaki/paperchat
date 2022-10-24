@@ -1,4 +1,5 @@
 import { positionObj } from 'types/Position'
+import { store } from 'store/store'
 
 const getRandomNumber = (min: number, max: number) => Math.round(Math.random() * (max - min) + min)
 
@@ -192,6 +193,8 @@ const areDatesOnTheSameDay = (first: Date, second: Date) => {
 }
 
 const playSound = (filename: string, volume = 1) => {
+  if (store.getState().user.muteSounds) return
+
   const audio = new Audio(`/sounds/${filename}.m4a`)
   audio.volume = volume
   audio.play()

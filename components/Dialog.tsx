@@ -2,6 +2,7 @@ import Spinner from './Spinner'
 import Button from './Button'
 import { dialogOptions, DialogProps } from 'types/Dialog'
 import { useState, useEffect } from 'react'
+import { store } from 'store/store'
 
 const Dialog = ({
   showSpinner,
@@ -23,7 +24,7 @@ const Dialog = ({
   const [audio, setAudio] = useState<null | HTMLAudioElement>(null)
 
   useEffect(() => {
-    if (showSpinner) {
+    if (showSpinner && !store.getState().user.muteSounds) {
       setAudio(new Audio('/sounds/loading.m4a'))
     } else {
       audio?.pause()

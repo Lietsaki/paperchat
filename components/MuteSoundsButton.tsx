@@ -1,5 +1,7 @@
 import styles from 'styles/components/menu-button.module.scss'
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { selectUser, setMuteSounds } from 'store/slices/userSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
 const { audio_button, small_version } = styles
 
@@ -8,19 +10,32 @@ type audioButtonProps = {
 }
 
 const MuteSoundsButton = ({ useSmallVersion }: audioButtonProps) => {
-  const [isMuted, setMuted] = useState(false)
+  const { muteSounds } = useSelector(selectUser)
+  const dispatch = useDispatch()
 
   const toggleAudio = () => {
-    setMuted(!isMuted)
-    console.log('toggle me')
+    dispatch(setMuteSounds(!muteSounds))
+    localStorage.setItem('muteSounds', JSON.stringify(!muteSounds))
   }
+
+  useEffect(() => {
+    const savedMuteValue = localStorage.getItem('muteSounds')
+
+    try {
+      if (savedMuteValue && JSON.parse(savedMuteValue)) {
+        dispatch(setMuteSounds(true))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
 
   return (
     <button
       onClick={toggleAudio}
       className={`${audio_button} ${useSmallVersion ? small_version : ''}`}
     >
-      {isMuted ? (
+      {muteSounds ? (
         <svg
           version="1.0"
           xmlns="http://www.w3.org/2000/svg"
