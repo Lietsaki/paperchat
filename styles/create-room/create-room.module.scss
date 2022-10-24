@@ -87,4 +87,52 @@
       }
     }
   }
+
+  .double_cards {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    height: 38%;
+
+    .card {
+      height: 100%;
+      width: 49%;
+
+      .card__inner {
+        width: 96%;
+        height: 90%;
+
+        .title_row {
+          .title {
+            left: 5%;
+            top: 2%;
+            font-size: 350%;
+          }
+
+          .icon {
+            right: 2%;
+            top: 1%;
+            width: 24%;
+
+            &.dino {
+              width: 30%;
+              top: -16%;
+            }
+          }
+
+          @include phones {
+            .title {
+              font-size: 230%;
+            }
+          }
+        }
+
+        .description {
+          @include phones {
+            padding-left: 7px;
+          }
+        }
+      }
+    }
+  }
 }

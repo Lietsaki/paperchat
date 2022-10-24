@@ -122,6 +122,21 @@
     }
   }
 
+  &.offline_mode {
+    .top_line,
+    .bottom_line {
+      width: 98%;
+      height: 2px;
+      background-color: $wifi-antenna;
+    }
+
+    .high_bar,
+    .mid_bar,
+    .low_bar {
+      background-color: $wifi-antenna;
+    }
+  }
+
   @include phones {
     .top_line,
     .bottom_line {

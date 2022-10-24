@@ -14,18 +14,22 @@ const {
   high_bar,
   bottom_line,
   mid_connection,
-  no_connection
+  no_connection,
+  offline_mode
 } = styles
 
-type ConnectionIndicatorProps = {}
+type ConnectionIndicatorProps = { offlineMode?: boolean }
 
-const ConnectionIndicator = ({}: ConnectionIndicatorProps) => {
+const ConnectionIndicator = ({ offlineMode }: ConnectionIndicatorProps) => {
   const [connectionLevel, setConnectionLevel] = useState(2)
 
   const getConnectionClass = () => {
+    if (offlineMode) return offline_mode
+
     if (connectionLevel === 2) return ''
     if (connectionLevel === 1) return mid_connection
     if (connectionLevel === 0) return no_connection
+    if (connectionLevel === -1) return
   }
 
   useEffect(() => {

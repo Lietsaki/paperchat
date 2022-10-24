@@ -8,6 +8,69 @@
     background-size: 21.5%;
     background-position: 2% 0%;
   }
+
+  display: grid;
+  grid-template-rows: 25% 1fr 25%;
+  grid-template-columns: 25% 1fr 25%;
+
+  .title {
+    grid-row: 2 / 3;
+    grid-column: 2 / 3;
+    color: #000;
+    @include flexcenter;
+
+    span.text {
+      font-size: 50px;
+      animation: appearFromLeft ease-in-out 1.5s;
+    }
+
+    span.icon {
+      font-size: 80px;
+      margin: 3px 10px 0px 0px;
+      animation: appearPopAndMoveLeft ease-in-out 0.5s;
+    }
+
+    @include small-phones {
+      span.text {
+        font-size: 45px;
+      }
+
+      span.icon {
+        font-size: 70px;
+      }
+    }
+  }
+
+  @keyframes appearPopAndMoveLeft {
+    0% {
+      transform: translateX(80px) scale(0.7);
+      opacity: 0.5;
+    }
+    30% {
+      transform: translateX(80px) scale(1.1);
+      opacity: 1;
+    }
+    50% {
+      transform: translateX(80px) scale(1);
+    }
+    100% {
+      transform: translateX(0px);
+    }
+  }
+
+  @keyframes appearFromLeft {
+    0% {
+      transform: translateX(-180px);
+      opacity: 0;
+    }
+    20% {
+      transform: translateX(-181px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0px);
+    }
+  }
 }
 
 .bottom {

@@ -1,6 +1,5 @@
 import general_styles from 'styles/options-screen/options.module.scss'
 import page_styles from 'styles/room/room.module.scss'
-import btn_styles from 'styles/components/button.module.scss'
 import MuteSoundsButton from 'components/MuteSoundsButton'
 import PaperchatOctagon from 'components/PaperchatOctagon'
 import UserInfoOctagon from 'components/room/UserInfoOctagon'
@@ -15,29 +14,16 @@ import {
   getSimpleId,
   createActiveColorClass,
   willContainerBeOverflowed,
-  getImageData,
-  isValidColor,
+  getRandomColor,
   playSound
 } from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
-import { roomContent, canvasData, firebaseMessage } from 'types/Room'
+import { roomContent, canvasData } from 'types/Room'
 import emitter from 'helpers/MittEmitter'
 import { useSelector } from 'react-redux'
 import { selectUser } from 'store/slices/userSlice'
-import {
-  SIMULTANEOUS_ROOMS_LIMIT,
-  USERS_LIMIT,
-  getMyRooms,
-  setEnteredCreatedRoom,
-  joinRoom,
-  sendMessageToRoom,
-  getRoomMessages,
-  leaveRoom,
-  getPrivateCode
-} from 'firebase-config/realtimeDB'
 import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
-import Button from 'components/Button'
 
 const { top, left_column, right_column, top_section, bottom_section, dotted_border } =
   general_styles
@@ -71,25 +57,20 @@ const {
 } = page_styles
 
 const Room = () => {
-  const defaultColor = 'hsla(204, 44%, 52%, 1.0)'
   const router = useRouter()
-  const [roomUsers, setRoomUsers] = useState<string[]>([])
   const [usingPencil, setUsingPencil] = useState(true)
   const [usingThickStroke, setUsingThickStroke] = useState(true)
   const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('Alphanumeric')
   const [roomContent, setRoomContent] = useState<roomContent[]>([
     { paperchatOctagon: true, id: 'paperchat_octagon' }
   ])
-  const [roomColor, setRoomColor] = useState(defaultColor)
+  const [roomColor] = useState(getRandomColor())
   const [adjacentMessages, setAdjacentMessages] = useState({ up: '', down: '' })
   const [user] = useState(useSelector(selectUser))
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
-  const [viewingUsers, setViewingUsers] = useState(false)
-  const [roomPrivateCode, setRoomPrivateCode] = useState('')
-  const [loadedRoom, setLoadedRoom] = useState(false)
-  const [roomCode, setRoomCode] = useState('?')
+  const [roomCode] = useState('A')
 
   const clearCanvas = () => emitter.emit('clearCanvas', '')
   const typeKey = (key: string) => emitter.emit('typeKey', key)
@@ -99,177 +80,29 @@ const Room = () => {
   const sendMessage = () => emitter.emit('sendMessage', '')
 
   useEffect(() => {
-    if (!router.query.roomID) return
+    setRoomContent([
+      ...roomContent,
+      { animate: true, id: getSimpleId(), userEntering: user.username }
+    ])
 
-    showLoadingDialog()
-    const myRooms = getMyRooms()
-    const roomData = myRooms ? myRooms[router.query.roomID as string] : null
-
-    if (!myRooms || !roomData || (roomData && !roomData.enteringMessage)) {
-      console.log('must join room')
-      if (router.query.roomID.length !== 20) return showRoomNotFoundDialog()
-      tryToJoinRoom(router.query.roomID as string)
-    } else {
-      console.log('created room')
-      const { code, color, id, enteringMessage } = roomData
-      setRoomCode(code[0])
-      if (color && isValidColor(color)) setRoomColor(color)
-      setRoomPrivateCode(getPrivateCode(router.query.roomID as string) || '')
-
-      if (enteringMessage) {
-        setRoomContent([
-          ...roomContent,
-          { animate: true, id: enteringMessage.localID, userEntering: enteringMessage.userEntering }
-        ])
-      }
-
-      setRoomUsers([user.username])
-      setDialogData(baseDialogData)
-      setLoadedRoom(true)
-      playEnteredSound()
-      setEnteredCreatedRoom(id)
-    }
-
-    emitter.on('lostConnection', showLostConnectionDialog)
-    emitter.on('backOnline', showBackOnlineDialog)
-    emitter.on('disbandedRoom', showBackOnlineDisbandedDialog)
-    emitter.on('otherError', showErrorDialog)
-
-    return () => {
-      emitter.off('lostConnection')
-      emitter.off('backOnline')
-      emitter.off('disbandedRoom')
-      emitter.off('otherError')
-    }
-  }, [router.isReady])
-
-  useEffect(() => {
-    return () => {
-      if (loadedRoom) leaveRoom()
-    }
-  }, [loadedRoom])
+    playEnteredSound()
+    setDialogData(baseDialogData)
+  }, [])
 
   useEffect(() => createActiveColorClass(roomColor), [roomColor])
 
   useEffect(() => {
     emitter.on('canvasData', receiveCanvasData)
-    emitter.on('receivedFirebaseMessages', receiveFirebaseMessages)
     setTimeout(() => scrollContent(), 100)
 
     return () => {
       emitter.off('canvasData')
-      emitter.off('receivedFirebaseMessages')
     }
-  }, [roomContent, loadedRoom])
-
-  useEffect(() => {
-    // Refresh user list in the user dialog if it's open
-    if (viewingUsers) {
-      setDialogData({
-        open: true,
-        largeDialog: true,
-        text: getUserList(),
-        showSpinner: false,
-        rightBtnText: 'Accept',
-        rightBtnFn: () => {
-          setDialogData(baseDialogData)
-          setViewingUsers(false)
-        }
-      })
-    }
-  }, [roomUsers])
-
-  const tryToJoinRoom = async (roomID: string) => {
-    const res = await joinRoom(roomID)
-
-    if (res === '404') return showRoomNotFoundDialog(true)
-    if (res === 'error') return showErrorDialog()
-    if (res === 'full-room') return showFullRoomDialog()
-    if (res === 'joined-already') return showJoinedAlreadyDialog()
-    if (res === 'hit-rooms-limit') return showRoomsLimitDialog()
-    if (res === 'invalid-code') return showRoomInvalidCodeDialog()
-
-    const myRooms = getMyRooms()
-    const roomData = myRooms![router.query.roomID as string]
-    const { code, color } = roomData
-    setRoomCode(code[0])
-    if (color && isValidColor(color)) setRoomColor(color)
-    setRoomPrivateCode(getPrivateCode(router.query.roomID as string) || '')
-    checkForPreviousMessages()
-  }
-
-  const checkForPreviousMessages = async () => {
-    const messages = await getRoomMessages()
-    if (messages === 'error') return showErrorDialog()
-
-    await receiveFirebaseMessages(messages)
-    setTimeout(() => scrollContent(), 300)
-    setLoadedRoom(true)
-    playEnteredSound()
-    setDialogData(baseDialogData)
-  }
+  }, [roomContent])
 
   const scrollContent = () => {
     const container = document.getElementById('messages-container')
     container!.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
-  }
-
-  const receiveFirebaseMessages = async (receivedMessages: firebaseMessage[]) => {
-    const parsedMessages = await Promise.all(
-      receivedMessages.map((message) => parseToRoomContent(message))
-    )
-
-    // Set room users
-    const leaveEnterMessages = parsedMessages.filter((msg) => msg.userEntering || msg.userLeaving)
-    const users = []
-    for (const msg of leaveEnterMessages) {
-      if (msg.userEntering) {
-        users.push(msg.userEntering)
-      }
-      if (msg.userLeaving) {
-        const index = users.indexOf(msg.userLeaving)
-        users.splice(index, 1)
-      }
-    }
-
-    setRoomContent([{ paperchatOctagon: true, id: 'paperchat_octagon' }, ...parsedMessages])
-    setRoomUsers(users)
-  }
-
-  const parseToRoomContent = async (message: firebaseMessage) => {
-    const { imageURL, userEntering, userLeaving, localID, color } = message
-
-    const roomMessage: roomContent = { id: localID }
-    let messageHeight = 0
-
-    if (userEntering || userLeaving) {
-      if (userEntering) {
-        roomMessage.userEntering = userEntering
-      }
-
-      if (userLeaving) {
-        roomMessage.userLeaving = userLeaving
-      }
-
-      messageHeight = window.innerWidth > 500 ? 43 : 28
-    }
-
-    if (imageURL && color) {
-      roomMessage.message = imageURL
-      roomMessage.color = color
-
-      const img = await getImageData(imageURL)
-      messageHeight = img.height
-    }
-
-    roomMessage.animate = !willContainerBeOverflowed(
-      messagesContainerRef.current!,
-      0,
-      4.5,
-      messageHeight
-    )
-
-    return roomMessage
   }
 
   const receiveCanvasData = ({ dataUrl, height }: canvasData) => {
@@ -279,12 +112,10 @@ const Room = () => {
       4,
       height
     )
-    const localID = getSimpleId()
-    sendMessageToRoom(dataUrl, localID, roomColor)
 
     setRoomContent([
       ...roomContent,
-      { message: dataUrl, id: localID, animate: !messagesWillTriggerScroll, color: roomColor }
+      { message: dataUrl, id: getSimpleId(), animate: !messagesWillTriggerScroll, color: roomColor }
     ])
   }
 
@@ -349,94 +180,6 @@ const Room = () => {
     emitter.emit('canvasToCopy', lastMessage.message!)
   }
 
-  const getRoomLinkButton = () => {
-    if (roomPrivateCode) {
-      return (
-        <Button
-          classes={btn_styles.room_top_row_btn}
-          text={`Get Room Code`}
-          onClick={showPrivateCodeDialog}
-        />
-      )
-    }
-
-    return (
-      <Button
-        classes={btn_styles.room_top_row_btn}
-        text={`Get Room Link`}
-        onClick={showRoomLinkDialog}
-      />
-    )
-  }
-
-  const showLoadingDialog = () => {
-    setDialogData({
-      open: true,
-      text: 'Loading...',
-      showSpinner: true
-    })
-  }
-
-  const showErrorDialog = () => {
-    setDialogData({
-      open: true,
-      text: 'There was an error.',
-      showSpinner: false,
-      rightBtnText: 'Go home',
-      rightBtnFn: () => router.push('/')
-    })
-  }
-
-  const showFullRoomDialog = () => {
-    setDialogData({
-      open: true,
-      text: 'Sorry, but the room is full.',
-      showSpinner: false,
-      rightBtnText: 'Go home',
-      rightBtnFn: () => router.push('/')
-    })
-  }
-
-  const showJoinedAlreadyDialog = () => {
-    setDialogData({
-      open: true,
-      text: "You're already in this room",
-      showSpinner: false,
-      rightBtnText: 'Go home',
-      rightBtnFn: () => router.push('/')
-    })
-  }
-
-  const showRoomsLimitDialog = () => {
-    setDialogData({
-      open: true,
-      text: `You can be in up to ${SIMULTANEOUS_ROOMS_LIMIT} rooms at the same time.`,
-      showSpinner: false,
-      rightBtnText: 'Go home',
-      rightBtnFn: () => router.push('/')
-    })
-  }
-
-  const showRoomInvalidCodeDialog = () => {
-    setDialogData({
-      open: true,
-      text: 'Invalid code, please try again.',
-      showSpinner: false,
-      rightBtnText: 'Go home',
-      rightBtnFn: () => router.push('/')
-    })
-  }
-
-  const showRoomNotFoundDialog = (addMaybe?: boolean) => {
-    setDialogData({
-      open: true,
-      text: addMaybe ? 'Room not found. Maybe it was disbanded.' : 'Room not found.',
-      showSpinner: false,
-      rightBtnText: 'Go home',
-      rightBtnFn: () => router.push('/')
-    })
-  }
-
   const showAskExitRoomDialog = () => {
     playSound('cancel', 0.5)
 
@@ -453,115 +196,6 @@ const Room = () => {
       },
       leftBtnFn: () => {
         setDialogData(baseDialogData)
-      }
-    })
-  }
-
-  const showLostConnectionDialog = () => {
-    setDialogData({
-      open: true,
-      text: 'Connection lost. Reconnecting...',
-      showSpinner: true
-    })
-  }
-
-  const showBackOnlineDialog = () => {
-    setDialogData({
-      open: true,
-      text: 'Back online!',
-      showSpinner: false
-    })
-    setTimeout(() => {
-      setDialogData(baseDialogData)
-      setTimeout(() => scrollContent(), 200)
-    }, 2000)
-  }
-
-  const showBackOnlineDisbandedDialog = () => {
-    setDialogData({
-      open: true,
-      text: 'Back online. Your room was disbanded since it was empty.',
-      showSpinner: false,
-      rightBtnText: 'Go home',
-      rightBtnFn: () => router.push('/')
-    })
-  }
-
-  const getUserList = () => {
-    return (
-      <div className="user_list">
-        <div className="title">
-          Room users ({roomUsers.length}/{USERS_LIMIT})
-        </div>
-
-        <ol className="scrollify">
-          {roomUsers.map((user, i) => (
-            <li key={i}>{user}</li>
-          ))}
-        </ol>
-      </div>
-    )
-  }
-
-  const showUsersDialog = () => {
-    setViewingUsers(true)
-    setDialogData({
-      open: true,
-      largeDialog: true,
-      text: getUserList(),
-      showSpinner: false,
-      rightBtnText: 'Accept',
-      rightBtnFn: () => {
-        setDialogData(baseDialogData)
-        setViewingUsers(false)
-      }
-    })
-  }
-
-  const showPrivateCodeDialog = () => {
-    setDialogData({
-      open: true,
-      text: 'Share your code with others to let them join your room!',
-      showSpinner: false,
-      rightBtnText: 'Copy Code',
-      hideOnRightBtn: false,
-      rightBtnFn: () => {
-        navigator.clipboard.writeText(roomPrivateCode)
-
-        setDialogData({
-          open: true,
-          text: 'Copied to clipboard!',
-          showSpinner: false
-        })
-
-        setTimeout(() => {
-          document.querySelector('.dialog_layer_1')?.classList.add('go_down')
-          setTimeout(() => setDialogData(baseDialogData), 400)
-        }, 2000)
-      }
-    })
-  }
-
-  const showRoomLinkDialog = () => {
-    setDialogData({
-      open: true,
-      text: 'Get your room link. Share it, anyone can join :)',
-      showSpinner: false,
-      rightBtnText: 'Copy Link',
-      hideOnRightBtn: false,
-      rightBtnFn: () => {
-        navigator.clipboard.writeText(window.location.href)
-
-        setDialogData({
-          open: true,
-          text: 'Copied to clipboard!',
-          showSpinner: false
-        })
-
-        setTimeout(() => {
-          document.querySelector('.dialog_layer_1')?.classList.add('go_down')
-          setTimeout(() => setDialogData(baseDialogData), 400)
-        }, 2000)
       }
     })
   }
@@ -601,7 +235,7 @@ const Room = () => {
         <div className={`screen ${top}`}>
           <div className={left_column}>
             <div className={top_section}>
-              <ConnectionIndicator />
+              <ConnectionIndicator offlineMode />
             </div>
             <div className={dotted_border}></div>
             <ContentIndicator roomContent={roomContent} setAdjacentMessages={setAdjacentMessages} />
@@ -715,14 +349,6 @@ const Room = () => {
 
           <div className={top_buttons_row}>
             <MuteSoundsButton useSmallVersion />
-
-            {getRoomLinkButton()}
-
-            <Button
-              classes={btn_styles.room_top_row_btn}
-              text={`Room users (${roomUsers.length}/${USERS_LIMIT})`}
-              onClick={showUsersDialog}
-            />
 
             <div className={`${close_btn} ${active_on_click}`} onClick={showAskExitRoomDialog}>
               <img src="/tool-buttons/close.png" alt="close button" />

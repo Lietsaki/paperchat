@@ -12,6 +12,9 @@ import { playSound } from 'helpers/helperFunctions'
 
 const {
   top,
+  title,
+  icon,
+  text,
   bottom,
   btn_search_rooms,
   btn_create_room,
@@ -90,7 +93,12 @@ const Home = () => {
   return (
     <div className="main">
       <div className="screens_section">
-        <div className={`screen ${top}`}></div>
+        <div className={`screen ${top}`}>
+          <div className={title}>
+            <span className={icon}>☺</span> <span className={text}>paperchat </span>
+          </div>
+        </div>
+
         <div className={`screen ${bottom}`}>
           <div className={btn_search_rooms}>
             <MenuButton onClick={goToFindRooms} text="Search rooms" />
