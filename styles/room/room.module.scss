@@ -228,7 +228,7 @@
     position: relative;
 
     .pixelated_top_left {
-      @include pixelated-top-left;
+      @include pixelated-top-left-small;
     }
 
     .tool_container {

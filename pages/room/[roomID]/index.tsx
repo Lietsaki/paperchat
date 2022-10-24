@@ -1,6 +1,7 @@
 import general_styles from 'styles/options-screen/options.module.scss'
 import page_styles from 'styles/room/room.module.scss'
 import btn_styles from 'styles/components/button.module.scss'
+import MuteSoundsButton from 'components/MuteSoundsButton'
 import PaperchatOctagon from 'components/PaperchatOctagon'
 import UserInfoOctagon from 'components/room/UserInfoOctagon'
 import MessageOctagon from 'components/room/MessageOctagon'
@@ -713,6 +714,8 @@ const Room = () => {
           </div>
 
           <div className={top_buttons_row}>
+            <MuteSoundsButton useSmallVersion />
+
             {getRoomLinkButton()}
 
             <Button

@@ -1,8 +1,7 @@
 .menu_button {
+  @include ds-font;
   height: 100%;
   width: 100%;
-
-  @include ds-font;
 
   font-size: 25px;
   color: #111;
@@ -12,11 +11,6 @@
   background-color: $clear-bg;
   transition: all 0.2s ease-in-out;
   background-image: url('/backgrounds/menu-btn-bg.png');
-
-  &:hover {
-    cursor: pointer;
-    background-color: #acacac;
-  }
 
   &:active {
     top: 1px;
@@ -33,4 +27,78 @@
   @include phones {
     font-size: 22px;
   }
+}
+
+.audio_button {
+  @include flexcenter;
+  background-color: $clear-bg;
+  background-image: url('/backgrounds/menu-btn-bg.png');
+  width: 100%;
+  height: 50px;
+  border-right: none;
+  border-bottom: none;
+
+  svg {
+    height: 22px;
+    width: 22px;
+    transition: all 0.2s ease-in-out;
+    fill: #111;
+  }
+
+  &:hover svg {
+    transform: scale(0.9);
+  }
+
+  @include phones {
+    height: 42px;
+
+    svg {
+      height: 18px;
+      width: 18px;
+    }
+  }
+
+  &.small_version {
+    width: 40px;
+    height: 84%;
+    margin-right: 7px;
+    border: 2px solid $dark-gray;
+
+    // Remove one pixel from each border
+    clip-path: polygon(
+      0px 2px,
+      2px 2px,
+      2px 0px,
+      calc(100% - 2px) 0px,
+      calc(100% - 2px) 2px,
+      100% 2px,
+      100% calc(100% - 2px),
+      calc(100% - 2px) calc(100% - 2px),
+      calc(100% - 2px) 100%,
+      2px 100%,
+      2px calc(100% - 2px),
+      0px calc(100% - 2px)
+    );
+
+    svg {
+      height: 15px;
+      width: 15px;
+      fill: #222;
+    }
+
+    @include phones {
+      margin-right: 3px;
+
+      svg {
+        height: 9px;
+        width: 10px;
+      }
+    }
+  }
+}
+
+.menu_button:hover,
+.audio_button:hover {
+  cursor: pointer;
+  background-color: #acacac;
 }

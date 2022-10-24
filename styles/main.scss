@@ -349,7 +349,7 @@ $scrollbar-color-2: rgba(228, 228, 228, 0.6);
   }
 }
 
-@mixin pixelated-top-left {
+@mixin pixelated-top-left-small {
   clip-path: polygon(
     0px 4px,
     1px 4px,

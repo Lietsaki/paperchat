@@ -176,6 +176,14 @@
     }
   }
 
+  .sounds_btn {
+    grid-row: 5 / 6;
+    grid-column: 6 / 7;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
   @keyframes moveUp1 {
     0% {
       transform: translateY(0%);

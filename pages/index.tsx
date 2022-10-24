@@ -1,5 +1,6 @@
 import styles from 'styles/home/home.module.scss'
 import MenuButton from 'components/MenuButton'
+import MuteSoundsButton from 'components/MuteSoundsButton'
 import Button from 'components/Button'
 import UsernameInput from 'components/UsernameInput'
 import { FormEvent, useEffect, useState } from 'react'
@@ -20,7 +21,8 @@ const {
   username_input,
   editing_username,
   back_to_corner,
-  save_username_btn_container
+  save_username_btn_container,
+  sounds_btn
 } = styles
 
 const Home = () => {
@@ -114,6 +116,10 @@ const Home = () => {
                 </div>
               ) : null}
             </form>
+          </div>
+
+          <div className={sounds_btn}>
+            <MuteSoundsButton />
           </div>
 
           {editingUsernameModalCover()}
