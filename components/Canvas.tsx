@@ -248,6 +248,9 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
 
   const drawUsernameRectangle = (ctx: CanvasRenderingContext2D, loadFont?: boolean) => {
     if (!ctx) return
+    ctx.clearRect(0, 0, nameContainerWidthWithMargin(), divionsHeightWithMargin())
+
+    nameContainerWidthWithMargin()
     ctx.globalCompositeOperation = 'source-over'
     ctx.lineJoin = 'bevel'
     ctx.imageSmoothingEnabled = false
@@ -271,6 +274,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
 
     // Write username making sure our font loaded first
     const f = new FontFace('nds', 'url(/fonts/nds.ttf)')
+
+    console.log('writig this', username)
 
     const writeUsername = () => {
       ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
@@ -537,7 +542,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
   }, [])
 
   useEffect(() => drawDivisions(), [divisionsHeight])
-  useEffect(() => drawUsernameRectangle(ctx!, true), [nameContainerWidth])
+  useEffect(() => drawUsernameRectangle(ctx!, true), [nameContainerWidth, username])
 
   useEffect(() => {
     drawDivisions()
@@ -562,7 +567,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
       emitter.off('draggingKey')
       emitter.off('sendMessage')
     }
-  }, [ctx])
+  }, [ctx, username])
 
   useEffect(() => {
     const handleMouseKeyDrop = (e: MouseEvent) => dropDraggingKey(e, draggingKey)

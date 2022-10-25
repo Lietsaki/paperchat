@@ -44,6 +44,7 @@ const Button = ({ text, onClick, name, debounce = 0, debounceMounted, classes }:
         classes || ''
       }`}
       disabled={!!time}
+      type="button"
     >
       <div className={button_inner}>
         <span>{text}</span> {time ? <span>&nbsp;({time})</span> : ''}

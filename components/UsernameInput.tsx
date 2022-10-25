@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, BaseSyntheticEvent, FormEvent } from 'react'
+import React, { useRef, useEffect, useState, BaseSyntheticEvent } from 'react'
 import { usernameMinLength, usernameMaxLength } from '../store/initializer'
 
 type UsernameInputProps = {

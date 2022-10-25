@@ -1,5 +1,6 @@
 import general_styles from 'styles/options-screen/options.module.scss'
 import page_styles from 'styles/room/room.module.scss'
+import home_styles from 'styles/home/home.module.scss'
 import btn_styles from 'styles/components/button.module.scss'
 import MuteSoundsButton from 'components/MuteSoundsButton'
 import PaperchatOctagon from 'components/PaperchatOctagon'
@@ -10,34 +11,44 @@ import Canvas from 'components/Canvas'
 import ContentIndicator from 'components/room/ContentIndicator'
 import ConnectionIndicator from 'components/room/ConnectionIndicator'
 import { useRouter } from 'next/router'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, FormEvent } from 'react'
 import {
   getSimpleId,
   createActiveColorClass,
   willContainerBeOverflowed,
   getImageData,
-  isValidColor,
+  getRandomColor,
   playSound
 } from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
 import { roomContent, canvasData, firebaseMessage } from 'types/Room'
 import emitter from 'helpers/MittEmitter'
-import { useSelector } from 'react-redux'
-import { selectUser } from 'store/slices/userSlice'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectUser, setUsername } from 'store/slices/userSlice'
 import {
   SIMULTANEOUS_ROOMS_LIMIT,
   USERS_LIMIT,
-  getMyRooms,
-  setEnteredCreatedRoom,
+  getCurrentRoomData,
   joinRoom,
   sendMessageToRoom,
   getRoomMessages,
   leaveRoom,
   getPrivateCode
 } from 'firebase-config/realtimeDB'
+import { usernameMinLength, usernameMaxLength } from 'store/initializer'
 import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 import Button from 'components/Button'
+import UsernameInput from 'components/UsernameInput'
+import getRandomUsername from 'helpers/username-generator/usernameGenerator'
+
+const {
+  username_form,
+  username_input,
+  editing_username,
+  save_username_btn_container,
+  skip_username_animation
+} = home_styles
 
 const { top, left_column, right_column, top_section, bottom_section, dotted_border } =
   general_styles
@@ -71,8 +82,8 @@ const {
 } = page_styles
 
 const Room = () => {
-  const defaultColor = 'hsla(204, 44%, 52%, 1.0)'
   const router = useRouter()
+  const user = useSelector(selectUser)
   const [roomUsers, setRoomUsers] = useState<string[]>([])
   const [usingPencil, setUsingPencil] = useState(true)
   const [usingThickStroke, setUsingThickStroke] = useState(true)
@@ -80,16 +91,20 @@ const Room = () => {
   const [roomContent, setRoomContent] = useState<roomContent[]>([
     { paperchatOctagon: true, id: 'paperchat_octagon' }
   ])
-  const [roomColor, setRoomColor] = useState(defaultColor)
+  const [roomColor] = useState(getRandomColor())
   const [adjacentMessages, setAdjacentMessages] = useState({ up: '', down: '' })
-  const [user] = useState(useSelector(selectUser))
   const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const dispatch = useDispatch()
 
   const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
   const [viewingUsers, setViewingUsers] = useState(false)
   const [roomPrivateCode, setRoomPrivateCode] = useState('')
+  const [mustSetUsername, setMustSetUsername] = useState(false)
   const [loadedRoom, setLoadedRoom] = useState(false)
   const [roomCode, setRoomCode] = useState('?')
+
+  const [usernameInputValue, setUsernameInputValue] = useState('')
+  const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
 
   const clearCanvas = () => emitter.emit('clearCanvas', '')
   const typeKey = (key: string) => emitter.emit('typeKey', key)
@@ -100,34 +115,18 @@ const Room = () => {
 
   useEffect(() => {
     if (!router.query.roomID) return
-
     showLoadingDialog()
-    const myRooms = getMyRooms()
-    const roomData = myRooms ? myRooms[router.query.roomID as string] : null
+    const savedUsername = user.username
 
-    if (!myRooms || !roomData || (roomData && !roomData.enteringMessage)) {
-      console.log('must join room')
-      if (router.query.roomID.length !== 20) return showRoomNotFoundDialog()
-      tryToJoinRoom(router.query.roomID as string)
-    } else {
-      console.log('created room')
-      const { code, color, id, enteringMessage } = roomData
-      setRoomCode(code[0])
-      if (color && isValidColor(color)) setRoomColor(color)
-      setRoomPrivateCode(getPrivateCode(router.query.roomID as string) || '')
-
-      if (enteringMessage) {
-        setRoomContent([
-          ...roomContent,
-          { animate: true, id: enteringMessage.localID, userEntering: enteringMessage.userEntering }
-        ])
-      }
-
-      setRoomUsers([user.username])
+    if (!savedUsername) {
+      const randomUsername = getRandomUsername()
+      setMustSetUsername(true)
+      setUsernameInputValue(randomUsername)
+      setUsernameBeingEdited(randomUsername)
       setDialogData(baseDialogData)
-      setLoadedRoom(true)
-      playEnteredSound()
-      setEnteredCreatedRoom(id)
+    } else {
+      dispatch(setUsername(savedUsername.substring(0, usernameMaxLength).trim()))
+      initializeRoom(router.query.roomID as string)
     }
 
     emitter.on('lostConnection', showLostConnectionDialog)
@@ -179,29 +178,39 @@ const Room = () => {
     }
   }, [roomUsers])
 
+  const initializeRoom = (id: string) => {
+    const currentRoom = getCurrentRoomData()
+
+    if (!currentRoom.code) {
+      console.log('must join room')
+      if (id.length !== 20) return showRoomNotFoundDialog()
+      tryToJoinRoom(id)
+    } else {
+      console.log('created room')
+      checkForPreviousMessages(currentRoom.code)
+    }
+  }
+
   const tryToJoinRoom = async (roomID: string) => {
     const res = await joinRoom(roomID)
+    const currentRoom = getCurrentRoomData()
 
     if (res === '404') return showRoomNotFoundDialog(true)
-    if (res === 'error') return showErrorDialog()
+    if (res === 'error' || !currentRoom.code) return showErrorDialog()
     if (res === 'full-room') return showFullRoomDialog()
     if (res === 'joined-already') return showJoinedAlreadyDialog()
     if (res === 'hit-rooms-limit') return showRoomsLimitDialog()
     if (res === 'invalid-code') return showRoomInvalidCodeDialog()
 
-    const myRooms = getMyRooms()
-    const roomData = myRooms![router.query.roomID as string]
-    const { code, color } = roomData
-    setRoomCode(code[0])
-    if (color && isValidColor(color)) setRoomColor(color)
-    setRoomPrivateCode(getPrivateCode(router.query.roomID as string) || '')
-    checkForPreviousMessages()
+    checkForPreviousMessages(currentRoom.code)
   }
 
-  const checkForPreviousMessages = async () => {
+  const checkForPreviousMessages = async (code: string) => {
     const messages = await getRoomMessages()
     if (messages === 'error') return showErrorDialog()
 
+    setRoomCode(code)
+    setRoomPrivateCode(getPrivateCode(router.query.roomID as string) || '')
     await receiveFirebaseMessages(messages)
     setTimeout(() => scrollContent(), 300)
     setLoadedRoom(true)
@@ -566,6 +575,47 @@ const Room = () => {
     })
   }
 
+  const handleUsernameSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    saveUsername()
+  }
+
+  const saveUsername = () => {
+    if (usernameBeingEdited.length < usernameMinLength) return
+    showLoadingDialog()
+
+    dispatch(setUsername(usernameBeingEdited))
+    localStorage.setItem('username', usernameBeingEdited)
+    setUsernameInputValue(usernameBeingEdited)
+
+    setMustSetUsername(false)
+    initializeRoom(router.query.roomID as string)
+  }
+
+  const editingUsernameModalCover = () => {
+    if (!mustSetUsername) return ''
+
+    return (
+      <>
+        <div className={`${username_input} ${editing_username} ${skip_username_animation}`}>
+          <form className={username_form} onSubmit={handleUsernameSubmit}>
+            <UsernameInput
+              editing={true}
+              receivedValue={usernameInputValue}
+              setUsernameBeingEdited={setUsernameBeingEdited}
+            />
+
+            <div className={save_username_btn_container}>
+              <Button onClick={() => saveUsername()} text="Save" />
+            </div>
+          </form>
+        </div>
+
+        <div className="modal_cover" />
+      </>
+    )
+  }
+
   const playEnteredSound = () => {
     playSound('entering-room')
   }
@@ -782,6 +832,7 @@ const Room = () => {
             </div>
           </div>
 
+          {editingUsernameModalCover()}
           {shouldDisplayDialog(dialogData)}
         </div>
       </div>

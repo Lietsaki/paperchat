@@ -131,114 +131,6 @@
     }
   }
 
-  .username_form {
-    @include flexcenter-column;
-  }
-
-  .username_input {
-    grid-row: 5 / 6;
-    grid-column: 1 / 3;
-    display: flex;
-    align-items: flex-end;
-    z-index: 10;
-    cursor: pointer;
-    position: absolute;
-    left: 0%;
-    bottom: 0%;
-
-    @include small-phones {
-      grid-column: 1 / 4;
-    }
-
-    input {
-      cursor: pointer;
-    }
-
-    &.editing_username {
-      grid-row: unset;
-      grid-column: unset;
-      bottom: unset;
-
-      filter: drop-shadow(-12px -10px 0.5px rgba(0, 0, 0, 0.6));
-      animation: moveToCenter 0.2s ease-out;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      // Center an absolutely positioned element
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-
-      input {
-        cursor: text;
-      }
-
-      @include phones {
-        width: 200px;
-      }
-
-      .save_username_btn_container {
-        margin-top: 20px;
-        animation: moveDown 0.5s ease-in-out;
-        width: 150px;
-        height: 32px;
-
-        button {
-          font-size: 22px;
-          @include phones {
-            font-size: 20px;
-          }
-        }
-      }
-    }
-
-    &.back_to_corner {
-      animation: moveToCorner 0.2s ease-in;
-    }
-
-    @keyframes moveToCenter {
-      0% {
-        left: 0%;
-        top: 90%;
-        transform: translate(0%, 0%);
-      }
-      100% {
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-      }
-    }
-    @keyframes moveToCorner {
-      0% {
-        left: 50%;
-        bottom: 38%;
-        transform: translate(-50%, -50%);
-        grid-row: unset;
-        grid-column: unset;
-      }
-      100% {
-        left: 0%;
-        bottom: 0%;
-        transform: translate(0%, 0%);
-        width: var(--backToCornerWidth);
-        grid-row: unset;
-        grid-column: unset;
-      }
-    }
-    @keyframes moveDown {
-      0% {
-        transform: translateY(-60px);
-      }
-      70% {
-        transform: translateY(20px);
-      }
-      100% {
-        transform: translateY(0px);
-      }
-    }
-  }
-
   .sounds_btn {
     grid-row: 5 / 6;
     grid-column: 6 / 7;
@@ -271,6 +163,118 @@
     }
     100% {
       transform: translateY(-400%);
+    }
+  }
+}
+
+.username_input {
+  grid-row: 5 / 6;
+  grid-column: 1 / 3;
+  display: flex;
+  align-items: flex-end;
+  z-index: 1500;
+  cursor: pointer;
+  position: absolute;
+  left: 0%;
+  bottom: 0%;
+
+  .username_form {
+    @include flexcenter-column;
+  }
+
+  input {
+    cursor: pointer;
+  }
+
+  @include small-phones {
+    grid-column: 1 / 4;
+  }
+
+  &.editing_username {
+    grid-row: unset;
+    grid-column: unset;
+    bottom: unset;
+
+    filter: drop-shadow(-12px -10px 0.5px rgba(0, 0, 0, 0.6));
+    animation: moveToCenter 0.9s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &.skip_username_animation {
+      animation: none;
+    }
+
+    // Center an absolutely positioned element
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    input {
+      cursor: text;
+    }
+
+    @include phones {
+      width: 200px;
+    }
+
+    .save_username_btn_container {
+      margin-top: 20px;
+      animation: moveDown 0.5s ease-in-out;
+      width: 150px;
+      height: 32px;
+
+      button {
+        font-size: 22px;
+        @include phones {
+          font-size: 20px;
+        }
+      }
+    }
+  }
+
+  &.back_to_corner {
+    animation: moveToCorner 0.2s ease-in;
+  }
+
+  @keyframes moveToCenter {
+    0% {
+      left: 0%;
+      top: 90%;
+      transform: translate(0%, 0%);
+    }
+    100% {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+  @keyframes moveToCorner {
+    0% {
+      left: 50%;
+      bottom: 38%;
+      transform: translate(-50%, -50%);
+      grid-row: unset;
+      grid-column: unset;
+    }
+    100% {
+      left: 0%;
+      bottom: 0%;
+      transform: translate(0%, 0%);
+      width: var(--backToCornerWidth);
+      grid-row: unset;
+      grid-column: unset;
+    }
+  }
+  @keyframes moveDown {
+    0% {
+      transform: translateY(-60px);
+    }
+    70% {
+      transform: translateY(20px);
+    }
+    100% {
+      transform: translateY(0px);
     }
   }
 }

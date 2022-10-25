@@ -18,17 +18,6 @@ type contentIndicators = {
 
 type canvasData = { dataUrl: string; height: number }
 
-type localStorageRoom = {
-  code: string
-  id: string
-  color: string
-  enteringMessage?: firebaseMessage
-}
-
-type currentRooms = {
-  [key: string]: localStorageRoom
-}
-
 // Types used in Firebase Realtime DB
 type onlineUser = {
   username: string
@@ -77,7 +66,5 @@ export type {
   roomCodes,
   firebaseMessage,
   roomMessages,
-  queryResult,
-  localStorageRoom,
-  currentRooms
+  queryResult
 }

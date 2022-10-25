@@ -71,9 +71,9 @@ a {
 .modal_cover {
   background-color: rgb(34 34 34 / 80%);
   height: 100%;
-  width: 100%;
+  width: 101%;
   position: absolute;
-  z-index: 1;
+  z-index: 1000;
   transition: all 0.2s ease-in-out;
 }
 

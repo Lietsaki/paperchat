@@ -5,7 +5,7 @@ import { setUsername } from 'store/slices/userSlice'
 const usernameMinLength = 2
 const usernameMaxLength = 11
 
-const initializer = () => {
+const initializeUsername = () => {
   const savedUsername = localStorage.getItem('username')
 
   if (savedUsername) {
@@ -17,4 +17,4 @@ const initializer = () => {
   }
 }
 
-export { initializer, usernameMinLength, usernameMaxLength }
+export { initializeUsername, usernameMinLength, usernameMaxLength }

@@ -7,7 +7,7 @@ import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser, setUsername } from 'store/slices/userSlice'
-import { usernameMinLength } from 'store/initializer'
+import { initializeUsername, usernameMinLength } from 'store/initializer'
 import { playSound } from 'helpers/helperFunctions'
 
 const {
@@ -30,15 +30,18 @@ const {
 
 const Home = () => {
   const router = useRouter()
+  const { username } = useSelector(selectUser)
+  const dispatch = useDispatch()
+
   const [editingUsername, setEditingUsername] = useState(false)
   const [usernameAreaClasses, setUsernameAreaClasses] = useState(username_input)
 
-  const [usernameInputValue, setUsernameInputValue] = useState(useSelector(selectUser).username)
+  const [usernameInputValue, setUsernameInputValue] = useState('')
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
-  const dispatch = useDispatch()
 
   const editUsername = () => {
     setEditingUsername(true)
+    setUsernameBeingEdited(usernameInputValue)
     setUsernameAreaClasses(`${username_input} ${editing_username}`)
   }
 
@@ -53,24 +56,31 @@ const Home = () => {
     ) : null
   }
 
-  const saveUsername = (savedUsername: string) => {
-    if (savedUsername.length < usernameMinLength) return
-    setUsernameInputValue(savedUsername)
-    dispatch(setUsername(savedUsername))
-    localStorage.setItem('username', savedUsername)
+  const saveUsername = () => {
+    if (usernameBeingEdited.length < usernameMinLength) return
+    dispatch(setUsername(usernameBeingEdited))
+    localStorage.setItem('username', usernameBeingEdited)
     finishEditingUsername()
   }
 
   const handleFormSubmit = (e: FormEvent) => {
     e.preventDefault()
-    saveUsername(usernameBeingEdited)
+    saveUsername()
   }
+
+  useEffect(() => {
+    initializeUsername()
+  }, [])
 
   useEffect(() => {
     if (usernameInputValue && editingUsername) {
       finishEditingUsername()
     }
   }, [usernameInputValue])
+
+  useEffect(() => {
+    setUsernameInputValue(username)
+  }, [username])
 
   const goToFindRooms = () => {
     document.querySelector(`.${btn_search_rooms}`)?.classList.add(pressed)
@@ -120,7 +130,7 @@ const Home = () => {
 
               {editingUsername ? (
                 <div className={save_username_btn_container}>
-                  <Button onClick={() => saveUsername(usernameBeingEdited)} text="Save" />
+                  <Button onClick={saveUsername} text="Save" />
                 </div>
               ) : null}
             </form>
