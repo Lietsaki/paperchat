@@ -11,9 +11,18 @@ type ButtonProps = {
   name?: dialogDebouncedActionNames
   debounceMounted?: boolean
   classes?: string
+  id?: string
 }
 
-const Button = ({ text, onClick, name, debounce = 0, debounceMounted, classes }: ButtonProps) => {
+const Button = ({
+  text,
+  onClick,
+  name,
+  debounce = 0,
+  debounceMounted,
+  classes,
+  id
+}: ButtonProps) => {
   const [time, setTime] = useState<null | number>(null)
 
   useEffect(() => {
@@ -45,6 +54,7 @@ const Button = ({ text, onClick, name, debounce = 0, debounceMounted, classes }:
       }`}
       disabled={!!time}
       type="button"
+      id={id}
     >
       <div className={button_inner}>
         <span>{text}</span> {time ? <span>&nbsp;({time})</span> : ''}

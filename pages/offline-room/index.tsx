@@ -99,7 +99,7 @@ const Room = () => {
 
   useEffect(() => {
     showLoadingDialog()
-    const savedUsername = user.username
+    const savedUsername = localStorage.getItem('username')
 
     if (!savedUsername) {
       setDialogData(baseDialogData)

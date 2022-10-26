@@ -32,8 +32,7 @@ import {
   joinRoom,
   sendMessageToRoom,
   getRoomMessages,
-  leaveRoom,
-  getPrivateCode
+  leaveRoom
 } from 'firebase-config/realtimeDB'
 import { usernameMinLength, usernameMaxLength } from 'store/initializer'
 import { dialogOptions } from 'types/Dialog'
@@ -98,7 +97,6 @@ const Room = () => {
 
   const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
   const [viewingUsers, setViewingUsers] = useState(false)
-  const [roomPrivateCode, setRoomPrivateCode] = useState('')
   const [mustSetUsername, setMustSetUsername] = useState(false)
   const [loadedRoom, setLoadedRoom] = useState(false)
   const [roomCode, setRoomCode] = useState('?')
@@ -116,7 +114,7 @@ const Room = () => {
   useEffect(() => {
     if (!router.query.roomID) return
     showLoadingDialog()
-    const savedUsername = user.username
+    const savedUsername = localStorage.getItem('username')
 
     if (!savedUsername) {
       const randomUsername = getRandomUsername()
@@ -192,15 +190,21 @@ const Room = () => {
   }
 
   const tryToJoinRoom = async (roomID: string) => {
-    const res = await joinRoom(roomID)
+    if (!router.query.code) return showMissingCodeDialog()
+
+    if (typeof router.query.code !== 'string' || router.query.code.length !== 5) {
+      return showRoomInvalidCodeDialog()
+    }
+
+    const res = await joinRoom(roomID, router.query.code)
     const currentRoom = getCurrentRoomData()
 
     if (res === '404') return showRoomNotFoundDialog(true)
-    if (res === 'error' || !currentRoom.code) return showErrorDialog()
     if (res === 'full-room') return showFullRoomDialog()
     if (res === 'joined-already') return showJoinedAlreadyDialog()
     if (res === 'hit-rooms-limit') return showRoomsLimitDialog()
     if (res === 'invalid-code') return showRoomInvalidCodeDialog()
+    if (res === 'error' || !currentRoom.code) return showErrorDialog()
 
     checkForPreviousMessages(currentRoom.code)
   }
@@ -210,7 +214,6 @@ const Room = () => {
     if (messages === 'error') return showErrorDialog()
 
     setRoomCode(code)
-    setRoomPrivateCode(getPrivateCode(router.query.roomID as string) || '')
     await receiveFirebaseMessages(messages)
     setTimeout(() => scrollContent(), 300)
     setLoadedRoom(true)
@@ -358,26 +361,6 @@ const Room = () => {
     emitter.emit('canvasToCopy', lastMessage.message!)
   }
 
-  const getRoomLinkButton = () => {
-    if (roomPrivateCode) {
-      return (
-        <Button
-          classes={btn_styles.room_top_row_btn}
-          text={`Get Room Code`}
-          onClick={showPrivateCodeDialog}
-        />
-      )
-    }
-
-    return (
-      <Button
-        classes={btn_styles.room_top_row_btn}
-        text={`Get Room Link`}
-        onClick={showRoomLinkDialog}
-      />
-    )
-  }
-
   const showLoadingDialog = () => {
     setDialogData({
       open: true,
@@ -436,6 +419,16 @@ const Room = () => {
     })
   }
 
+  const showMissingCodeDialog = (addMaybe?: boolean) => {
+    setDialogData({
+      open: true,
+      text: 'Room not found: private code missing in URL.',
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
   const showRoomNotFoundDialog = (addMaybe?: boolean) => {
     setDialogData({
       open: true,
@@ -457,7 +450,6 @@ const Room = () => {
       rightBtnText: 'Accept',
       rightBtnFn: () => {
         playSound('leave-room', 0.3)
-        setDialogData(baseDialogData)
         router.push('/')
       },
       leftBtnFn: () => {
@@ -535,7 +527,7 @@ const Room = () => {
       rightBtnText: 'Copy Code',
       hideOnRightBtn: false,
       rightBtnFn: () => {
-        navigator.clipboard.writeText(roomPrivateCode)
+        navigator.clipboard.writeText(router.query.code as string)
 
         setDialogData({
           open: true,
@@ -547,18 +539,11 @@ const Room = () => {
           document.querySelector('.dialog_layer_1')?.classList.add('go_down')
           setTimeout(() => setDialogData(baseDialogData), 400)
         }, 2000)
-      }
-    })
-  }
+      },
 
-  const showRoomLinkDialog = () => {
-    setDialogData({
-      open: true,
-      text: 'Get your room link. Share it, anyone can join :)',
-      showSpinner: false,
-      rightBtnText: 'Copy Link',
-      hideOnRightBtn: false,
-      rightBtnFn: () => {
+      leftBtnText: 'Get Full Link',
+      hideOnLeftBtn: false,
+      leftBtnFn: () => {
         navigator.clipboard.writeText(window.location.href)
 
         setDialogData({
@@ -766,7 +751,11 @@ const Room = () => {
           <div className={top_buttons_row}>
             <MuteSoundsButton useSmallVersion />
 
-            {getRoomLinkButton()}
+            <Button
+              classes={btn_styles.room_top_row_btn}
+              text={`Get Invitation`}
+              onClick={showPrivateCodeDialog}
+            />
 
             <Button
               classes={btn_styles.room_top_row_btn}

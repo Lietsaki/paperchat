@@ -34,13 +34,13 @@ const JoinWithACode = () => {
     if (code.trim().length !== PRIVATE_CODE_LENGTH) return showCodeLengthDialog()
     showLoadingDialog()
 
-    const roomID = await requestJoinPrivateRoom(code)
-    if (roomID === 'error') return showErrorDialog()
-    if (roomID === 'not-found') return showNotFoundDialog()
+    const roomIDAndCode = await requestJoinPrivateRoom(code)
+    if (roomIDAndCode === 'error') return showErrorDialog()
+    if (roomIDAndCode === 'not-found') return showNotFoundDialog()
 
     localStorage.setItem('retryJoinPrivateRoomAttempt', '0')
     setDialogData(baseDialogData)
-    router.push(`room/${roomID}`)
+    router.push(`private-room/${roomIDAndCode}`)
   }
 
   const showCodeLengthDialog = () => {

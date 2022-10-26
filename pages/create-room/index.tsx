@@ -51,13 +51,14 @@ const CreateRoom = () => {
       text: 'Creating your private room',
       showSpinner: true
     })
-    const roomID = await createRoom(true)
-    if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
-    if (roomID === 'joined-already') return showJoinedAlreadyDialog()
-    if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
-    if (roomID === 'error') return showErrorDialog()
+    const roomURL = await createRoom(true)
+    if (roomURL === 'hit-creation-limit') return showCreationLimitDialog()
+    if (roomURL === 'joined-already') return showJoinedAlreadyDialog()
+    if (roomURL === 'hit-rooms-limit') return showRoomsLimitDialog()
+    if (roomURL === 'error') return showErrorDialog()
     setDialogData(baseDialogData)
-    router.push(`room/${roomID}`)
+
+    router.push(`private-room/${roomURL}`)
   }
 
   const goToOfflineRoom = async () => {
@@ -152,25 +153,6 @@ const CreateRoom = () => {
             </div>
 
             <div className={double_cards}>
-              <div className={card} onClick={createPrivateRoom}>
-                <div className={card__inner}>
-                  <div className={title_row}>
-                    <div className={title}>Private</div>
-                    <div className={icon}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="682.667"
-                        height="682.667"
-                        viewBox="0 0 512 512"
-                        preserveAspectRatio="xMidYMid meet"
-                      >
-                        <path d="M191 93v16h-16.5H158v32.5V174l-16.2.2-16.3.3-.3 16.2-.2 16.3h-16-16v98 98h16 16v16 16h131 131v-16-16h16 16v-98-98h-16-16l-.2-16.3-.3-16.2-16.2-.3-16.3-.2v-32.5V109h-16.5H321V93 77h-65-65v16zm130 48.5V174h-16-49-49-16v-32.5V109h65 65v32.5zM387 305v98H256 125v-98-98h131 131v98zm-163.5-31.8c-.3.7-.4 15.5-.3 32.8l.3 31.5H256h32.5V305v-32.5l-32.3-.3c-25.4-.2-32.4 0-32.7 1z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div className={description}>Hidden room. Users join with an invitation code</div>
-                </div>
-              </div>
               <div className={card} onClick={goToOfflineRoom}>
                 <div className={card__inner}>
                   <div className={title_row}>
@@ -192,6 +174,26 @@ const CreateRoom = () => {
                     </div>
                   </div>
                   <div className={description}>Draw and have fun with no connection</div>
+                </div>
+              </div>
+
+              <div className={card} onClick={createPrivateRoom}>
+                <div className={card__inner}>
+                  <div className={title_row}>
+                    <div className={title}>Private</div>
+                    <div className={icon}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="682.667"
+                        height="682.667"
+                        viewBox="0 0 512 512"
+                        preserveAspectRatio="xMidYMid meet"
+                      >
+                        <path d="M191 93v16h-16.5H158v32.5V174l-16.2.2-16.3.3-.3 16.2-.2 16.3h-16-16v98 98h16 16v16 16h131 131v-16-16h16 16v-98-98h-16-16l-.2-16.3-.3-16.2-16.2-.3-16.3-.2v-32.5V109h-16.5H321V93 77h-65-65v16zm130 48.5V174h-16-49-49-16v-32.5V109h65 65v32.5zM387 305v98H256 125v-98-98h131 131v98zm-163.5-31.8c-.3.7-.4 15.5-.3 32.8l.3 31.5H256h32.5V305v-32.5l-32.3-.3c-25.4-.2-32.4 0-32.7 1z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className={description}>Hidden room. Users join with an invitation code</div>
                 </div>
               </div>
             </div>

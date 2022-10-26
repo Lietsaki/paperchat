@@ -32,8 +32,7 @@ import {
   joinRoom,
   sendMessageToRoom,
   getRoomMessages,
-  leaveRoom,
-  getPrivateCode
+  leaveRoom
 } from 'firebase-config/realtimeDB'
 import { usernameMinLength, usernameMaxLength } from 'store/initializer'
 import { dialogOptions } from 'types/Dialog'
@@ -98,7 +97,6 @@ const Room = () => {
 
   const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
   const [viewingUsers, setViewingUsers] = useState(false)
-  const [roomPrivateCode, setRoomPrivateCode] = useState('')
   const [mustSetUsername, setMustSetUsername] = useState(false)
   const [loadedRoom, setLoadedRoom] = useState(false)
   const [roomCode, setRoomCode] = useState('?')
@@ -116,7 +114,7 @@ const Room = () => {
   useEffect(() => {
     if (!router.query.roomID) return
     showLoadingDialog()
-    const savedUsername = user.username
+    const savedUsername = localStorage.getItem('username')
 
     if (!savedUsername) {
       const randomUsername = getRandomUsername()
@@ -180,6 +178,7 @@ const Room = () => {
 
   const initializeRoom = (id: string) => {
     const currentRoom = getCurrentRoomData()
+    console.log('got this', currentRoom)
 
     if (!currentRoom.code) {
       console.log('must join room')
@@ -195,12 +194,14 @@ const Room = () => {
     const res = await joinRoom(roomID)
     const currentRoom = getCurrentRoomData()
 
+    console.log('RESPONSE')
+    console.log(res)
+
     if (res === '404') return showRoomNotFoundDialog(true)
-    if (res === 'error' || !currentRoom.code) return showErrorDialog()
     if (res === 'full-room') return showFullRoomDialog()
     if (res === 'joined-already') return showJoinedAlreadyDialog()
     if (res === 'hit-rooms-limit') return showRoomsLimitDialog()
-    if (res === 'invalid-code') return showRoomInvalidCodeDialog()
+    if (res === 'error' || !currentRoom.code) return showErrorDialog()
 
     checkForPreviousMessages(currentRoom.code)
   }
@@ -210,7 +211,6 @@ const Room = () => {
     if (messages === 'error') return showErrorDialog()
 
     setRoomCode(code)
-    setRoomPrivateCode(getPrivateCode(router.query.roomID as string) || '')
     await receiveFirebaseMessages(messages)
     setTimeout(() => scrollContent(), 300)
     setLoadedRoom(true)
@@ -358,26 +358,6 @@ const Room = () => {
     emitter.emit('canvasToCopy', lastMessage.message!)
   }
 
-  const getRoomLinkButton = () => {
-    if (roomPrivateCode) {
-      return (
-        <Button
-          classes={btn_styles.room_top_row_btn}
-          text={`Get Room Code`}
-          onClick={showPrivateCodeDialog}
-        />
-      )
-    }
-
-    return (
-      <Button
-        classes={btn_styles.room_top_row_btn}
-        text={`Get Room Link`}
-        onClick={showRoomLinkDialog}
-      />
-    )
-  }
-
   const showLoadingDialog = () => {
     setDialogData({
       open: true,
@@ -420,16 +400,6 @@ const Room = () => {
     setDialogData({
       open: true,
       text: `You can be in up to ${SIMULTANEOUS_ROOMS_LIMIT} rooms at the same time.`,
-      showSpinner: false,
-      rightBtnText: 'Go home',
-      rightBtnFn: () => router.push('/')
-    })
-  }
-
-  const showRoomInvalidCodeDialog = () => {
-    setDialogData({
-      open: true,
-      text: 'Invalid code, please try again.',
       showSpinner: false,
       rightBtnText: 'Go home',
       rightBtnFn: () => router.push('/')
@@ -522,30 +492,6 @@ const Room = () => {
       rightBtnFn: () => {
         setDialogData(baseDialogData)
         setViewingUsers(false)
-      }
-    })
-  }
-
-  const showPrivateCodeDialog = () => {
-    setDialogData({
-      open: true,
-      text: 'Share your code with others to let them join your room!',
-      showSpinner: false,
-      rightBtnText: 'Copy Code',
-      hideOnRightBtn: false,
-      rightBtnFn: () => {
-        navigator.clipboard.writeText(roomPrivateCode)
-
-        setDialogData({
-          open: true,
-          text: 'Copied to clipboard!',
-          showSpinner: false
-        })
-
-        setTimeout(() => {
-          document.querySelector('.dialog_layer_1')?.classList.add('go_down')
-          setTimeout(() => setDialogData(baseDialogData), 400)
-        }, 2000)
       }
     })
   }
@@ -765,7 +711,11 @@ const Room = () => {
           <div className={top_buttons_row}>
             <MuteSoundsButton useSmallVersion />
 
-            {getRoomLinkButton()}
+            <Button
+              classes={btn_styles.room_top_row_btn}
+              text={`Get Room Link`}
+              onClick={showRoomLinkDialog}
+            />
 
             <Button
               classes={btn_styles.room_top_row_btn}
