@@ -275,8 +275,6 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     // Write username making sure our font loaded first
     const f = new FontFace('nds', 'url(/fonts/nds.ttf)')
 
-    console.log('writig this', username)
-
     const writeUsername = () => {
       ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       const firstLineY = getPercentage(80, divisionsHeight)

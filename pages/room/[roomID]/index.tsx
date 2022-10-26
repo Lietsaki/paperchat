@@ -457,7 +457,6 @@ const Room = () => {
       rightBtnText: 'Accept',
       rightBtnFn: () => {
         playSound('leave-room', 0.3)
-        setDialogData(baseDialogData)
         router.push('/')
       },
       leftBtnFn: () => {
