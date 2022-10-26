@@ -9,12 +9,15 @@ import { useSelector, useDispatch } from 'react-redux'
 import { selectUser, setUsername } from 'store/slices/userSlice'
 import { initializeUsername, usernameMinLength } from 'store/initializer'
 import { playSound } from 'helpers/helperFunctions'
+import Link from 'next/link'
 
 const {
   top,
   title,
   icon,
-  text,
+  title_text,
+  attribution,
+  privacy_link,
   bottom,
   btn_search_rooms,
   btn_create_room,
@@ -105,7 +108,19 @@ const Home = () => {
       <div className="screens_section">
         <div className={`screen ${top}`}>
           <div className={title}>
-            <span className={icon}>☺</span> <span className={text}>paperchat </span>
+            <span className={icon}>☺</span> <span className={title_text}>paperchat </span>
+          </div>
+
+          <div className={attribution}>
+            <a href="https://github.com/lietsaki/paperchat" target="_blank">
+              By Lietsaki - Fork me!
+            </a>
+          </div>
+
+          <div className={privacy_link}>
+            <span>
+              v1.0.0 - <Link href="/privacy">Privacy</Link>
+            </span>
           </div>
         </div>
 

@@ -178,7 +178,6 @@ const Room = () => {
 
   const initializeRoom = (id: string) => {
     const currentRoom = getCurrentRoomData()
-    console.log('got this', currentRoom)
 
     if (!currentRoom.code) {
       console.log('must join room')
@@ -193,9 +192,6 @@ const Room = () => {
   const tryToJoinRoom = async (roomID: string) => {
     const res = await joinRoom(roomID)
     const currentRoom = getCurrentRoomData()
-
-    console.log('RESPONSE')
-    console.log(res)
 
     if (res === '404') return showRoomNotFoundDialog(true)
     if (res === 'full-room') return showFullRoomDialog()

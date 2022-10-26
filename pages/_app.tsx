@@ -33,7 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="author" content="Ricardo Sandez - Lietsaki" />
         <meta
           name="keywords"
-          content="paperchat, pictochat online, drawing online, live drawing app, nintendo pictochat, DS drawing app"
+          content="paperchat, pictochat online, drawing online, live drawing app, nintendo pictochat, DS drawing app, by lietsaki"
         />
       </Head>
 
