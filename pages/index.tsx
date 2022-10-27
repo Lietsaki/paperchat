@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { selectUser, setUsername } from 'store/slices/userSlice'
 import { initializeUsername, usernameMinLength } from 'store/initializer'
 import { playSound } from 'helpers/helperFunctions'
+import version from 'store/version'
 import Link from 'next/link'
 
 const {
@@ -119,7 +120,7 @@ const Home = () => {
 
           <div className={privacy_link}>
             <span>
-              v1.0.0 - <Link href="/privacy">Privacy</Link>
+              v{version} - <Link href="/privacy">Privacy</Link>
             </span>
           </div>
         </div>

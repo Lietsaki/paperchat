@@ -199,6 +199,32 @@
       transform: translateY(-400%);
     }
   }
+
+  &.privacy {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 10%;
+    justify-items: center;
+
+    .privacy_content {
+      position: relative;
+      text-align: justify;
+
+      -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+      padding-bottom: 40px;
+      padding-right: 15px;
+
+      a {
+        text-decoration: underline;
+      }
+    }
+
+    .home_btn {
+      width: 30%;
+    }
+  }
 }
 
 .username_input {

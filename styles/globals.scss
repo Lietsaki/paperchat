@@ -92,9 +92,15 @@ a {
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: $scrollbar-color-2;
+    background-color: $scrollbar-color;
     border-radius: 6px;
-    // border: 3px solid $scrollbar-color-2;
+    // border: 3px solid $scrollbar-color;
+  }
+
+  &.scrollify-dark {
+    &::-webkit-scrollbar-thumb {
+      background-color: $scrollbar-color-dark;
+    }
   }
 }
 
