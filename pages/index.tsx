@@ -113,7 +113,7 @@ const Home = () => {
           </div>
 
           <div className={attribution}>
-            <a href="https://github.com/lietsaki/paperchat" target="_blank">
+            <a href="https://github.com/lietsaki/paperchat" target="_blank" rel="noreferrer">
               By Lietsaki - Fork me!
             </a>
           </div>

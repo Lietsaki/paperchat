@@ -16,7 +16,7 @@ const {
 
 type messageOctagonProps = { img_uri: string; color: string; id: string; shouldAnimate: boolean }
 
-const messageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonProps) => {
+const MessageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonProps) => {
   const outlineRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
@@ -80,7 +80,7 @@ const messageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonPro
         <div className={`${options_modal} ${shortMessage ? smaller_options : ''}`}>
           <div className={download_message} onClick={() => downloadImage(img_uri)}>
             <span>Save Image</span>
-            <img src="/icons/download-arrow.svg" />
+            <img src="/icons/download-arrow.svg" alt="download arrow icon" />
           </div>
         </div>
       )
@@ -99,11 +99,11 @@ const messageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonPro
       {renderOptionsModal()}
       <div className={octagon_outline} ref={outlineRef} style={{ backgroundColor: color }}>
         <div className={octagon_content} ref={containerRef}>
-          <img src={img_uri} onLoad={handleLoad} ref={imgRef} />
+          <img src={img_uri} onLoad={handleLoad} ref={imgRef} alt="message" />
         </div>
       </div>
     </div>
   )
 }
 
-export default messageOctagon
+export default MessageOctagon

@@ -40,8 +40,8 @@ const Home = () => {
         <div className={`screen ${bottom} ${privacy}`}>
           <div className={`${privacy_content} scrollify scrollify-dark`}>
             <p>
-              Paperchat (referred to as "this service"), is accessible from{' '}
-              <a href="https://paperchat.net/" target="_blank">
+              Paperchat (referred to as {`"this service"`}), is accessible from{' '}
+              <a href="https://paperchat.net/" target="_blank" rel="noreferrer">
                 https://paperchat.net/
               </a>{' '}
               as a web application, and also as an android application in the Google Play Store.
@@ -64,8 +64,9 @@ const Home = () => {
 
             <p>
               We do not store or collect any personal information from users. The messages you
-              exchange in chat rooms are not encrypted; they're saved as images (the canvas content)
-              while the room is active, all messages are deleted after the room is disbanded.
+              exchange in chat rooms are not encrypted; {`they're`} saved as images (the canvas
+              content) while the room is active, all messages are deleted after the room is
+              disbanded.
             </p>
 
             <p>* You can download messages (images) by clicking/tapping on them.</p>
@@ -95,10 +96,10 @@ const Home = () => {
               stamp, referring/exit pages, and possibly the number of clicks. These are not linked
               to any information that is personally identifiable. The purpose of the information is
               for analyzing trends, administering the app and tracking app performance. For example,
-              IP addresses are automatically collected by Google's Firebase Analytics.
+              IP addresses are automatically collected by {`Google's`} Firebase Analytics.
             </p>
 
-            <h3>Children's Information</h3>
+            <h3>{`Children's`} Information</h3>
             <p>
               Paperchat does not knowingly collect any Personal Identifiable Information from
               children under the age of 13.
@@ -112,13 +113,13 @@ const Home = () => {
 
             <p>
               Under the CCPA, among other rights, California consumers have the right to: Request
-              that a business that collects a consumer's personal data disclose the categories and
-              specific pieces of personal data that a business has collected about consumers.
+              that a business that collects a {`consumer's`} personal data disclose the categories
+              and specific pieces of personal data that a business has collected about consumers.
               Request that a business delete any personal data about the consumer that a business
-              has collected. Request that a business that sells a consumer's personal data, not sell
-              the consumer's personal data. If you make a request, we have one month to respond to
-              you. If you would like to exercise any of these rights, please contact us at
-              whoolsodev@gmail.com
+              has collected. Request that a business that sells a {`consumer's`} personal data, not
+              sell the {`consumer's`} personal data. If you make a request, we have one month to
+              respond to you. If you would like to exercise any of these rights, please contact us
+              at whoolsodev@gmail.com
             </p>
 
             <h3>GDPR Data Protection Rights</h3>
@@ -151,9 +152,9 @@ const Home = () => {
               conditions.
             </p>
             <p>
-              Since we do not collect user data but only log data to track our application's
-              performance, we can't provide you with any copies of said information because there is
-              none.
+              Since we do not collect user data but only log data to track our {`application's`}
+              performance, we {`can't`} provide you with any copies of said information because
+              there is none.
             </p>
           </div>
 

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Paperchat</string>
+    <string name="title_activity_main">Paperchat</string>
+    <string name="package_name">net.paperchat_dev.app</string>
+    <string name="custom_url_scheme">net.paperchat_dev.app</string>
+</resources>
