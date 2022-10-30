@@ -78,6 +78,13 @@ const Home = () => {
               Analytics.
             </p>
 
+            <h3>Disclaimer</h3>
+
+            <p>
+              Paperchat is in no way, shape or form associated with Pictochat or Nintendo. No
+              copyright infringement is intended.
+            </p>
+
             <h3>User-Generated Content</h3>
 
             <p>

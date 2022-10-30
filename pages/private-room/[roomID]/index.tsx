@@ -43,6 +43,7 @@ import UsernameInput from 'components/UsernameInput'
 import getRandomUsername from 'helpers/username-generator/usernameGenerator'
 import { Clipboard } from '@capacitor/clipboard'
 import { Capacitor } from '@capacitor/core'
+import { App } from '@capacitor/app'
 
 const {
   username_form,
@@ -135,12 +136,14 @@ const Room = () => {
     emitter.on('backOnline', showBackOnlineDialog)
     emitter.on('disbandedRoom', showBackOnlineDisbandedDialog)
     emitter.on('otherError', showErrorDialog)
+    App.addListener('backButton', () => showAskExitRoomDialog())
 
     return () => {
       emitter.off('lostConnection')
       emitter.off('backOnline')
       emitter.off('disbandedRoom')
       emitter.off('otherError')
+      App.removeAllListeners()
     }
   }, [router.isReady])
 

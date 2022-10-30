@@ -266,7 +266,8 @@ const Canvas = ({
       usernameCanvas.width = nameContainerWidthWithMargin()
       usernameCanvas.height = divionsHeightWithMargin()
     } else {
-      ctxToUse.clearRect(0, 0, nameContainerWidth + 5, divisionsHeight + 5)
+      ctxToUse.fillStyle = canvasBgColor
+      ctxToUse.fillRect(0, 0, nameContainerWidth + 5, divisionsHeight + 5)
     }
 
     ctxToUse.globalCompositeOperation = 'source-over'

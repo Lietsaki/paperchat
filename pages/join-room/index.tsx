@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 import { playSound } from 'helpers/helperFunctions'
+import Head from 'next/head'
 
 const {
   top,
@@ -88,6 +89,18 @@ const JoinWithACode = () => {
 
   return (
     <div className="main">
+      <Head>
+        <title>Paperchat - Join Room with a Code</title>
+        <meta
+          name="description"
+          content="Join a private room with a code to chat and draw online in this Pictochat online spiritual successor."
+        />
+        <meta
+          name="keywords"
+          content="paperchat join private room, pictochat online, drawing online, live drawing app, nintendo pictochat, DS drawing app, by lietsaki"
+        />
+      </Head>
+
       <div className="screens_section">
         <div className={`screen ${top}`}>
           <div className={left_column}>

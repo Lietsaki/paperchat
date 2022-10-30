@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react'
 import styles from 'styles/components/paperchat-octagon.module.scss'
+import { Capacitor } from '@capacitor/core'
 
 const {
   octagon_outside,
@@ -46,7 +47,8 @@ const MessageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonPro
   }
 
   const showOptions = (e: React.PointerEvent) => {
-    if (showingOptions || e.button === 2) return
+    // Android 11 and newest versions do not allow saving to external storage: this feature is disabled in the Android app.
+    if (showingOptions || e.button === 2 || Capacitor.isNativePlatform()) return
     setShowingOptions(true)
 
     // Curious note: If we used 'click' instead of 'pointerdown' here, hideOptions would fire immediately with
@@ -62,6 +64,7 @@ const MessageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonPro
       .then((resp) => resp.blob())
       .then((blob) => {
         const url = window.URL.createObjectURL(blob)
+
         const a = document.createElement('a')
         a.style.display = 'none'
         a.href = url

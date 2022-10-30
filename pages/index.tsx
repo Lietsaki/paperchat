@@ -44,6 +44,7 @@ const Home = () => {
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
 
   const editUsername = () => {
+    if (editingUsername) return
     setEditingUsername(true)
     setUsernameBeingEdited(usernameInputValue)
     setUsernameAreaClasses(`${username_input} ${editing_username}`)

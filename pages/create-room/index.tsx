@@ -8,6 +8,7 @@ import { createRoom, SIMULTANEOUS_ROOMS_LIMIT, DAILY_ROOMS_LIMIT } from 'firebas
 import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 import { playSound } from 'helpers/helperFunctions'
+import Head from 'next/head'
 
 const {
   top,
@@ -112,6 +113,18 @@ const CreateRoom = () => {
 
   return (
     <div className="main">
+      <Head>
+        <title>Paperchat - Create Room</title>
+        <meta
+          name="description"
+          content="Create your own room to chat and draw in real time in this online Pictochat spiritual successor."
+        />
+        <meta
+          name="keywords"
+          content="paperchat create rooms, pictochat online, drawing online, live drawing app, nintendo pictochat, DS drawing app, by lietsaki"
+        />
+      </Head>
+
       <div className="screens_section">
         <div className={`screen ${top}`}>
           <div className={left_column}>

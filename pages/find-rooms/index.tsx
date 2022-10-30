@@ -14,6 +14,7 @@ import {
   DAILY_ROOMS_LIMIT
 } from 'firebase-config/realtimeDB'
 import { playSound } from 'helpers/helperFunctions'
+import Head from 'next/head'
 
 const {
   top,
@@ -184,6 +185,18 @@ const FindRooms = () => {
 
   return (
     <div className="main">
+      <Head>
+        <title>Paperchat - Find Rooms</title>
+        <meta
+          name="description"
+          content="Find online rooms to chat and draw in real time in this online Pictochat spiritual successor."
+        />
+        <meta
+          name="keywords"
+          content="paperchat find rooms, pictochat online, drawing online, live drawing app, nintendo pictochat, DS drawing app, by lietsaki"
+        />
+      </Head>
+
       <div className="screens_section">
         <div className={`screen ${top}`}>
           <div className={left_column}>

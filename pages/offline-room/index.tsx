@@ -30,6 +30,7 @@ import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 import Button from 'components/Button'
 import UsernameInput from 'components/UsernameInput'
 import getRandomUsername from 'helpers/username-generator/usernameGenerator'
+import { App } from '@capacitor/app'
 
 const {
   username_form,
@@ -112,6 +113,12 @@ const Room = () => {
     } else {
       dispatch(setUsername(savedUsername.substring(0, usernameMaxLength).trim()))
       initializeRoom(savedUsername)
+    }
+
+    App.addListener('backButton', () => showAskExitRoomDialog())
+
+    return () => {
+      App.removeAllListeners()
     }
   }, [])
 
