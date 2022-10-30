@@ -93,21 +93,6 @@ const Room = () => {
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
   const strokeRGBArray = [17, 17, 17]
 
-  const clearCanvas = () => {
-    const canvas = document.getElementById('roomCanvas') as HTMLCanvasElement
-    const { highestPoint, lowestPoint } = getHighestAndLowestPoints(
-      canvas.getContext('2d')!,
-      strokeRGBArray
-    )
-
-    if (!highestPoint && !lowestPoint) return playSound('btn-denied', 0.4)
-
-    setShouldShowCanvas(false)
-    setTimeout(() => {
-      setShouldShowCanvas(true)
-      playSound('clear-canvas')
-    }, 30)
-  }
   const typeKey = (key: string) => emitter.emit('typeKey', key)
   const typeSpace = () => emitter.emit('typeSpace', '')
   const typeEnter = () => emitter.emit('typeEnter', '')
@@ -221,12 +206,38 @@ const Room = () => {
     playSound('move-messages', 0.2)
   }
 
+  const clearCanvas = (clearEvenEmpty?: boolean, skipSound?: boolean) => {
+    const canvas = document.getElementById('roomCanvas') as HTMLCanvasElement
+
+    const performClear = () => {
+      setShouldShowCanvas(false)
+      setTimeout(() => {
+        setShouldShowCanvas(true)
+        if (!skipSound) playSound('clear-canvas')
+      }, 30)
+    }
+
+    if (clearEvenEmpty) {
+      performClear()
+    } else {
+      const { highestPoint, lowestPoint } = getHighestAndLowestPoints(
+        canvas.getContext('2d')!,
+        strokeRGBArray
+      )
+      if (!highestPoint && !lowestPoint) return playSound('btn-denied', 0.4)
+      performClear()
+    }
+  }
+
   const copyLastCanvas = () => {
     const roomMessages = roomContent.filter((item) => item.message)
     if (!roomMessages.length) return playSound('btn-denied', 0.4)
     const lastMessage = roomMessages[roomMessages.length - 1]
-    clearCanvas()
-    emitter.emit('canvasToCopy', lastMessage.message!)
+    clearCanvas(true, true)
+
+    setTimeout(() => {
+      emitter.emit('canvasToCopy', lastMessage.message!)
+    }, 200)
   }
 
   const showAskExitRoomDialog = () => {
@@ -334,6 +345,7 @@ const Room = () => {
           usingPencil={usingPencil}
           roomColor={roomColor}
           usingThickStroke={usingThickStroke}
+          clearCanvas={clearCanvas}
         />
       )
     }
@@ -498,7 +510,7 @@ const Room = () => {
                       className={active}
                     />
                   </div>
-                  <div className={`${active_on_click}`} onClick={clearCanvas}>
+                  <div className={`${active_on_click}`} onClick={() => clearCanvas()}>
                     <img src="/send-buttons/CLEAR.png" alt="clear button" />
                     <img
                       src="/send-buttons/active/CLEAR.png"

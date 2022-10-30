@@ -18,6 +18,7 @@ import {
   willContainerBeOverflowed,
   getImageData,
   getRandomColor,
+  getHighestAndLowestPoints,
   playSound
 } from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
@@ -40,6 +41,8 @@ import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 import Button from 'components/Button'
 import UsernameInput from 'components/UsernameInput'
 import getRandomUsername from 'helpers/username-generator/usernameGenerator'
+import { Clipboard } from '@capacitor/clipboard'
+import { Capacitor } from '@capacitor/core'
 
 const {
   username_form,
@@ -83,6 +86,7 @@ const {
 const Room = () => {
   const router = useRouter()
   const user = useSelector(selectUser)
+  const [shouldShowCanvas, setShouldShowCanvas] = useState(true)
   const [roomUsers, setRoomUsers] = useState<string[]>([])
   const [usingPencil, setUsingPencil] = useState(true)
   const [usingThickStroke, setUsingThickStroke] = useState(true)
@@ -103,8 +107,8 @@ const Room = () => {
 
   const [usernameInputValue, setUsernameInputValue] = useState('')
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
+  const strokeRGBArray = [17, 17, 17]
 
-  const clearCanvas = () => emitter.emit('clearCanvas', '')
   const typeKey = (key: string) => emitter.emit('typeKey', key)
   const typeSpace = () => emitter.emit('typeSpace', '')
   const typeEnter = () => emitter.emit('typeEnter', '')
@@ -347,11 +351,38 @@ const Room = () => {
     playSound('move-messages', 0.2)
   }
 
+  const clearCanvas = (clearEvenEmpty?: boolean, skipSound?: boolean) => {
+    const canvas = document.getElementById('roomCanvas') as HTMLCanvasElement
+
+    const performClear = () => {
+      setShouldShowCanvas(false)
+      setTimeout(() => {
+        setShouldShowCanvas(true)
+        if (!skipSound) playSound('clear-canvas')
+      }, 30)
+    }
+
+    if (clearEvenEmpty) {
+      performClear()
+    } else {
+      const { highestPoint, lowestPoint } = getHighestAndLowestPoints(
+        canvas.getContext('2d')!,
+        strokeRGBArray
+      )
+      if (!highestPoint && !lowestPoint) return playSound('btn-denied', 0.4)
+      performClear()
+    }
+  }
+
   const copyLastCanvas = () => {
     const roomMessages = roomContent.filter((item) => item.message)
     if (!roomMessages.length) return playSound('btn-denied', 0.4)
     const lastMessage = roomMessages[roomMessages.length - 1]
-    emitter.emit('canvasToCopy', lastMessage.message!)
+    clearCanvas(true, true)
+
+    setTimeout(() => {
+      emitter.emit('canvasToCopy', lastMessage.message!)
+    }, 200)
   }
 
   const showLoadingDialog = () => {
@@ -499,8 +530,12 @@ const Room = () => {
       showSpinner: false,
       rightBtnText: 'Copy Link',
       hideOnRightBtn: false,
-      rightBtnFn: () => {
-        navigator.clipboard.writeText(window.location.href)
+      rightBtnFn: async () => {
+        if (Capacitor.isNativePlatform()) {
+          await Clipboard.write({ url: window.location.href })
+        } else {
+          navigator.clipboard.writeText(window.location.href)
+        }
 
         setDialogData({
           open: true,
@@ -584,6 +619,20 @@ const Room = () => {
   const selectThinStroke = () => {
     setUsingThickStroke(false)
     playSound('select-thin-stroke', 0.15)
+  }
+
+  const getCanvas = () => {
+    if (shouldShowCanvas) {
+      return (
+        <Canvas
+          username={user.username}
+          usingPencil={usingPencil}
+          roomColor={roomColor}
+          usingThickStroke={usingThickStroke}
+          clearCanvas={clearCanvas}
+        />
+      )
+    }
   }
 
   return (
@@ -727,14 +776,7 @@ const Room = () => {
 
           <div className={canvas_column}>
             <div className={canvas_area}>
-              <div className={canvas_bg}>
-                <Canvas
-                  username={user.username}
-                  usingPencil={usingPencil}
-                  roomColor={roomColor}
-                  usingThickStroke={usingThickStroke}
-                />
-              </div>
+              <div className={canvas_bg}>{getCanvas()}</div>
 
               <div className={keyboard_area}>
                 <Keyboard
@@ -764,7 +806,7 @@ const Room = () => {
                       className={active}
                     />
                   </div>
-                  <div className={`${active_on_click}`} onClick={clearCanvas}>
+                  <div className={`${active_on_click}`} onClick={() => clearCanvas()}>
                     <img src="/send-buttons/CLEAR.png" alt="clear button" />
                     <img
                       src="/send-buttons/active/CLEAR.png"

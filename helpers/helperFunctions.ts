@@ -203,6 +203,19 @@ const areDatesOnTheSameDay = (first: Date, second: Date) => {
   )
 }
 
+const loadImage = (url: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve) => {
+    const image = new Image()
+
+    // Allow bringing data from a cross origin (image urls from firebase storage)
+    image.crossOrigin = 'Anonymous'
+    image.addEventListener('load', () => resolve(image))
+
+    image.src = url
+    if (image.complete) resolve(image)
+  })
+}
+
 const playSound = (filename: string, volume = 1) => {
   if (store.getState().user.muteSounds) return
 
@@ -225,5 +238,6 @@ export {
   removeColor,
   areDatesOnTheSameDay,
   playSound,
-  getLighterHslaShade
+  getLighterHslaShade,
+  loadImage
 }

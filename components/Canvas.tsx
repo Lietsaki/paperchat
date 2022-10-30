@@ -8,6 +8,7 @@ import {
   getHighestAndLowestPoints,
   removeColor,
   getLighterHslaShade,
+  loadImage,
   playSound
 } from 'helpers/helperFunctions'
 
@@ -18,6 +19,7 @@ type canvasProps = {
   usingPencil: boolean
   roomColor: string
   username: string
+  clearCanvas: (clearEvenEmpty?: boolean, skipSound?: boolean) => void
 }
 
 interface textData {
@@ -30,7 +32,13 @@ interface textData {
   keyHeight?: number
 }
 
-const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasProps) => {
+const Canvas = ({
+  usingThickStroke,
+  usingPencil,
+  roomColor,
+  username,
+  clearCanvas
+}: canvasProps) => {
   // REFS
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -52,15 +60,6 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
   const strokeColor = '#111'
   const strokeRGBArray = [17, 17, 17]
   const smallDevice = typeof window !== 'undefined' ? window.screen.width < 999 : false
-
-  const clearCanvas = () => {
-    if (!ctx) return
-
-    const firstLineY = getPercentage(80, divisionsHeight)
-    setKeyPos({ x: getStartingX(), y: firstLineY })
-    setTextHistory([])
-    ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
-  }
 
   const getNextYDivision = (y: number) => {
     const nextDivision = y + divisionsHeight
@@ -227,27 +226,30 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
   }
 
   const drawDivisions = () => {
-    if (!ctx) return
-    ctx.fillStyle = canvasBgColor
-    ctx.fillRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
-    ctx.strokeStyle = roomColor.replace('1.0', '0.6')
-    ctx.lineWidth = 1
+    const divisionsCanvas = document.createElement('canvas')
+    const divCtx = divisionsCanvas.getContext('2d')!
+    divisionsCanvas.width = containerRef.current!.offsetWidth * (window.devicePixelRatio || 1)
+    divisionsCanvas.height = containerRef.current!.offsetHeight * (window.devicePixelRatio || 1)
+
+    divCtx.fillStyle = canvasBgColor
+    divCtx.fillRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
+    divCtx.strokeStyle = roomColor.replace('1.0', '0.6')
+    divCtx.lineWidth = 1
 
     for (let i = 1; i < 5; i++) {
-      ctx.beginPath()
-      ctx.moveTo(3, divisionsHeight * i)
-      ctx.lineTo(canvasRef.current!.width - 3, divisionsHeight * i)
-      ctx.stroke()
+      divCtx.beginPath()
+      divCtx.moveTo(3, divisionsHeight * i)
+      divCtx.lineTo(canvasRef.current!.width - 3, divisionsHeight * i)
+      divCtx.stroke()
     }
 
-    const dataUrl = canvasRef.current!.toDataURL('image/png')
+    const dataUrl = divisionsCanvas.toDataURL('image/png')
     const existingDivisions = document.getElementById('canvasDivisions')
     if (existingDivisions) existingDivisions.remove()
     const img = new Image()
     img.id = 'canvasDivisions'
     img.src = dataUrl
     containerRef.current!.append(img)
-    ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
   }
 
   const drawUsernameRectangle = (
@@ -352,9 +354,10 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
 
     if (distanceToUse >= unit) {
       setLatestFiredStrokeSound(lastStroke.ts)
-      const volume = usingThickStroke ? 0.2 : 0.1
+      let volume = usingThickStroke ? 0.2 : 0.1
+      if (smallDevice) volume = 1
       if (usingPencil) return playSound('pencil-stroke', volume)
-      return playSound('eraser-stroke', volume + 0.3)
+      return playSound('eraser-stroke', volume)
     }
   }
 
@@ -387,35 +390,48 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     }
   }
 
-  const copyCanvas = (img_uri: string) => {
+  const copyCanvas = async (imgUri: string) => {
     if (!ctx) return
 
-    const drawCopiedContent = (img: HTMLImageElement) => {
-      {
-        ctx.drawImage(
-          img,
-          0,
-          0,
-          img.width * (window.devicePixelRatio || 1),
-          img.height * (window.devicePixelRatio || 1),
-          0,
-          0,
-          img.width * (window.devicePixelRatio || 1),
-          img.height * (window.devicePixelRatio || 1)
-        )
+    // Use a different content (imgCtx) to draw the received image and remove its white background
+    // If we removed it in ctx, it'd cause lag in mobile.
+    const imgCanvas = document.createElement('canvas')
+    imgCanvas.width = ctx.canvas.width
+    imgCanvas.height = ctx.canvas.height
+    const imgCtx = imgCanvas.getContext('2d')!
 
-        removeColor(ctx, canvasBgColorArr)
-        ctx.clearRect(0, 0, nameContainerWidth + 7, divisionsHeight)
-        playSound('copy-last-canvas', 0.3)
-      }
-    }
+    const receivedImg = await loadImage(imgUri)
 
-    const img = new Image()
-    img.src = img_uri
-    // Allow bringing data from a cross origin (image urls from firebase storage)
-    img.crossOrigin = 'Anonymous'
-    if (img.complete) return drawCopiedContent(img)
-    img.onload = () => drawCopiedContent(img)
+    // Draw the received image which will have a white background
+    imgCtx.drawImage(
+      receivedImg,
+      0,
+      0,
+      receivedImg.width * (window.devicePixelRatio || 1),
+      receivedImg.height * (window.devicePixelRatio || 1),
+      0,
+      0,
+      receivedImg.width * (window.devicePixelRatio || 1),
+      receivedImg.height * (window.devicePixelRatio || 1)
+    )
+
+    removeColor(imgCtx, canvasBgColorArr)
+    const transparentDataURL = imgCanvas.toDataURL()
+    const transparentImg = await loadImage(transparentDataURL)
+
+    // Draw the transparent image into our ctx.
+    ctx.drawImage(
+      transparentImg,
+      0,
+      0,
+      transparentImg.width * (window.devicePixelRatio || 1),
+      transparentImg.height * (window.devicePixelRatio || 1),
+      0,
+      0,
+      transparentImg.width * (window.devicePixelRatio || 1),
+      transparentImg.height * (window.devicePixelRatio || 1)
+    )
+    playSound('copy-last-canvas', 0.3)
   }
 
   const sendMessage = () => {
@@ -434,6 +450,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     )
 
     if (highestPoint && lowestPoint) {
+      clearCanvas(true, true)
       const contentHeight = lowestPoint[1] - highestPoint[1]
       let sourceY = 0
       let destinationY = 0
@@ -526,7 +543,6 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
       drawUsernameRectangle(msgCtx, false, false)
 
       emitter.emit('canvasData', { dataUrl: msgCanvas.toDataURL(), height: msgCanvas.height })
-      clearCanvas()
       playSound('send-message', 0.5)
     } else {
       playSound('btn-denied', 0.4)
@@ -540,7 +556,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     if (!canvas.getContext) return
     canvas.width = containerRef.current!.offsetWidth * (window.devicePixelRatio || 1)
     canvas.height = containerRef.current!.offsetHeight * (window.devicePixelRatio || 1)
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d')!
+
     setCanvasCtx(ctx)
     setDivisionsHeight(Math.floor(canvas.height / 5))
     setNameContainerWidth(getPercentage(25, canvas.width))
