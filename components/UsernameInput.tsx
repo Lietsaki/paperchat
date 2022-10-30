@@ -12,6 +12,7 @@ const UsernameInput = ({ editing, receivedValue, setUsernameBeingEdited }: Usern
   let [inputValue, setInputValue] = useState('')
 
   const handleChange = (e: BaseSyntheticEvent) => {
+    if (e.target.value.length > usernameMaxLength) return
     setInputValue(e.target.value)
     setUsernameBeingEdited(e.target.value)
   }
@@ -41,6 +42,7 @@ const UsernameInput = ({ editing, receivedValue, setUsernameBeingEdited }: Usern
         onChange={handleChange}
         maxLength={usernameMaxLength}
         minLength={usernameMinLength}
+        autoComplete="off"
       ></input>
     </div>
   )

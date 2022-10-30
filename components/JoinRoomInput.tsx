@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, BaseSyntheticEvent } from 'react'
 import Button from 'components/Button'
 import { PRIVATE_CODE_LENGTH } from 'firebase-config/realtimeDB'
 import styles from 'styles/join-room/join-room.module.scss'
@@ -26,6 +26,11 @@ const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
     btn.click()
   }
 
+  const handleChange = (e: BaseSyntheticEvent) => {
+    if (e.target.value.length > PRIVATE_CODE_LENGTH) return
+    setCode(e.target.value.trim().toUpperCase())
+  }
+
   return (
     <div className={join_area}>
       <div>
@@ -35,10 +40,11 @@ const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
             <input
               ref={inputRef}
               value={code}
-              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              onChange={handleChange}
               type="text"
               placeholder="ABC12"
               maxLength={PRIVATE_CODE_LENGTH}
+              autoComplete="off"
             ></input>
           </div>
 

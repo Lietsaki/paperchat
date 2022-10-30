@@ -62,8 +62,8 @@ const Home = () => {
 
   const saveUsername = () => {
     if (usernameBeingEdited.length < usernameMinLength) return
-    dispatch(setUsername(usernameBeingEdited))
-    localStorage.setItem('username', usernameBeingEdited)
+    dispatch(setUsername(usernameBeingEdited.trim()))
+    localStorage.setItem('username', usernameBeingEdited.trim())
     finishEditingUsername()
   }
 
