@@ -1,7 +1,7 @@
 import styles from 'styles/components/keyboard.module.scss'
 import { createFloatingKey, removeFloatingKey } from 'helpers/floatingKey'
 import { useState, useRef } from 'react'
-import { keys } from 'types/Keyboard'
+import { keys, gridSpecialKeys } from 'types/Keyboard'
 import { eventPos } from 'types/Position'
 import { playSound } from 'helpers/helperFunctions'
 
@@ -32,13 +32,13 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
     return `/special-keys/${processed_key}.png`
   }
 
-  const handleMouseDown = (key: string) => {
+  const handlePointerDown = (key: string) => {
     setActiveKey(key)
 
     // Listen for mouseup in the whole document, as the text will be dragged outside the key.
-    // onMouseUp would only fire within the key, not when dragged into the canvas, for example.
-    document.addEventListener('mouseup', handleMouseUp)
-    document.addEventListener('touchend', handleMouseUp)
+    // Otherwise onMouseUp would only fire within the key, not when dragged into the canvas, for example.
+    document.addEventListener('mouseup', handlePointerUp)
+    document.addEventListener('touchend', handlePointerUp)
     document.body.style.cursor = 'grabbing'
     playSound('keydown', 0.1)
   }
@@ -56,14 +56,23 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
     handleKeyLeave(key, { touches: e.nativeEvent.touches })
   }
 
-  const handleMouseUp = () => {
+  const handlePointerUp = () => {
     if (!draggingKeyRef.current) playSound('keyup', 0.1)
     setActiveKey('')
     setDragginKey('')
-    document.removeEventListener('mouseup', handleMouseUp)
-    document.removeEventListener('touchend', handleMouseUp)
+    document.removeEventListener('mouseup', handlePointerUp)
+    document.removeEventListener('touchend', handlePointerUp)
     document.body.style.cursor = 'auto'
     removeFloatingKey()
+  }
+
+  const specialMethodKeydown = () => {
+    playSound('keydown', 0.1)
+  }
+
+  const specialMethodKeyup = (specialKey: gridSpecialKeys) => {
+    playSound('keyup', 0.1)
+    specialKeyMethods[specialKey]()
   }
 
   const getKeys = () => {
@@ -71,7 +80,8 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
       if (key.specialKey) {
         return (
           <div
-            onClick={specialKeyMethods[key.specialKey]}
+            onPointerDown={specialMethodKeydown}
+            onPointerUp={() => specialMethodKeyup(key.specialKey!)}
             key={key.specialKey}
             className={`${styles.special_key} ${styles[key.specialKey]}`}
           >
@@ -84,8 +94,8 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
           <div
             onMouseLeave={(e) => handleKeyLeave(key.text, e)}
             onTouchMove={(e) => handleTouchMove(key.text, e)}
-            onMouseDown={() => handleMouseDown(key.text)}
-            onTouchStart={() => handleMouseDown(key.text)}
+            onPointerDown={() => handlePointerDown(key.text)}
+            onTouchStart={() => handlePointerDown(key.text)}
             onClick={() => typeKey(key.text)}
             className={key_container}
             key={key.text}

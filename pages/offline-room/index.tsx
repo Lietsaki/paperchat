@@ -15,6 +15,7 @@ import {
   getSimpleId,
   createActiveColorClass,
   willContainerBeOverflowed,
+  getHighestAndLowestPoints,
   getRandomColor,
   playSound
 } from 'helpers/helperFunctions'
@@ -72,6 +73,7 @@ const {
 const Room = () => {
   const router = useRouter()
   const user = useSelector(selectUser)
+  const [shouldShowCanvas, setShouldShowCanvas] = useState(true)
   const [usingPencil, setUsingPencil] = useState(true)
   const [usingThickStroke, setUsingThickStroke] = useState(true)
   const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('Alphanumeric')
@@ -89,8 +91,23 @@ const Room = () => {
 
   const [usernameInputValue, setUsernameInputValue] = useState('')
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
+  const strokeRGBArray = [17, 17, 17]
 
-  const clearCanvas = () => emitter.emit('clearCanvas', '')
+  const clearCanvas = () => {
+    const canvas = document.getElementById('roomCanvas') as HTMLCanvasElement
+    const { highestPoint, lowestPoint } = getHighestAndLowestPoints(
+      canvas.getContext('2d')!,
+      strokeRGBArray
+    )
+
+    if (!highestPoint && !lowestPoint) return playSound('btn-denied', 0.4)
+
+    setShouldShowCanvas(false)
+    setTimeout(() => {
+      setShouldShowCanvas(true)
+      playSound('clear-canvas')
+    }, 30)
+  }
   const typeKey = (key: string) => emitter.emit('typeKey', key)
   const typeSpace = () => emitter.emit('typeSpace', '')
   const typeEnter = () => emitter.emit('typeEnter', '')
@@ -183,7 +200,7 @@ const Room = () => {
   }
 
   const scrollToAdjacent = (to: 'up' | 'down') => {
-    if (!adjacentMessages[to]) return
+    if (!adjacentMessages[to]) return playSound('btn-denied', 0.4)
     const margin = 4
     const target = document.getElementById(adjacentMessages[to])!
     let offsetTop = target.offsetTop - messagesContainerRef.current!.offsetTop
@@ -206,8 +223,9 @@ const Room = () => {
 
   const copyLastCanvas = () => {
     const roomMessages = roomContent.filter((item) => item.message)
-    if (!roomMessages.length) return playSound('right-btn-denied', 0.4)
+    if (!roomMessages.length) return playSound('btn-denied', 0.4)
     const lastMessage = roomMessages[roomMessages.length - 1]
+    clearCanvas()
     emitter.emit('canvasToCopy', lastMessage.message!)
   }
 
@@ -306,6 +324,19 @@ const Room = () => {
   const selectThinStroke = () => {
     setUsingThickStroke(false)
     playSound('select-thin-stroke', 0.15)
+  }
+
+  const getCanvas = () => {
+    if (shouldShowCanvas) {
+      return (
+        <Canvas
+          username={user.username}
+          usingPencil={usingPencil}
+          roomColor={roomColor}
+          usingThickStroke={usingThickStroke}
+        />
+      )
+    }
   }
 
   return (
@@ -437,14 +468,7 @@ const Room = () => {
 
           <div className={canvas_column}>
             <div className={canvas_area}>
-              <div className={canvas_bg}>
-                <Canvas
-                  username={user.username}
-                  usingPencil={usingPencil}
-                  roomColor={roomColor}
-                  usingThickStroke={usingThickStroke}
-                />
-              </div>
+              <div className={canvas_bg}>{getCanvas()}</div>
 
               <div className={keyboard_area}>
                 <Keyboard

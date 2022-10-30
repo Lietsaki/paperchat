@@ -326,7 +326,7 @@ const Room = () => {
   }
 
   const scrollToAdjacent = (to: 'up' | 'down') => {
-    if (!adjacentMessages[to]) return
+    if (!adjacentMessages[to]) return playSound('btn-denied', 0.4)
     const margin = 4
     const target = document.getElementById(adjacentMessages[to])!
     let offsetTop = target.offsetTop - messagesContainerRef.current!.offsetTop
@@ -349,7 +349,7 @@ const Room = () => {
 
   const copyLastCanvas = () => {
     const roomMessages = roomContent.filter((item) => item.message)
-    if (!roomMessages.length) return playSound('right-btn-denied', 0.4)
+    if (!roomMessages.length) return playSound('btn-denied', 0.4)
     const lastMessage = roomMessages[roomMessages.length - 1]
     emitter.emit('canvasToCopy', lastMessage.message!)
   }

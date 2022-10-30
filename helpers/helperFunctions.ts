@@ -12,6 +12,17 @@ const getRandomColor = () => {
   )}%, 1.0)`
 }
 
+// Color is a string obtained from getRandomColor()
+const getLighterHslaShade = (color: string) => {
+  const lightIndex = color.lastIndexOf('%')
+  const lightness = Number(color.substring(lightIndex - 2, lightIndex))
+  let amount = 30
+  if (lightness >= 60) amount = 25
+  if (lightness <= 50) amount = 40
+
+  return `${color.substring(0, lightIndex - 2)}${lightness + amount}${color.substring(lightIndex)}`
+}
+
 const getPercentage = (percentage: number, of: number) => Math.floor((percentage / 100) * of)
 
 const dropPosOffset = (dropPos: positionObj, width: number, height: number) => {
@@ -44,7 +55,7 @@ const dropPosOffset = (dropPos: positionObj, width: number, height: number) => {
 const getHighestAndLowestPoints = (
   ctx: CanvasRenderingContext2D,
   color: number[],
-  belowThisPos: positionObj
+  belowThisPos?: positionObj
 ) => {
   const w = ctx.canvas.width
   const h = ctx.canvas.height
@@ -74,7 +85,7 @@ const getHighestAndLowestPoints = (
           if (!highestPoint) highestPoint = [x, y]
           else lowestPoint = [x, y]
 
-          if (x < belowThisPos.x && y > belowThisPos.y) conflictingPoints = true
+          if (belowThisPos && x < belowThisPos.x && y > belowThisPos.y) conflictingPoints = true
         }
       }
     }
@@ -213,5 +224,6 @@ export {
   isValidColor,
   removeColor,
   areDatesOnTheSameDay,
-  playSound
+  playSound,
+  getLighterHslaShade
 }

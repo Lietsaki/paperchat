@@ -7,10 +7,11 @@ import {
   dropPosOffset,
   getHighestAndLowestPoints,
   removeColor,
+  getLighterHslaShade,
   playSound
 } from 'helpers/helperFunctions'
 
-const { canvas_outline, canvas_content } = styles
+const { canvas_outline, canvas_content, usernameRectangle } = styles
 
 type canvasProps = {
   usingThickStroke: boolean
@@ -32,7 +33,7 @@ interface textData {
 const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasProps) => {
   // REFS
   const containerRef = useRef<HTMLDivElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   // DRAWING STATE
   const [pos, setPos] = useState<positionObj>({ x: 0, y: 0 })
@@ -46,17 +47,19 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
   const [latestFiredStrokeSound, setLatestFiredStrokeSound] = useState(0)
 
   // COLOR DATA
-  const [canvasColor, setCanvasColor] = useState(roomColor)
-  const colorRef = useRef<string>('')
-  colorRef.current = canvasColor
   const canvasBgColor = '#FDFDFD'
+  const canvasBgColorArr = [253, 253, 253]
   const strokeColor = '#111'
   const strokeRGBArray = [17, 17, 17]
+  const smallDevice = typeof window !== 'undefined' ? window.screen.width < 999 : false
 
   const clearCanvas = () => {
     if (!ctx) return
+
+    const firstLineY = getPercentage(80, divisionsHeight)
+    setKeyPos({ x: getStartingX(), y: firstLineY })
+    setTextHistory([])
     ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
-    drawUsernameRectangle(ctx)
   }
 
   const getNextYDivision = (y: number) => {
@@ -82,10 +85,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
   }
 
   const getLineWidth = () => {
-    const smallDevice = window.screen.width < 999
-
     if (usingThickStroke) {
-      if (smallDevice) return 6
+      if (smallDevice) return 12
       return 4
     } else {
       if (smallDevice) return 3
@@ -108,6 +109,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
 
   const resetPosition = () => setPos({ x: 0, y: 0 })
   const getFontSize = () => getPercentage(canvasRef.current!.width > 295 ? 88 : 94, divisionsHeight)
+  // starting X refers to the end of the username rectangle, where the first line of user-generated text can begin
   const getStartingX = () => nameContainerWidth + getPercentage(3, canvasRef.current!.width)
   const posOverflowsX = (pos: positionObj) => pos.x >= getPercentage(98, canvasRef.current!.width)
   const divionsHeightWithMargin = () => divisionsHeight + 6
@@ -189,7 +191,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     if (lastKey.isKey) {
       ctx.clearRect(
         lastKey.x - 1,
-        lastKey.y - (lastKey.keyHeight! - 3),
+        lastKey.y - (lastKey.keyHeight! - (smallDevice ? 4 : 3)),
         lastKey.keyWidth! + 1,
         lastKey.keyHeight!
       )
@@ -228,7 +230,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     if (!ctx) return
     ctx.fillStyle = canvasBgColor
     ctx.fillRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
-    ctx.strokeStyle = colorRef.current.replace('1.0', '0.6')
+    ctx.strokeStyle = roomColor.replace('1.0', '0.6')
     ctx.lineWidth = 1
 
     for (let i = 1; i < 5; i++) {
@@ -238,48 +240,73 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
       ctx.stroke()
     }
 
-    const data_url = canvasRef.current!.toDataURL('image/png')
+    const dataUrl = canvasRef.current!.toDataURL('image/png')
+    const existingDivisions = document.getElementById('canvasDivisions')
+    if (existingDivisions) existingDivisions.remove()
     const img = new Image()
     img.id = 'canvasDivisions'
-    img.src = data_url
+    img.src = dataUrl
     containerRef.current!.append(img)
     ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
   }
 
-  const drawUsernameRectangle = (ctx: CanvasRenderingContext2D, loadFont?: boolean) => {
+  const drawUsernameRectangle = (
+    ctx: CanvasRenderingContext2D,
+    loadFont?: boolean,
+    appendImgToCanvas?: boolean
+  ) => {
     if (!ctx) return
-    ctx.clearRect(0, 0, nameContainerWidthWithMargin(), divionsHeightWithMargin())
+    const usernameCanvas = document.createElement('canvas')
+    const usernameCtx = usernameCanvas.getContext('2d')!
+    const ctxToUse = appendImgToCanvas ? usernameCtx : ctx
 
-    nameContainerWidthWithMargin()
-    ctx.globalCompositeOperation = 'source-over'
-    ctx.lineJoin = 'bevel'
-    ctx.imageSmoothingEnabled = false
+    if (appendImgToCanvas) {
+      usernameCanvas.width = nameContainerWidthWithMargin()
+      usernameCanvas.height = divionsHeightWithMargin()
+    } else {
+      ctxToUse.clearRect(0, 0, nameContainerWidth + 5, divisionsHeight + 5)
+    }
+
+    ctxToUse.globalCompositeOperation = 'source-over'
+    ctxToUse.lineJoin = 'bevel'
+    ctxToUse.imageSmoothingEnabled = false
     let pixelBorderSize = canvasRef.current!.width >= 400 ? 3 : 2
-    ctx.lineWidth = 1
-    ctx.fillStyle = colorRef.current.replace('1.0', '0.3')
-    ctx.strokeStyle = colorRef.current
-    ctx.beginPath()
-    ctx.moveTo(0, divisionsHeight)
-    ctx.lineTo(nameContainerWidth, divisionsHeight)
-    ctx.lineTo(nameContainerWidth, divisionsHeight - pixelBorderSize)
-    ctx.lineTo(nameContainerWidth + pixelBorderSize, divisionsHeight - pixelBorderSize)
-    ctx.lineTo(nameContainerWidth + pixelBorderSize, divisionsHeight - pixelBorderSize * 2)
-    ctx.lineTo(nameContainerWidth + pixelBorderSize * 2, divisionsHeight - pixelBorderSize * 2)
+    ctxToUse.lineWidth = smallDevice ? 3 : 1
+    ctxToUse.fillStyle = getLighterHslaShade(roomColor)
+    ctxToUse.strokeStyle = roomColor
+    ctxToUse.beginPath()
+    ctxToUse.moveTo(0, divisionsHeight)
+    ctxToUse.lineTo(nameContainerWidth, divisionsHeight)
+    ctxToUse.lineTo(nameContainerWidth, divisionsHeight - pixelBorderSize)
+    ctxToUse.lineTo(nameContainerWidth + pixelBorderSize, divisionsHeight - pixelBorderSize)
+    ctxToUse.lineTo(nameContainerWidth + pixelBorderSize, divisionsHeight - pixelBorderSize * 2)
+    ctxToUse.lineTo(nameContainerWidth + pixelBorderSize * 2, divisionsHeight - pixelBorderSize * 2)
     // Send the line above the canvas (-5 y) to hide the top stroke, which we don't want to show.
-    ctx.lineTo(nameContainerWidth + pixelBorderSize * 2, -5)
-    ctx.lineTo(0, -5)
-    ctx.fill()
-    ctx.stroke()
-    ctx.fillStyle = colorRef.current
+    ctxToUse.lineTo(nameContainerWidth + pixelBorderSize * 2, -5)
+    ctxToUse.lineTo(0, -5)
+    ctxToUse.fill()
+    ctxToUse.stroke()
+    ctxToUse.fillStyle = roomColor
 
     // Write username making sure our font loaded first
     const f = new FontFace('nds', 'url(/fonts/nds.ttf)')
 
     const writeUsername = () => {
+      ctxToUse.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       const firstLineY = getPercentage(80, divisionsHeight)
-      ctx.fillText(username, 8, firstLineY - 1.5)
+      ctxToUse.fillText(username, smallDevice ? 16 : 8, firstLineY - 1.5)
       setKeyPos({ x: getStartingX(), y: firstLineY })
+
+      if (appendImgToCanvas) {
+        const dataUrl = usernameCanvas.toDataURL('image/png')
+        const existingUserRect = document.getElementById(usernameRectangle)
+        if (existingUserRect) existingUserRect.remove()
+        const img = new Image()
+        img.id = usernameRectangle
+        img.src = dataUrl
+        containerRef.current!.append(img)
+      }
     }
 
     if (loadFont) f.load().then((font) => writeUsername())
@@ -293,7 +320,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
 
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
-    ctx.lineCap = 'square'
+    ctx.lineCap = 'round'
     ctx.lineWidth = getLineWidth()
     ctx.strokeStyle = strokeColor
 
@@ -327,7 +354,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
       setLatestFiredStrokeSound(lastStroke.ts)
       const volume = usingThickStroke ? 0.2 : 0.1
       if (usingPencil) return playSound('pencil-stroke', volume)
-      return playSound('eraser-stroke', volume)
+      return playSound('eraser-stroke', volume + 0.3)
     }
   }
 
@@ -337,15 +364,15 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
 
   const drawDot = (e: React.PointerEvent) => {
     if (draggingKey) return
-    const posToUse = e.pointerType === 'touch' ? getPosition(e) : pos
+    const posToUse = e.pointerType !== 'mouse' ? getPosition(e) : pos
     const usedMouseNoLeftBtn = e.pointerType === 'mouse' && e.buttons !== 1
 
     if (!ctx || usedMouseNoLeftBtn || isWithinUsername(posToUse)) return setPos(getPosition(e))
-    if (e.pointerType === 'touch') setPos(posToUse)
+    if (e.pointerType !== 'mouse') setPos(posToUse)
 
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
-    ctx.lineCap = 'square'
+    ctx.lineCap = 'round'
     ctx.lineWidth = getLineWidth()
     ctx.strokeStyle = strokeColor
 
@@ -365,7 +392,6 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
 
     const drawCopiedContent = (img: HTMLImageElement) => {
       {
-        clearCanvas()
         ctx.drawImage(
           img,
           0,
@@ -378,9 +404,8 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
           img.height * (window.devicePixelRatio || 1)
         )
 
-        removeColor(ctx, [253, 253, 253])
+        removeColor(ctx, canvasBgColorArr)
         ctx.clearRect(0, 0, nameContainerWidth + 7, divisionsHeight)
-        drawUsernameRectangle(ctx)
         playSound('copy-last-canvas', 0.3)
       }
     }
@@ -396,10 +421,10 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
   const sendMessage = () => {
     if (!ctx) return
 
-    const pic_canvas = document.createElement('canvas')
-    const pic_ctx = pic_canvas.getContext('2d')!
-    const min_height = divisionsHeight
-    pic_canvas.width = ctx.canvas.width
+    const msgCanvas = document.createElement('canvas')
+    const msgCtx = msgCanvas.getContext('2d')!
+    const minHeight = divisionsHeight
+    msgCanvas.width = ctx.canvas.width
 
     const nameContainerPos = { x: nameContainerWidth, y: divisionsHeight }
     const { highestPoint, lowestPoint, conflictingPoints } = getHighestAndLowestPoints(
@@ -432,15 +457,15 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
         highestPoint[0] < nameContainerWidth && highestPoint[1] > divionsHeightWithMargin()
 
       if (isNextToUsername) {
-        pic_canvas.height = min_height
+        msgCanvas.height = minHeight
       }
 
       if (hPointNextToUsername) {
-        pic_canvas.height = lowestPoint[1] + margin + margin / 2
+        msgCanvas.height = lowestPoint[1] + margin + margin / 2
       }
 
       if (hPointUnderAndOutsideUsername && !conflictingPoints) {
-        const contentSmallerThanMinHeight = contentHeight <= min_height - 4
+        const contentSmallerThanMinHeight = contentHeight <= minHeight - 4
         const startOfDivision = getStartOfDivision(highestPoint[1])
         const endOfDivision = startOfDivision + divisionsHeight
 
@@ -449,16 +474,16 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
           highestPoint[1] > startOfDivision &&
           lowestPoint[1] < endOfDivision
         ) {
-          pic_canvas.height = min_height
+          msgCanvas.height = minHeight
           sourceY = startOfDivision
         } else {
           // We need extra margin in this case, so multiply it by 2
-          pic_canvas.height = lowestPoint[1] + margin * 2 - (highestPoint[1] - margin * 2)
+          msgCanvas.height = lowestPoint[1] + margin * 2 - (highestPoint[1] - margin * 2)
           sourceY = highestPoint[1] - margin * 2
 
           // Prevent the original username rectangle from appearing on top of the one we're gonna draw
           if (sourceY < divisionsHeight) {
-            pic_canvas.height = lowestPoint[1] + margin - divionsHeightWithMargin()
+            msgCanvas.height = lowestPoint[1] + margin - divionsHeightWithMargin()
             sourceY = divionsHeightWithMargin()
           }
         }
@@ -466,9 +491,9 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
 
       if (hPointUnderAndWithinUsername || (conflictingPoints && !hPointNextToUsername)) {
         sourceY = highestPoint[1] - margin
-        destinationY = min_height
+        destinationY = minHeight
 
-        const contentSmallerThanMinHeight = contentHeight <= min_height - 4
+        const contentSmallerThanMinHeight = contentHeight <= minHeight - 4
         const startOfDivision = getStartOfDivision(highestPoint[1])
         const endOfDivision = startOfDivision + divisionsHeight
 
@@ -477,53 +502,35 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
           highestPoint[1] > startOfDivision &&
           lowestPoint[1] < endOfDivision
         ) {
-          pic_canvas.height = min_height * 2
+          msgCanvas.height = minHeight * 2
         } else {
-          pic_canvas.height = min_height + (lowestPoint[1] + margin - (highestPoint[1] - margin))
+          msgCanvas.height = minHeight + (lowestPoint[1] + margin - (highestPoint[1] - margin))
         }
       }
 
-      pic_ctx.fillStyle = canvasBgColor
-      pic_ctx.fillRect(0, 0, pic_canvas.width, pic_canvas.height)
+      msgCtx.fillStyle = canvasBgColor
+      msgCtx.fillRect(0, 0, msgCanvas.width, msgCanvas.height)
 
-      if (
-        (hPointUnderAndOutsideUsername || hPointUnderAndWithinUsername || conflictingPoints) &&
-        !hPointNextToUsername
-      ) {
-        drawUsernameRectangle(pic_ctx)
-      }
-
-      pic_ctx.drawImage(
+      msgCtx.drawImage(
         ctx.canvas,
         0,
         sourceY,
         ctx.canvas.width,
-        pic_canvas.height,
+        msgCanvas.height,
         0,
         destinationY,
-        pic_canvas.width,
-        pic_canvas.height
+        msgCanvas.width,
+        msgCanvas.height
       )
 
-      emitter.emit('canvasData', { dataUrl: pic_canvas.toDataURL(), height: pic_canvas.height })
+      drawUsernameRectangle(msgCtx, false, false)
+
+      emitter.emit('canvasData', { dataUrl: msgCanvas.toDataURL(), height: msgCanvas.height })
       clearCanvas()
       playSound('send-message', 0.5)
     } else {
-      playSound('right-btn-denied', 0.4)
+      playSound('btn-denied', 0.4)
     }
-  }
-
-  const clearCanvasBtn = () => {
-    const nameContainerPos = { x: nameContainerWidth, y: divisionsHeight }
-    const { highestPoint, lowestPoint } = getHighestAndLowestPoints(
-      ctx!,
-      strokeRGBArray,
-      nameContainerPos
-    )
-
-    if (!highestPoint && !lowestPoint) return playSound('right-btn-denied', 0.4)
-    clearCanvas()
-    playSound('clear-canvas', 0.4)
   }
 
   // CANVAS SETUP - Happens on mounted
@@ -540,27 +547,14 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
   }, [])
 
   useEffect(() => drawDivisions(), [divisionsHeight])
-  useEffect(() => drawUsernameRectangle(ctx!, true), [nameContainerWidth, username])
+  useEffect(() => drawUsernameRectangle(ctx!, true, true), [nameContainerWidth, username])
 
   useEffect(() => {
-    drawDivisions()
-    const oldDivisions = document.getElementById('canvasDivisions')
-    oldDivisions?.remove()
-    clearCanvas()
-  }, [canvasColor])
-
-  useEffect(() => {
-    setCanvasColor(roomColor)
-  }, [roomColor])
-
-  useEffect(() => {
-    emitter.on('clearCanvas', clearCanvasBtn)
     emitter.on('canvasToCopy', copyCanvas)
     emitter.on('draggingKey', (key: string) => setDraggingKey(key))
     emitter.on('sendMessage', sendMessage)
 
     return () => {
-      emitter.off('clearCanvas')
       emitter.off('canvasToCopy')
       emitter.off('draggingKey')
       emitter.off('sendMessage')
@@ -600,6 +594,7 @@ const Canvas = ({ usingThickStroke, usingPencil, roomColor, username }: canvasPr
     <div className={`${canvas_outline} active_bg_color`}>
       <div ref={containerRef} className={canvas_content}>
         <canvas
+          id="roomCanvas"
           onPointerUp={endDrawing}
           onPointerDown={drawDot}
           onPointerMove={draw}

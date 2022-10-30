@@ -20,4 +20,4 @@ type specialKey = { specialKey: gridSpecialKeys }
 
 type keys = (regularKey | specialKey)[]
 
-export type { keyboard, regularAlphaKey, alphaKeys, keys }
+export type { keyboard, regularAlphaKey, alphaKeys, keys, allSpecialKeys, gridSpecialKeys }

@@ -2,7 +2,7 @@ import styles from 'styles/components/keyboard.module.scss'
 import { createFloatingKey, removeFloatingKey } from 'helpers/floatingKey'
 import { useState, useRef } from 'react'
 import { eventPos } from 'types/Position'
-import { regularAlphaKey } from 'types/Keyboard'
+import { regularAlphaKey, allSpecialKeys } from 'types/Keyboard'
 import { Alphanumeric } from 'static/KeyboardsData'
 import { playSound } from 'helpers/helperFunctions'
 
@@ -60,10 +60,10 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
     typeKey(key)
   }
 
-  const handleMouseDown = (key: string) => {
+  const handlePointerDown = (key: string) => {
     setActiveKey(key)
-    document.addEventListener('mouseup', handleMouseUp)
-    document.addEventListener('touchend', handleMouseUp)
+    document.addEventListener('mouseup', handlePointerUp)
+    document.addEventListener('touchend', handlePointerUp)
     document.body.style.cursor = 'grabbing'
     playSound('keydown', 0.1)
   }
@@ -81,14 +81,23 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
     handleKeyLeave(key, { touches: e.nativeEvent.touches })
   }
 
-  const handleMouseUp = () => {
+  const handlePointerUp = () => {
     if (!draggingKeyRef.current) playSound('keyup', 0.1)
     setActiveKey('')
     setDragginKey('')
-    document.removeEventListener('mouseup', handleMouseUp)
-    document.removeEventListener('touchend', handleMouseUp)
+    document.removeEventListener('mouseup', handlePointerUp)
+    document.removeEventListener('touchend', handlePointerUp)
     document.body.style.cursor = 'auto'
     removeFloatingKey()
+  }
+
+  const specialMethodKeydown = () => {
+    playSound('keydown', 0.1)
+  }
+
+  const specialMethodKeyup = (specialKey: allSpecialKeys) => {
+    playSound('keyup', 0.1)
+    specialKeyMethods[specialKey]()
   }
 
   const getKeys = () => {
@@ -99,7 +108,8 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
             if (key.specialKey) {
               return (
                 <div
-                  onClick={specialKeyMethods[key.specialKey]}
+                  onPointerDown={specialMethodKeydown}
+                  onPointerUp={() => specialMethodKeyup(key.specialKey!)}
                   key={key.specialKey}
                   className={`${styles.special_key} ${styles[key.specialKey]} ${isKeyActive(
                     key.specialKey
@@ -116,8 +126,8 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
                 <div
                   onMouseLeave={(e) => handleKeyLeave(keyText, e)}
                   onTouchMove={(e) => handleTouchMove(keyText, e)}
-                  onMouseDown={() => handleMouseDown(keyText)}
-                  onTouchStart={() => handleMouseDown(keyText)}
+                  onPointerDown={() => handlePointerDown(keyText)}
+                  onTouchStart={() => handlePointerDown(keyText)}
                   onClick={() => performType(keyText)}
                   className={key_container}
                   key={key.text}

@@ -109,7 +109,7 @@ const Home = () => {
       <div className="screens_section">
         <div className={`screen ${top}`}>
           <div className={title}>
-            <span className={icon}>☺</span> <span className={title_text}>paperchat </span>
+            <span className={icon}>☺</span> <span className={title_text}>paperchat</span>
           </div>
 
           <div className={attribution}>

@@ -22,6 +22,11 @@
   "resolved" "https://registry.npmjs.org/@capacitor/android/-/android-4.4.0.tgz"
   "version" "4.4.0"
 
+"@capacitor/app@^4.1.0":
+  "integrity" "sha512-QPZh+fnndlL1fT8jUmx8R7KPaWZDNJf/Aj1BiU867AxHnQNnM0a6wwDdQKGhA7OOniudekHEdrJAzHnPnKtLNg=="
+  "resolved" "https://registry.npmjs.org/@capacitor/app/-/app-4.1.0.tgz"
+  "version" "4.1.0"
+
 "@capacitor/cli@^4.4.0":
   "integrity" "sha512-BB/gbUtZ2PVrUSoqkQAOCvOtEP/5IDG3aZvlqT53RAzmt/rIbcOi7qimOoLsS9iCtNtAIN+UgCqb+f62GdvV5Q=="
   "resolved" "https://registry.npmjs.org/@capacitor/cli/-/cli-4.4.0.tgz"
@@ -45,7 +50,7 @@
     "tslib" "^2.4.0"
     "xml2js" "^0.4.23"
 
-"@capacitor/core@^4.3.0", "@capacitor/core@^4.4.0":
+"@capacitor/core@^4.0.0", "@capacitor/core@^4.3.0", "@capacitor/core@^4.4.0":
   "integrity" "sha512-9k6EJTCMlHhr6g2oGo2FJM2byRyX5GEfB24Bv2e4fnemiiHrQEeAKdg++6Hj7jNNZtI1q+5EImTrcpXzPkiX7Q=="
   "resolved" "https://registry.npmjs.org/@capacitor/core/-/core-4.4.0.tgz"
   "version" "4.4.0"

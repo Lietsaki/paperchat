@@ -417,6 +417,7 @@
             }
 
             @include phones {
+              border: 1px solid $clear-bg;
               border-right: 3.5px solid $clear-bg;
 
               &:nth-child(2) {
