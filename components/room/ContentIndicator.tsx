@@ -5,6 +5,7 @@ import { willContainerBeOverflowed } from 'helpers/helperFunctions'
 
 const {
   content_indicator,
+  animate,
   indicator,
   invisible,
   overflowed_1,
@@ -24,6 +25,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
   const indicatorIdPrefix = 'i-'
   const [indicators, setIndicators] = useState<contentIndicators>({})
   const [latestOverflowedLength, setLatestOverflowedLength] = useState(0)
+  const animatedIndicators = useRef<{ [key: string]: boolean }>({})
 
   const [overflowed1OldestIndicator, setOverflowed1OldestIndicator] = useState('')
   const [overflowed1NewestIndicator, setOverflowed1NewestIndicator] = useState('')
@@ -40,9 +42,10 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
   const newestIndicators = [overflowed1NewestIndicator, overflowed2NewestIndicator]
   const middleIndicatorKeys = Object.keys(indicators)
     .filter((key) => !oldestIndicators.includes(key) && !newestIndicators.includes(key))
-    .sort((a, b) => Number(a.split('-')[0]) - Number(b.split('-')[0])) // ids are saved as Date.now()-123 where 123 are random.
+    .sort((a, b) => Number(a) - Number(b)) // ids are saved as firebase server timestamps
 
   const setupObserver = () => {
+    setIndicators({})
     observer = new IntersectionObserver(
       (entries) => {
         let newIndicators = { ...indicatorsRef.current }
@@ -85,7 +88,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     )
 
     roomContent.map((item) => {
-      const el = document.getElementById(item.id)
+      const el = document.getElementById(item.serverTs + '')
       if (el && observer) observer.observe(el)
     })
   }
@@ -248,16 +251,26 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
   }
 
   const renderIndicators = (indicatorKeys: string[]) => {
-    return indicatorKeys.map((id) => {
+    return indicatorKeys.map((id, i) => {
       const ind = indicators[id]
       if (!ind) return ''
+
+      // Set the previous indicator as already animated (because we just rendered it)
+      // Keeping trak of the animated indicators prevents animating all indicators from being
+      // animated at the same time when calling setIndicators({}) in setupObserver()
+      if (indicatorKeys[i - 1]) {
+        animatedIndicators.current[indicatorKeys[i - 1]] = true
+      }
+
       return (
         <div
           key={id}
           id={indicatorIdPrefix + id}
-          className={`${indicator} ${ind.isVisible ? '' : invisible} ${
-            ind.isOverflowedIndicator1 ? overflowed_1 : ''
-          } ${ind.isOverflowedIndicator2 ? overflowed_2 : ''}`}
+          className={`${indicator} ${animatedIndicators.current[id] ? '' : animate} ${
+            ind.isVisible ? '' : invisible
+          } ${ind.isOverflowedIndicator1 ? overflowed_1 : ''} ${
+            ind.isOverflowedIndicator2 ? overflowed_2 : ''
+          }`}
         ></div>
       )
     })

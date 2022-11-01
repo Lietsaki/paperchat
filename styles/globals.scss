@@ -122,3 +122,7 @@ a {
 .disabled_opacity {
   filter: opacity(0.8);
 }
+
+.no_pointer_events {
+  pointer-events: none;
+}

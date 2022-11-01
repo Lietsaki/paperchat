@@ -3,6 +3,7 @@ import Button from './Button'
 import { dialogOptions, DialogProps } from 'types/Dialog'
 import { useState, useEffect } from 'react'
 import { store } from 'store/store'
+import { App } from '@capacitor/app'
 
 const Dialog = ({
   showSpinner,
@@ -36,12 +37,24 @@ const Dialog = ({
     if (audio) {
       audio.loop = true
       audio.play()
+
+      // Stop the sound when the app is in the foreground, and play it back when the user returns
+      // We have to do this in all places where a looping sound is played, that is, only here.
+      App.addListener('appStateChange', ({ isActive }) => {
+        if (!isActive) {
+          audio.loop = false
+        } else {
+          audio.loop = true
+          audio.play()
+        }
+      })
     }
 
     return () => {
       if (audio) {
         audio.loop = false
         audio.currentTime = 1
+        App.removeAllListeners()
       }
     }
   }, [audio])

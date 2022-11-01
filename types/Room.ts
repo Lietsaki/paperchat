@@ -2,10 +2,12 @@ type roomContent = {
   userEntering?: string
   userLeaving?: string
   color?: string
-  message?: string
+  imageURL?: string
   paperchatOctagon?: boolean
   animate?: boolean
+  author?: string
   id: string
+  serverTs: number
 }
 
 type contentIndicators = {
@@ -35,18 +37,14 @@ type room = {
   id?: string
 }
 
-type roomCodes = {
-  [key: string]: string
-}
-
 type firebaseMessage = {
   imageURL?: string
   color?: string
   author: string
   userEntering?: string
   userLeaving?: string
-  localID: string
-  createdOn: number
+  id: string
+  serverTs: number
 }
 
 type roomMessages = {
@@ -63,7 +61,6 @@ export type {
   canvasData,
   onlineUser,
   room,
-  roomCodes,
   firebaseMessage,
   roomMessages,
   queryResult

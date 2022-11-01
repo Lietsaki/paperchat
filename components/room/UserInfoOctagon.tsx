@@ -15,7 +15,7 @@ type userInfoOctagonProps = {
   userEntering?: string
   userLeaving?: string
   shouldAnimate: boolean
-  id: string
+  id: number
 }
 
 const UserInfoOctagon = ({
@@ -39,7 +39,7 @@ const UserInfoOctagon = ({
   return (
     <div
       className={`${octagon_outside} ${blur} ${info} ${shouldAnimate ? animate_growth : ''}`}
-      id={id}
+      id={id + ''}
     >
       <div className={octagon_outline}>
         <div className={octagon_content}>{userEntering ? entering : leaving}</div>

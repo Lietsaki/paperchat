@@ -75,7 +75,6 @@
       }
 
       .indicator {
-        animation: grow 0.2s ease-in-out;
         transform-origin: bottom;
         height: 4px;
         min-height: 4px;
@@ -86,6 +85,10 @@
 
         &.invisible {
           background-color: $content-invisible;
+        }
+
+        &.animate {
+          animation: grow 0.2s ease-in-out;
         }
 
         &.overflowed_1 {

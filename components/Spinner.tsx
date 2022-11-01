@@ -161,11 +161,10 @@ const Spinner = ({ speed = 80 }: SpinnerProps) => {
     rightPyramidInverse,
     rightColumn,
     rightPyramid,
-    bottomRow,
+    bottomRow
   }
 
-  const [displayingGrid, setDisplayingGrid] =
-    useState<keyof typeof grids>('leftPyramid')
+  const [displayingGrid, setDisplayingGrid] = useState<keyof typeof grids>('leftPyramid')
 
   useEffect(() => {
     const timer = setTimeout(() => spin(), speed)

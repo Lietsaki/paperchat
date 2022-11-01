@@ -403,7 +403,9 @@
             top: 1.6%;
           }
 
-          div {
+          div.send,
+          div.last_canvas,
+          div.clear {
             @include flexcenter;
             @include active-on-click;
             background-color: $send-area-bg;
@@ -449,6 +451,30 @@
               width: 90%;
               height: 90%;
               left: 3%;
+            }
+
+            .send_seal {
+              position: absolute;
+              width: 130%;
+              height: 110%;
+              background-color: rgba(17, 17, 17, 0.7);
+              z-index: 1000;
+              transition: all 0.2s ease-in-out;
+              @include flexcenter;
+              color: $clear-bg;
+              font-size: 25px;
+              animation: opacityFadeIn 0.2s ease-in-out;
+
+              &:hover {
+                cursor: not-allowed;
+              }
+
+              @include phones {
+                font-size: 20px;
+              }
+              @include small-phones {
+                font-size: 18px;
+              }
             }
           }
 

@@ -15,7 +15,12 @@ const {
   smaller_options
 } = styles
 
-type messageOctagonProps = { img_uri: string; color: string; id: string; shouldAnimate: boolean }
+type messageOctagonProps = {
+  img_uri: string
+  color: string
+  id: number
+  shouldAnimate: boolean
+}
 
 const MessageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonProps) => {
   const outlineRef = useRef<HTMLDivElement>(null)
@@ -96,7 +101,7 @@ const MessageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonPro
       className={`${octagon_outside} ${message} ${shortMessage ? short_message : ''} ${
         shouldAnimate ? animate_growth : ''
       }`}
-      id={id}
+      id={id + ''}
       onPointerUp={showOptions}
     >
       {renderOptionsModal()}
