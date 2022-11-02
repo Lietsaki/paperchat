@@ -149,7 +149,6 @@ const Room = () => {
       emitter.off('backOnline')
       emitter.off('disbandedRoom')
       emitter.off('otherError')
-
       App.removeAllListeners()
     }
   }, [router.isReady])
@@ -272,7 +271,7 @@ const Room = () => {
         // If a duplicated userEntering message is received, consider only the most recent one.
         if (userEnteringMsgs.length > userLeavingMsgs.length) {
           const lastEnteringMsg = userEnteringMsgs[userEnteringMsgs.length - 1]
-          idsToSkip[lastEnteringMsg.serverTs > msg.serverTs ? lastEnteringMsg.id : msg.id] = true
+          idsToSkip[lastEnteringMsg.id] = true
         }
 
         if (!users[msg.author!]) users[msg.author!] = msg.userEntering
@@ -309,7 +308,9 @@ const Room = () => {
       if (!idsToSkip[msg.id]) updatedContent[msg.id] = msg
     }
 
-    setRoomContent(Object.values(updatedContent))
+    const updatedContentArr = Object.values(updatedContent)
+    updatedContentArr.sort((a, b) => a.serverTs - b.serverTs)
+    setRoomContent(updatedContentArr)
     setRoomUsers(Object.values(users))
 
     if (missingMessages.length) updateMissingMessages(Object.values(updatedContent))
