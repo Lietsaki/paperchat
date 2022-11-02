@@ -131,7 +131,6 @@ const Room = () => {
     emitter.on('backOnline', showBackOnlineDialog)
     emitter.on('disbandedRoom', showBackOnlineDisbandedDialog)
     emitter.on('otherError', showErrorDialog)
-    App.addListener('backButton', () => showAskExitRoomDialog())
 
     if (!savedUsername) {
       const randomUsername = getRandomUsername()
@@ -176,7 +175,10 @@ const Room = () => {
   // and receive its first messages snapshot.
   useEffect(() => {
     if (loadedRoom === true) {
-      setTimeout(() => scrollContent(), 300)
+      setTimeout(() => {
+        scrollContent()
+        App.addListener('backButton', () => showAskExitRoomDialog())
+      }, 300)
       playEnteredSound()
       setDialogData(baseDialogData)
     }
