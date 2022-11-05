@@ -114,7 +114,7 @@ const Room = () => {
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
   const [debounceTime, setDebounceTime] = useState(0)
   const strokeRGBArray = [17, 17, 17]
-  const DEB_TIME = 5
+  const DEB_TIME = 0
 
   const typeKey = (key: string) => emitter.emit('typeKey', key)
   const typeSpace = () => emitter.emit('typeSpace', '')
@@ -125,12 +125,7 @@ const Room = () => {
   useEffect(() => {
     if (!router.query.roomID) return
     showLoadingDialog()
-
     const savedUsername = localStorage.getItem('username')
-    emitter.on('lostConnection', showLostConnectionDialog)
-    emitter.on('backOnline', showBackOnlineDialog)
-    emitter.on('disbandedRoom', showBackOnlineDisbandedDialog)
-    emitter.on('otherError', showErrorDialog)
 
     if (!savedUsername) {
       const randomUsername = getRandomUsername()
@@ -142,6 +137,11 @@ const Room = () => {
       dispatch(setUsername(savedUsername.substring(0, usernameMaxLength).trim()))
       initializeRoom(router.query.roomID as string)
     }
+
+    emitter.on('lostConnection', showLostConnectionDialog)
+    emitter.on('backOnline', showBackOnlineDialog)
+    emitter.on('disbandedRoom', showBackOnlineDisbandedDialog)
+    emitter.on('otherError', showErrorDialog)
 
     return () => {
       emitter.off('lostConnection')
@@ -208,6 +208,12 @@ const Room = () => {
       }, 1000)
     }
   }, [debounceTime])
+
+  useEffect(() => {
+    if (dialogData === baseDialogData) {
+      App.addListener('backButton', () => showAskExitRoomDialog())
+    }
+  }, [dialogData])
 
   const initializeRoom = (id: string) => {
     const currentRoom = getCurrentRoomData()
@@ -315,7 +321,13 @@ const Room = () => {
     setRoomContent(updatedContentArr)
     setRoomUsers(Object.values(users))
 
-    if (missingMessages.length) updateMissingMessages(Object.values(updatedContent))
+    if (missingMessages.length) {
+      try {
+        updateRoomMessages(parseToFirebaseMessages(Object.values(updatedContent)))
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
 
   const parseToFirebaseMessages = (messages: roomContent[]): firebaseMessage[] => {
@@ -332,14 +344,6 @@ const Room = () => {
           serverTs: item.serverTs
         }
       })
-  }
-
-  const updateMissingMessages = (messages: roomContent[]) => {
-    try {
-      updateRoomMessages(parseToFirebaseMessages(messages))
-    } catch (error) {
-      console.log(error)
-    }
   }
 
   const parseToRoomContent = async (message: firebaseMessage) => {
@@ -407,7 +411,7 @@ const Room = () => {
         return (
           <UserInfoOctagon
             key={item.id}
-            id={item.serverTs!}
+            id={item.serverTs}
             userEntering={item.userEntering}
             userLeaving={item.userLeaving}
             shouldAnimate={!!item.animate || item.author === getCurrentUserID()}

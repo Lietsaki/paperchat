@@ -13,13 +13,13 @@ import ConnectionIndicator from 'components/room/ConnectionIndicator'
 import { useRouter } from 'next/router'
 import { useState, useEffect, useRef, FormEvent } from 'react'
 import {
-  getSimpleId,
   createActiveColorClass,
   willContainerBeOverflowed,
   getImageData,
   getRandomColor,
   getHighestAndLowestPoints,
-  playSound
+  playSound,
+  getSimpleId
 } from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
 import { roomContent, canvasData, firebaseMessage } from 'types/Room'
@@ -32,8 +32,10 @@ import {
   getCurrentRoomData,
   joinRoom,
   sendMessageToRoom,
-  getRoomMessages,
-  leaveRoom
+  leaveRoom,
+  getCurrentUserID,
+  listenForDisconnectAndMessages,
+  updateRoomMessages
 } from 'firebase-config/realtimeDB'
 import { usernameMinLength, usernameMaxLength } from 'store/initializer'
 import { dialogOptions } from 'types/Dialog'
@@ -68,7 +70,9 @@ const {
   send_buttons,
   send_buttons_bg,
   send,
+  send_seal,
   last_canvas,
+  clear,
   tool_container,
   active,
   active_on_click,
@@ -93,7 +97,7 @@ const Room = () => {
   const [usingThickStroke, setUsingThickStroke] = useState(true)
   const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('Alphanumeric')
   const [roomContent, setRoomContent] = useState<roomContent[]>([
-    { paperchatOctagon: true, id: 'paperchat_octagon' }
+    { paperchatOctagon: true, id: '1', serverTs: 1 }
   ])
   const [roomColor] = useState(getRandomColor())
   const [adjacentMessages, setAdjacentMessages] = useState({ up: '', down: '' })
@@ -108,7 +112,9 @@ const Room = () => {
 
   const [usernameInputValue, setUsernameInputValue] = useState('')
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
+  const [debounceTime, setDebounceTime] = useState(0)
   const strokeRGBArray = [17, 17, 17]
+  const DEB_TIME = 5
 
   const typeKey = (key: string) => emitter.emit('typeKey', key)
   const typeSpace = () => emitter.emit('typeSpace', '')
@@ -117,7 +123,7 @@ const Room = () => {
   const sendMessage = () => emitter.emit('sendMessage', '')
 
   useEffect(() => {
-    if (!router.query.roomID) return showErrorDialog()
+    if (!router.query.roomID) return
     showLoadingDialog()
     const savedUsername = localStorage.getItem('username')
 
@@ -136,7 +142,6 @@ const Room = () => {
     emitter.on('backOnline', showBackOnlineDialog)
     emitter.on('disbandedRoom', showBackOnlineDisbandedDialog)
     emitter.on('otherError', showErrorDialog)
-    App.addListener('backButton', () => showAskExitRoomDialog())
 
     return () => {
       emitter.off('lostConnection')
@@ -164,10 +169,23 @@ const Room = () => {
       emitter.off('canvasData')
       emitter.off('receivedFirebaseMessages')
     }
-  }, [roomContent, loadedRoom])
+  }, [roomContent])
 
+  // loadedRoom becomes true after we enter/create a room
+  // and receive its first messages snapshot.
   useEffect(() => {
-    // Refresh user list in the user dialog if it's open
+    if (loadedRoom === true) {
+      setTimeout(() => {
+        scrollContent()
+        App.addListener('backButton', () => showAskExitRoomDialog())
+      }, 300)
+      playEnteredSound()
+      setDialogData(baseDialogData)
+    }
+  }, [loadedRoom])
+
+  // Refresh user list in the user dialog if it's open
+  useEffect(() => {
     if (viewingUsers) {
       setDialogData({
         open: true,
@@ -183,16 +201,34 @@ const Room = () => {
     }
   }, [roomUsers])
 
+  useEffect(() => {
+    if (debounceTime) {
+      setTimeout(() => {
+        setDebounceTime(debounceTime - 1)
+      }, 1000)
+    }
+  }, [debounceTime])
+
+  useEffect(() => {
+    if (dialogData === baseDialogData) {
+      App.addListener('backButton', () => showAskExitRoomDialog())
+    }
+  }, [dialogData])
+
   const initializeRoom = (id: string) => {
     const currentRoom = getCurrentRoomData()
 
     if (!currentRoom.code) {
-      console.log('must join room')
       if (id.length !== 20) return showRoomNotFoundDialog()
       tryToJoinRoom(id)
     } else {
-      console.log('created room')
-      checkForPreviousMessages(currentRoom.code)
+      try {
+        listenForDisconnectAndMessages()
+        setRoomCode(currentRoom.code)
+      } catch (error) {
+        console.log(error)
+        return showErrorDialog()
+      }
     }
   }
 
@@ -213,52 +249,114 @@ const Room = () => {
     if (res === 'invalid-code') return showRoomInvalidCodeDialog()
     if (res === 'error' || !currentRoom.code) return showErrorDialog()
 
-    checkForPreviousMessages(currentRoom.code)
-  }
-
-  const checkForPreviousMessages = async (code: string) => {
-    const messages = await getRoomMessages()
-    if (messages === 'error') return showErrorDialog()
-
-    setRoomCode(code)
-    await receiveFirebaseMessages(messages)
-    setTimeout(() => scrollContent(), 300)
-    setLoadedRoom(true)
-    playEnteredSound()
-    setDialogData(baseDialogData)
+    try {
+      listenForDisconnectAndMessages()
+      setRoomCode(currentRoom.code)
+    } catch (error) {
+      console.log(error)
+      return showErrorDialog()
+    }
   }
 
   const scrollContent = () => {
     const container = document.getElementById('messages-container')
-    container!.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
+    container?.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
   }
 
   const receiveFirebaseMessages = async (receivedMessages: firebaseMessage[]) => {
+    const idsToSkip: { [key: string]: boolean } = {}
     const parsedMessages = await Promise.all(
       receivedMessages.map((message) => parseToRoomContent(message))
     )
 
     // Set room users
-    const leaveEnterMessages = parsedMessages.filter((msg) => msg.userEntering || msg.userLeaving)
-    const users = []
+    const leaveEnterMessages = parsedMessages.filter(
+      (msg) => (msg.userEntering || msg.userLeaving) && msg.author
+    )
+    const users: { [key: string]: string } = {}
     for (const msg of leaveEnterMessages) {
       if (msg.userEntering) {
-        users.push(msg.userEntering)
+        const userEnteringMsgs = roomContent.filter(
+          (item) => item.userEntering && item.author === msg.author && item.id !== msg.id
+        )
+        const userLeavingMsgs = roomContent.filter(
+          (item) => item.userLeaving && item.author === msg.author
+        )
+
+        // If a duplicated userEntering message is received, consider only the most recent one.
+        if (userEnteringMsgs.length > userLeavingMsgs.length) {
+          const lastEnteringMsg = userEnteringMsgs[userEnteringMsgs.length - 1]
+          idsToSkip[lastEnteringMsg.id] = true
+        }
+
+        if (!users[msg.author!]) users[msg.author!] = msg.userEntering
       }
       if (msg.userLeaving) {
-        const index = users.indexOf(msg.userLeaving)
-        users.splice(index, 1)
+        delete users[msg.author!]
       }
     }
 
-    setRoomContent([{ paperchatOctagon: true, id: 'paperchat_octagon' }, ...parsedMessages])
-    setRoomUsers(users)
+    if (roomContent.length === 1 && parsedMessages.length) {
+      setLoadedRoom(true)
+    }
+
+    // Check for deleted messages (users who disconnected and came back online overwrite
+    // the messages sent while they were offline with their 'Now leaving' message)
+    const missingMessages = roomContent.filter((msg) => {
+      if (msg.paperchatOctagon) return false
+      return !parsedMessages.find((item) => item.id === msg.id)
+    })
+
+    if (missingMessages.length) {
+      for (const missingMsg of missingMessages) {
+        const i = roomContent.findIndex((item) => item.id === missingMsg.id)
+        parsedMessages.splice(i + 1, 0, missingMsg)
+      }
+      parsedMessages.sort((a, b) => a.serverTs - b.serverTs)
+    }
+
+    const updatedContent: { [key: string]: roomContent } = {}
+    for (const msg of roomContent) {
+      if (!idsToSkip[msg.id]) updatedContent[msg.id] = msg
+    }
+    for (const msg of parsedMessages) {
+      if (!idsToSkip[msg.id]) updatedContent[msg.id] = msg
+    }
+
+    const updatedContentArr = Object.values(updatedContent)
+    updatedContentArr.sort((a, b) => a.serverTs - b.serverTs)
+    setRoomContent(updatedContentArr)
+    setRoomUsers(Object.values(users))
+
+    if (missingMessages.length) {
+      try {
+        updateRoomMessages(parseToFirebaseMessages(Object.values(updatedContent)))
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
+
+  const parseToFirebaseMessages = (messages: roomContent[]): firebaseMessage[] => {
+    return messages
+      .filter((item) => !item.paperchatOctagon)
+      .map((item) => {
+        return {
+          imageURL: item.imageURL || '',
+          color: item.color || '',
+          author: item.author!,
+          userEntering: item.userEntering || '',
+          userLeaving: item.userLeaving || '',
+          id: item.id,
+          serverTs: item.serverTs
+        }
+      })
   }
 
   const parseToRoomContent = async (message: firebaseMessage) => {
-    const { imageURL, userEntering, userLeaving, localID, color } = message
+    const { imageURL, userEntering, userLeaving, color, serverTs, author } = message
 
-    const roomMessage: roomContent = { id: localID }
+    const roomMessage: roomContent = { id: message.id, serverTs, author }
     let messageHeight = 0
 
     if (userEntering || userLeaving) {
@@ -274,9 +372,8 @@ const Room = () => {
     }
 
     if (imageURL && color) {
-      roomMessage.message = imageURL
+      roomMessage.imageURL = imageURL
       roomMessage.color = color
-
       const img = await getImageData(imageURL)
       messageHeight = img.height
     }
@@ -298,43 +395,51 @@ const Room = () => {
       4,
       height
     )
-    const localID = getSimpleId()
-    sendMessageToRoom(dataUrl, localID, roomColor)
 
+    const id = getSimpleId()
     setRoomContent([
       ...roomContent,
-      { message: dataUrl, id: localID, animate: !messagesWillTriggerScroll, color: roomColor }
+      {
+        imageURL: dataUrl,
+        serverTs: Date.now(),
+        id,
+        animate: !messagesWillTriggerScroll,
+        color: roomColor,
+        author: getCurrentUserID()!
+      }
     ])
+    sendMessageToRoom(dataUrl, id, roomColor)
+    setDebounceTime(DEB_TIME)
   }
 
   const getRoomContent = () => {
-    return roomContent.map((item, i) => {
+    return roomContent.map((item) => {
       if (item.userEntering || item.userLeaving) {
         return (
           <UserInfoOctagon
             key={item.id}
-            id={item.id}
+            id={item.serverTs}
             userEntering={item.userEntering}
             userLeaving={item.userLeaving}
-            shouldAnimate={!!item.animate}
+            shouldAnimate={!!item.animate || item.author === getCurrentUserID()}
           />
         )
       }
 
-      if (item.message && item.color) {
+      if (item.imageURL && item.color) {
         return (
           <MessageOctagon
             key={item.id}
-            id={item.id}
+            id={item.serverTs!}
             color={item.color}
-            img_uri={item.message}
-            shouldAnimate={!!item.animate}
+            img_uri={item.imageURL}
+            shouldAnimate={!!item.animate && `${item.id}`.length === 14}
           />
         )
       }
 
       if (item.paperchatOctagon) {
-        return <PaperchatOctagon key={item.id} id={item.id} />
+        return <PaperchatOctagon key={item.id} id="1" />
       }
     })
   }
@@ -385,13 +490,13 @@ const Room = () => {
   }
 
   const copyLastCanvas = () => {
-    const roomMessages = roomContent.filter((item) => item.message)
+    const roomMessages = roomContent.filter((item) => item.imageURL)
     if (!roomMessages.length) return playSound('btn-denied', 0.4)
     const lastMessage = roomMessages[roomMessages.length - 1]
     clearCanvas(true, true)
 
     setTimeout(() => {
-      emitter.emit('canvasToCopy', lastMessage.message!)
+      emitter.emit('canvasToCopy', lastMessage.imageURL!)
     }, 200)
   }
 
@@ -453,7 +558,7 @@ const Room = () => {
     })
   }
 
-  const showMissingCodeDialog = (addMaybe?: boolean) => {
+  const showMissingCodeDialog = () => {
     setDialogData({
       open: true,
       text: 'Room not found: private code missing in URL.',
@@ -841,13 +946,20 @@ const Room = () => {
 
               <div className={send_buttons}>
                 <div className={send_buttons_bg}>
-                  <div onClick={sendMessage} className={`${send} ${active_on_click}`}>
+                  <div
+                    onClick={sendMessage}
+                    className={`${send} ${active_on_click} ${
+                      debounceTime ? 'no_pointer_events' : ''
+                    }`}
+                  >
                     <img src="/send-buttons/SEND.png" alt="send button" />
                     <img
                       src="/send-buttons/active/SEND.png"
                       alt="active send button"
                       className={active}
                     />
+
+                    {debounceTime ? <div className={send_seal}>{debounceTime}</div> : ''}
                   </div>
                   <div className={`${last_canvas} ${active_on_click}`} onClick={copyLastCanvas}>
                     <img src="/send-buttons/LAST-CANVAS.png" alt="last message button" />
@@ -857,7 +969,7 @@ const Room = () => {
                       className={active}
                     />
                   </div>
-                  <div className={`${active_on_click}`} onClick={() => clearCanvas()}>
+                  <div className={`${clear} ${active_on_click}`} onClick={() => clearCanvas()}>
                     <img src="/send-buttons/CLEAR.png" alt="clear button" />
                     <img
                       src="/send-buttons/active/CLEAR.png"

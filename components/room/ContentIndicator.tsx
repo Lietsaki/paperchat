@@ -27,9 +27,9 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
   const [latestOverflowedLength, setLatestOverflowedLength] = useState(0)
   const animatedIndicators = useRef<{ [key: string]: boolean }>({})
 
+  const [overflowed2OldestIndicator, setOverflowed2OldestIndicator] = useState('')
   const [overflowed1OldestIndicator, setOverflowed1OldestIndicator] = useState('')
   const [overflowed1NewestIndicator, setOverflowed1NewestIndicator] = useState('')
-  const [overflowed2OldestIndicator, setOverflowed2OldestIndicator] = useState('')
   const [overflowed2NewestIndicator, setOverflowed2NewestIndicator] = useState('')
 
   const middleIndicatorsRef = useRef<HTMLDivElement>(null)
@@ -45,7 +45,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     .sort((a, b) => Number(a) - Number(b)) // ids are saved as firebase server timestamps
 
   const setupObserver = () => {
-    setIndicators({})
+    // setIndicators({})
     observer = new IntersectionObserver(
       (entries) => {
         let newIndicators = { ...indicatorsRef.current }
@@ -97,6 +97,9 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     const indicators = { ...indicatorsToHandle }
     const indicatorKeys = Object.keys(indicators)
 
+    // If a new item has not been added, return.
+    if (latestOverflowedLength && indicatorKeys.length === latestOverflowedLength) return indicators
+
     const mustAssignOverflowed1ToOldestIndicator =
       !indicators[indicatorKeys[0]].isVisible &&
       !overflowed1OldestIndicator &&
@@ -108,10 +111,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
       overflowed1OldestIndicator &&
       !indicators[indicatorKeys[1]].isOverflowedIndicator1
 
-    const mustReassignNewestIndicators =
-      overflowed2NewestIndicator &&
-      latestOverflowedLength &&
-      indicatorKeys.length > latestOverflowedLength
+    const mustReassignNewestIndicators = overflowed2NewestIndicator
 
     if (mustAssignOverflowed1ToOldestIndicator) {
       indicators[indicatorKeys[0]].isOverflowedIndicator1 = true
@@ -247,7 +247,9 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
 
   const scrollMiddleIndicatorForVisibility = (latestVisibleId: string) => {
     const item = document.getElementById(indicatorIdPrefix + latestVisibleId)
-    if (isIndicatorOverflowed(item!)) item!.scrollIntoView({ behavior: 'auto', block: 'nearest' })
+    if (item && isIndicatorOverflowed(item)) {
+      item.scrollIntoView({ behavior: 'auto', block: 'nearest' })
+    }
   }
 
   const renderIndicators = (indicatorKeys: string[]) => {

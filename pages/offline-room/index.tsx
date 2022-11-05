@@ -55,7 +55,9 @@ const {
   send_buttons,
   send_buttons_bg,
   send,
+  send_seal,
   last_canvas,
+  clear,
   tool_container,
   active,
   active_on_click,
@@ -79,7 +81,7 @@ const Room = () => {
   const [usingThickStroke, setUsingThickStroke] = useState(true)
   const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('Alphanumeric')
   const [roomContent, setRoomContent] = useState<roomContent[]>([
-    { paperchatOctagon: true, id: 'paperchat_octagon' }
+    { paperchatOctagon: true, id: 'paperchat_octagon', serverTs: 1 }
   ])
   const [roomColor] = useState(getRandomColor())
   const [adjacentMessages, setAdjacentMessages] = useState({ up: '', down: '' })
@@ -134,7 +136,10 @@ const Room = () => {
   }, [roomContent])
 
   const initializeRoom = (username: string) => {
-    setRoomContent([...roomContent, { animate: true, id: getSimpleId(), userEntering: username }])
+    setRoomContent([
+      ...roomContent,
+      { animate: true, id: getSimpleId(), userEntering: username, serverTs: 1 }
+    ])
 
     playEnteredSound()
     setDialogData(baseDialogData)
@@ -155,7 +160,13 @@ const Room = () => {
 
     setRoomContent([
       ...roomContent,
-      { message: dataUrl, id: getSimpleId(), animate: !messagesWillTriggerScroll, color: roomColor }
+      {
+        imageURL: dataUrl,
+        id: getSimpleId(),
+        animate: !messagesWillTriggerScroll,
+        color: roomColor,
+        serverTs: Date.now()
+      }
     ])
   }
 
@@ -165,7 +176,7 @@ const Room = () => {
         return (
           <UserInfoOctagon
             key={item.id}
-            id={item.id}
+            id={item.serverTs}
             userEntering={item.userEntering}
             userLeaving={item.userLeaving}
             shouldAnimate={!!item.animate}
@@ -173,13 +184,13 @@ const Room = () => {
         )
       }
 
-      if (item.message && item.color) {
+      if (item.imageURL && item.color) {
         return (
           <MessageOctagon
             key={item.id}
-            id={item.id}
+            id={item.serverTs}
             color={item.color}
-            img_uri={item.message}
+            img_uri={item.imageURL}
             shouldAnimate={!!item.animate}
           />
         )
@@ -237,13 +248,13 @@ const Room = () => {
   }
 
   const copyLastCanvas = () => {
-    const roomMessages = roomContent.filter((item) => item.message)
+    const roomMessages = roomContent.filter((item) => item.imageURL)
     if (!roomMessages.length) return playSound('btn-denied', 0.4)
     const lastMessage = roomMessages[roomMessages.length - 1]
     clearCanvas(true, true)
 
     setTimeout(() => {
-      emitter.emit('canvasToCopy', lastMessage.message!)
+      emitter.emit('canvasToCopy', lastMessage.imageURL!)
     }, 200)
   }
 
@@ -517,7 +528,7 @@ const Room = () => {
                       className={active}
                     />
                   </div>
-                  <div className={`${active_on_click}`} onClick={() => clearCanvas()}>
+                  <div className={`${clear} ${active_on_click}`} onClick={() => clearCanvas()}>
                     <img src="/send-buttons/CLEAR.png" alt="clear button" />
                     <img
                       src="/send-buttons/active/CLEAR.png"
