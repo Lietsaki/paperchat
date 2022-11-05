@@ -40,12 +40,12 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
 
   const oldestIndicators = [overflowed2OldestIndicator, overflowed1OldestIndicator]
   const newestIndicators = [overflowed1NewestIndicator, overflowed2NewestIndicator]
-  const middleIndicatorKeys = Object.keys(indicators)
-    .filter((key) => !oldestIndicators.includes(key) && !newestIndicators.includes(key))
-    .sort((a, b) => Number(a) - Number(b)) // ids are saved as firebase server timestamps
+  // No need to sort middleIndicatorKeys as roomContent already comes sorted, so indicators will be too.
+  const middleIndicatorKeys = Object.keys(indicators).filter(
+    (key) => !oldestIndicators.includes(key) && !newestIndicators.includes(key)
+  )
 
   const setupObserver = () => {
-    // setIndicators({})
     observer = new IntersectionObserver(
       (entries) => {
         let newIndicators = { ...indicatorsRef.current }
@@ -88,7 +88,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     )
 
     roomContent.map((item) => {
-      const el = document.getElementById(item.serverTs + '')
+      const el = document.getElementById(item.id + '')
       if (el && observer) observer.observe(el)
     })
   }

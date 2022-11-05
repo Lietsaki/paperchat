@@ -411,7 +411,7 @@ const Room = () => {
         return (
           <UserInfoOctagon
             key={item.id}
-            id={item.serverTs}
+            id={item.id}
             userEntering={item.userEntering}
             userLeaving={item.userLeaving}
             shouldAnimate={!!item.animate || item.author === getCurrentUserID()}
@@ -423,7 +423,7 @@ const Room = () => {
         return (
           <MessageOctagon
             key={item.id}
-            id={item.serverTs!}
+            id={item.id}
             color={item.color}
             img_uri={item.imageURL}
             shouldAnimate={!!item.animate && `${item.id}`.length === 14}
