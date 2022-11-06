@@ -18,6 +18,10 @@ type contentIndicators = {
   }
 }
 
+type contentIndicator = {
+  isVisible: boolean
+}
+
 type canvasData = { dataUrl: string; height: number }
 
 // Types used in Firebase Realtime DB
@@ -58,6 +62,7 @@ type queryResult<T> = {
 export type {
   roomContent,
   contentIndicators,
+  contentIndicator,
   canvasData,
   onlineUser,
   room,

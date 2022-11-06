@@ -114,7 +114,7 @@ const Room = () => {
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
   const [debounceTime, setDebounceTime] = useState(0)
   const strokeRGBArray = [17, 17, 17]
-  const DEB_TIME = 0
+  const DEB_TIME = 5
 
   const typeKey = (key: string) => emitter.emit('typeKey', key)
   const typeSpace = () => emitter.emit('typeSpace', '')

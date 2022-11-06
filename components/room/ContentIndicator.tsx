@@ -49,6 +49,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     observer = new IntersectionObserver(
       (entries) => {
         let newIndicators = { ...indicatorsRef.current }
+        const newIndKeys = Object.keys(newIndicators)
         let latestVisibleId = ''
 
         for (const entry of entries) {
@@ -61,7 +62,16 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
               newIndicators[id].isVisible = true
               latestVisibleId = id
 
-              if (newIndicators[id].isOverflowedIndicator1) {
+              if (
+                newIndicators[id].isOverflowedIndicator1 ||
+                newIndicators[id].isOverflowedIndicator2
+              ) {
+                // This if statement handles an edge case: When scrolling too fast in mobile devices, the
+                // overflowed 2 oldest indicator would be evaluated here, but the overflowed 1 oldest would be skipped.
+                if (newIndKeys[0] === id) {
+                  newIndicators = handleOverflowedIndicatorView(newIndKeys[1], newIndicators)
+                }
+
                 newIndicators = handleOverflowedIndicatorView(id, newIndicators)
               }
             }
@@ -149,6 +159,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     indicatorId: string,
     indicatorsToHandle: contentIndicators
   ) => {
+    console.log('I ran!!', indicatorId)
     const indicators = { ...indicatorsToHandle }
     const viewingOldIndicator1 = overflowed1OldestIndicator === indicatorId
     const viewingNewIndicator1 = overflowed1NewestIndicator === indicatorId
@@ -156,7 +167,14 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     const viewingNewIndicator2 = overflowed2NewestIndicator === indicatorId
     indicators[indicatorId] = { isVisible: true }
 
+    console.log(viewingOldIndicator2)
+    console.log(viewingOldIndicator1)
+    console.log(viewingNewIndicator1)
+    console.log(viewingNewIndicator2)
+
     if (viewingOldIndicator1) {
+      // handleOverflowedIndicatorView()
+
       if (overflowed2NewestIndicator) {
         indicators[overflowed2OldestIndicator].isOverflowedIndicator1 = true
         indicators[overflowed2OldestIndicator].isOverflowedIndicator2 = false
@@ -270,8 +288,8 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
           id={indicatorIdPrefix + id}
           className={`${indicator} ${animatedIndicators.current[id] ? '' : animate} ${
             ind.isVisible ? '' : invisible
-          } ${ind.isOverflowedIndicator1 ? overflowed_1 : ''} ${
-            ind.isOverflowedIndicator2 ? overflowed_2 : ''
+          } ${ind.isOverflowedIndicator1 && !ind.isVisible ? overflowed_1 : ''} ${
+            ind.isOverflowedIndicator2 && !ind.isVisible ? overflowed_2 : ''
           }`}
         ></div>
       )
