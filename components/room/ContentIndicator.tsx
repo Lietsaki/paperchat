@@ -31,6 +31,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
   const [overflowed1OldestIndicator, setOverflowed1OldestIndicator] = useState('')
   const [overflowed1NewestIndicator, setOverflowed1NewestIndicator] = useState('')
   const [overflowed2NewestIndicator, setOverflowed2NewestIndicator] = useState('')
+  const [finishedFirstRender, setFinishedFirstRender] = useState(false)
 
   const middleIndicatorsRef = useRef<HTMLDivElement>(null)
   const indicatorsContainerRef = useRef<HTMLDivElement>(null)
@@ -107,8 +108,14 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     const indicators = { ...indicatorsToHandle }
     const indicatorKeys = Object.keys(indicators)
 
-    // If a new item has not been added, return.
-    if (latestOverflowedLength && indicatorKeys.length === latestOverflowedLength) return indicators
+    // If a new item has not been added after the first render completed, return.
+    if (
+      latestOverflowedLength &&
+      indicatorKeys.length === latestOverflowedLength &&
+      finishedFirstRender
+    ) {
+      return indicators
+    }
 
     const mustAssignOverflowed1ToOldestIndicator =
       !indicators[indicatorKeys[0]].isVisible &&
@@ -159,7 +166,6 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     indicatorId: string,
     indicatorsToHandle: contentIndicators
   ) => {
-    console.log('I ran!!', indicatorId)
     const indicators = { ...indicatorsToHandle }
     const viewingOldIndicator1 = overflowed1OldestIndicator === indicatorId
     const viewingNewIndicator1 = overflowed1NewestIndicator === indicatorId
@@ -167,14 +173,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     const viewingNewIndicator2 = overflowed2NewestIndicator === indicatorId
     indicators[indicatorId] = { isVisible: true }
 
-    console.log(viewingOldIndicator2)
-    console.log(viewingOldIndicator1)
-    console.log(viewingNewIndicator1)
-    console.log(viewingNewIndicator2)
-
     if (viewingOldIndicator1) {
-      // handleOverflowedIndicatorView()
-
       if (overflowed2NewestIndicator) {
         indicators[overflowed2OldestIndicator].isOverflowedIndicator1 = true
         indicators[overflowed2OldestIndicator].isOverflowedIndicator2 = false
@@ -229,6 +228,16 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     overflowed2NewestIndicator
   ])
 
+  // finishedFirstRender will be used to check for overflowed indicators when joining room
+  // that potentially has many messages. Here we consider that the first scroll ends in up to 500ms.
+  useEffect(() => {
+    if (roomContent.length > 2) {
+      setTimeout(() => {
+        setFinishedFirstRender(true)
+      }, 500)
+    }
+  }, [roomContent])
+
   useEffect(() => {
     const adjacentIndicators = { up: '', down: '' }
     const indKeys = Object.keys(indicators)
@@ -277,7 +286,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
 
       // Set the previous indicator as already animated (because we just rendered it)
       // Keeping trak of the animated indicators prevents animating all indicators from being
-      // animated at the same time when calling setIndicators({}) in setupObserver()
+      // animated at the same time when calling setIndicators() in setupObserver()
       if (indicatorKeys[i - 1]) {
         animatedIndicators.current[indicatorKeys[i - 1]] = true
       }

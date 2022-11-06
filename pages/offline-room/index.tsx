@@ -226,24 +226,25 @@ const Room = () => {
 
   const clearCanvas = (clearEvenEmpty?: boolean, skipSound?: boolean) => {
     const canvas = document.getElementById('roomCanvas') as HTMLCanvasElement
+    if (!canvas) return
 
-    const performClear = () => {
+    const performClear = (foundCanvasData: boolean) => {
       setShouldShowCanvas(false)
       setTimeout(() => {
         setShouldShowCanvas(true)
-        if (!skipSound) playSound('clear-canvas')
+        if (!skipSound && foundCanvasData) playSound('clear-canvas')
       }, 30)
     }
 
     if (clearEvenEmpty) {
-      performClear()
+      performClear(false)
     } else {
       const { highestPoint, lowestPoint } = getHighestAndLowestPoints(
         canvas.getContext('2d')!,
         strokeRGBArray
       )
-      if (!highestPoint && !lowestPoint) return playSound('btn-denied', 0.4)
-      performClear()
+      if (!highestPoint && !lowestPoint) playSound('btn-denied', 0.4)
+      performClear(!!highestPoint && !!lowestPoint)
     }
   }
 

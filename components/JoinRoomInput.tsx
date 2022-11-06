@@ -17,6 +17,7 @@ const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
   useEffect(() => {
     inputRef.current!.focus()
     const savedDebounce = localStorage.getItem('retryJoinPrivateRoomAttempt')
+    console.log('latest debounce!', savedDebounce)
     if (savedDebounce) setLatestDebounce(Number(savedDebounce))
   }, [])
 

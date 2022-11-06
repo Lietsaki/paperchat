@@ -257,7 +257,7 @@ const Canvas = ({
     loadFont?: boolean,
     appendImgToCanvas?: boolean
   ) => {
-    if (!ctx) return
+    if (!ctx || !canvasRef.current) return
     const usernameCanvas = document.createElement('canvas')
     const usernameCtx = usernameCanvas.getContext('2d')!
     const ctxToUse = appendImgToCanvas ? usernameCtx : ctx
@@ -295,6 +295,7 @@ const Canvas = ({
     const f = new FontFace('nds', 'url(/fonts/nds.ttf)')
 
     const writeUsername = () => {
+      if (!ctx || !canvasRef.current) return
       ctxToUse.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       const firstLineY = getPercentage(80, divisionsHeight)
@@ -392,7 +393,7 @@ const Canvas = ({
   }
 
   const copyCanvas = async (imgUri: string) => {
-    if (!ctx) return
+    if (!ctx || !canvasRef.current) return
 
     // Use a different content (imgCtx) to draw the received image and remove its white background
     // If we removed it in ctx, it'd cause lag in mobile.
@@ -402,6 +403,7 @@ const Canvas = ({
     const imgCtx = imgCanvas.getContext('2d')!
 
     const receivedImg = await loadImage(imgUri)
+    const ratio = receivedImg.naturalWidth / receivedImg.naturalHeight
 
     // Draw the received image which will have a white background
     imgCtx.drawImage(
@@ -412,8 +414,8 @@ const Canvas = ({
       receivedImg.height * (window.devicePixelRatio || 1),
       0,
       0,
-      receivedImg.width * (window.devicePixelRatio || 1),
-      receivedImg.height * (window.devicePixelRatio || 1)
+      ctx.canvas.width * (window.devicePixelRatio || 1),
+      (ctx.canvas.width / ratio) * (window.devicePixelRatio || 1)
     )
 
     removeColor(imgCtx, canvasBgColorArr)
@@ -450,8 +452,8 @@ const Canvas = ({
       nameContainerPos
     )
 
+    clearCanvas(true, true)
     if (highestPoint && lowestPoint) {
-      clearCanvas(true, true)
       const contentHeight = lowestPoint[1] - highestPoint[1]
       let sourceY = 0
       let destinationY = 0

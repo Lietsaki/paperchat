@@ -413,6 +413,30 @@
             border: 2px solid $clear-bg;
             border-right: 4px solid $clear-bg;
 
+            .interact_seal {
+              position: absolute;
+              width: 130%;
+              height: 110%;
+              background-color: rgba(17, 17, 17, 0.7);
+              z-index: 1000;
+              transition: all 0.2s ease-in-out;
+              @include flexcenter;
+              color: $clear-bg;
+              font-size: 25px;
+              animation: opacityFadeIn 0.2s ease-in-out;
+
+              &:hover {
+                cursor: not-allowed;
+              }
+
+              @include phones {
+                font-size: 20px;
+              }
+              @include small-phones {
+                font-size: 18px;
+              }
+            }
+
             &:nth-child(2) {
               border-top: 4px solid $clear-bg;
               border-bottom: 4px solid $clear-bg;
@@ -451,30 +475,6 @@
               width: 90%;
               height: 90%;
               left: 3%;
-            }
-
-            .send_seal {
-              position: absolute;
-              width: 130%;
-              height: 110%;
-              background-color: rgba(17, 17, 17, 0.7);
-              z-index: 1000;
-              transition: all 0.2s ease-in-out;
-              @include flexcenter;
-              color: $clear-bg;
-              font-size: 25px;
-              animation: opacityFadeIn 0.2s ease-in-out;
-
-              &:hover {
-                cursor: not-allowed;
-              }
-
-              @include phones {
-                font-size: 20px;
-              }
-              @include small-phones {
-                font-size: 18px;
-              }
             }
           }
 

@@ -70,7 +70,7 @@ const {
   send_buttons,
   send_buttons_bg,
   send,
-  send_seal,
+  interact_seal,
   last_canvas,
   clear,
   tool_container,
@@ -112,9 +112,10 @@ const Room = () => {
 
   const [usernameInputValue, setUsernameInputValue] = useState('')
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
-  const [debounceTime, setDebounceTime] = useState(0)
+
+  const [msgDebounceTime, setMsgDebounceTime] = useState(0)
   const strokeRGBArray = [17, 17, 17]
-  const DEB_TIME = 5
+  const MSG_DEB_TIME = 5
 
   const typeKey = (key: string) => emitter.emit('typeKey', key)
   const typeSpace = () => emitter.emit('typeSpace', '')
@@ -202,12 +203,12 @@ const Room = () => {
   }, [roomUsers])
 
   useEffect(() => {
-    if (debounceTime) {
+    if (msgDebounceTime) {
       setTimeout(() => {
-        setDebounceTime(debounceTime - 1)
+        setMsgDebounceTime(msgDebounceTime - 1)
       }, 1000)
     }
-  }, [debounceTime])
+  }, [msgDebounceTime])
 
   useEffect(() => {
     if (dialogData === baseDialogData) {
@@ -409,7 +410,7 @@ const Room = () => {
       }
     ])
     sendMessageToRoom(dataUrl, id, roomColor)
-    setDebounceTime(DEB_TIME)
+    setMsgDebounceTime(MSG_DEB_TIME)
   }
 
   const getRoomContent = () => {
@@ -468,24 +469,25 @@ const Room = () => {
 
   const clearCanvas = (clearEvenEmpty?: boolean, skipSound?: boolean) => {
     const canvas = document.getElementById('roomCanvas') as HTMLCanvasElement
+    if (!canvas) return
 
-    const performClear = () => {
+    const performClear = (foundCanvasData: boolean) => {
       setShouldShowCanvas(false)
       setTimeout(() => {
         setShouldShowCanvas(true)
-        if (!skipSound) playSound('clear-canvas')
+        if (!skipSound && foundCanvasData) playSound('clear-canvas')
       }, 30)
     }
 
     if (clearEvenEmpty) {
-      performClear()
+      performClear(false)
     } else {
       const { highestPoint, lowestPoint } = getHighestAndLowestPoints(
         canvas.getContext('2d')!,
         strokeRGBArray
       )
-      if (!highestPoint && !lowestPoint) return playSound('btn-denied', 0.4)
-      performClear()
+      if (!highestPoint && !lowestPoint) playSound('btn-denied', 0.4)
+      performClear(!!highestPoint && !!lowestPoint)
     }
   }
 
@@ -947,9 +949,9 @@ const Room = () => {
               <div className={send_buttons}>
                 <div className={send_buttons_bg}>
                   <div
-                    onClick={sendMessage}
+                    onClick={() => (msgDebounceTime ? '' : sendMessage())}
                     className={`${send} ${active_on_click} ${
-                      debounceTime ? 'no_pointer_events' : ''
+                      msgDebounceTime ? 'no_pointer_events' : ''
                     }`}
                   >
                     <img src="/send-buttons/SEND.png" alt="send button" />
@@ -959,7 +961,7 @@ const Room = () => {
                       className={active}
                     />
 
-                    {debounceTime ? <div className={send_seal}>{debounceTime}</div> : ''}
+                    {msgDebounceTime ? <div className={interact_seal}>{msgDebounceTime}</div> : ''}
                   </div>
                   <div className={`${last_canvas} ${active_on_click}`} onClick={copyLastCanvas}>
                     <img src="/send-buttons/LAST-CANVAS.png" alt="last message button" />

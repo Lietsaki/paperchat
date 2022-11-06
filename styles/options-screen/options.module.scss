@@ -1,6 +1,7 @@
 .top {
   display: grid;
   grid-template-columns: 7.5% 1fr;
+  user-select: none;
 
   .left_column {
     background-color: $clear-bg;

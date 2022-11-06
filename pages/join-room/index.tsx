@@ -39,8 +39,10 @@ const JoinWithACode = () => {
     if (roomIDAndCode === 'error') return showErrorDialog()
     if (roomIDAndCode === 'not-found') return showNotFoundDialog()
 
-    localStorage.setItem('retryJoinPrivateRoomAttempt', '0')
     setDialogData(baseDialogData)
+    setTimeout(() => {
+      localStorage.setItem('retryJoinPrivateRoomAttempt', '0')
+    }, 1500)
     router.push(`private-room/${roomIDAndCode}`)
   }
 

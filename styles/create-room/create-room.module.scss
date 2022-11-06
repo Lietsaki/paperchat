@@ -59,7 +59,7 @@
         @include phones {
           .title {
             top: 2%;
-            font-size: 400%;
+            font-size: 330%;
           }
         }
 
@@ -78,7 +78,7 @@
         color: $dark-gray;
 
         @include phones {
-          font-size: 16px;
+          font-size: 15px;
         }
         @include small-phones {
           font-size: 12px;
