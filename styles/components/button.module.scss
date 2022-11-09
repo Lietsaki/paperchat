@@ -65,6 +65,10 @@
     top: 1px;
   }
 
+  @include landscape-tablet-up {
+    font-size: 20px;
+  }
+
   @include phones {
     font-size: 18px;
 

@@ -32,6 +32,10 @@
         height: 252px;
       }
 
+      @include landscape-tablet-up {
+        height: 252px;
+      }
+
       @include phones {
         height: 210px;
       }

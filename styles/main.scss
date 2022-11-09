@@ -36,13 +36,13 @@ $scrollbar-color-dark: rgba(132, 132, 132, 0.6);
 }
 
 @mixin phones {
-  @media (max-width: 599px) {
+  @media (max-width: 500px) {
     @content;
   }
 }
 
 @mixin landscape-tablet-up {
-  @media (max-width: 800px) {
+  @media (max-width: 750px) {
     @content;
   }
 }

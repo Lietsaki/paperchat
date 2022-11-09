@@ -59,13 +59,19 @@
     }
   }
 
-  @include phones {
-    height: 42px;
-
+  @include landscape-tablet-up {
     .title {
       font-size: 12px;
       padding: 2px 0 2px 5px;
+
+      &.extra_pad_left {
+        padding-left: 10px;
+      }
     }
+  }
+
+  @include phones {
+    height: 42px;
 
     input {
       font-size: 22px;

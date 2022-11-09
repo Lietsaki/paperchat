@@ -22,6 +22,14 @@ function MyApp({ Component, pageProps }: AppProps) {
           content="Draw in real time with your friends or random people in an online version of Pictochat."
         />
 
+        <link
+          rel="preload"
+          href="/fonts/nds.ttf"
+          as="font"
+          type="font/ttf"
+          crossOrigin="true"
+        ></link>
+
         <link rel="icon" type="image/ico" href="/favicons/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
@@ -29,7 +37,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="#cbcbcb" />
 
         <meta name="format-detection" content="telephone=no" />
-        <meta name="robots" content="noindex, nofollow" />
+        <meta name="robots" content="index, follow" />
         <meta name="author" content="Ricardo Sandez - Lietsaki" />
         <meta
           name="keywords"

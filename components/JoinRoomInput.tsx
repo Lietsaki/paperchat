@@ -35,8 +35,8 @@ const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
     <div className={join_area}>
       <div>
         <form className={input_area} onSubmit={(e) => handleCodeSubmitWithCheck(e, code)}>
-          <div className="input_container simple_width make_complete_rectangle">
-            <div className="title">Code</div>
+          <div className="input_container  simple_width make_complete_rectangle">
+            <div className="title extra_pad_left">Code</div>
             <input
               ref={inputRef}
               value={code}

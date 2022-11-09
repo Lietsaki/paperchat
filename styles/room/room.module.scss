@@ -137,15 +137,9 @@
     }
   }
 
-  @include phones {
-    .top_line,
-    .bottom_line {
-      height: 1.5px;
-    }
-
+  @include landscape-tablet-up {
     .center {
-      grid-template-columns: 4px repeat(3, 2.5px);
-      gap: 2px;
+      grid-template-columns: 4px repeat(3, 3px);
 
       .antenna {
         .head {
@@ -167,6 +161,18 @@
       .high_bar {
         height: 12px;
       }
+    }
+  }
+
+  @include phones {
+    .top_line,
+    .bottom_line {
+      height: 1.5px;
+    }
+
+    .center {
+      grid-template-columns: 4px repeat(3, 2.5px);
+      gap: 2px;
     }
   }
 

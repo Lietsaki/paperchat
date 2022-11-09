@@ -59,7 +59,8 @@ const Canvas = ({
   const canvasBgColorArr = [253, 253, 253]
   const strokeColor = '#111'
   const strokeRGBArray = [17, 17, 17]
-  const smallDevice = typeof window !== 'undefined' ? window.screen.width < 999 : false
+  const smallDevice = typeof window !== 'undefined' ? window.screen.width < 800 : false
+  const smallerDevice = smallDevice && window.screen.width < 550
 
   const getNextYDivision = (y: number) => {
     const nextDivision = y + divisionsHeight
@@ -85,10 +86,11 @@ const Canvas = ({
 
   const getLineWidth = () => {
     if (usingThickStroke) {
-      if (smallDevice) return 12
+      if (smallerDevice) return 12
+      if (smallDevice) return 5
       return 4
     } else {
-      if (smallDevice) return 3
+      if (smallerDevice) return 3
       return 2
     }
   }
@@ -274,7 +276,7 @@ const Canvas = ({
     ctxToUse.lineJoin = 'bevel'
     ctxToUse.imageSmoothingEnabled = false
     let pixelBorderSize = canvasRef.current!.width >= 400 ? 3 : 2
-    ctxToUse.lineWidth = smallDevice ? 3 : 1
+    ctxToUse.lineWidth = smallerDevice ? 4 : 2
     ctxToUse.fillStyle = getLighterHslaShade(roomColor)
     ctxToUse.strokeStyle = roomColor
     ctxToUse.beginPath()
@@ -299,7 +301,7 @@ const Canvas = ({
       ctxToUse.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       const firstLineY = getPercentage(80, divisionsHeight)
-      ctxToUse.fillText(username, smallDevice ? 16 : 8, firstLineY - 1.5)
+      ctxToUse.fillText(username, smallerDevice ? 18 : smallDevice ? 10 : 8, firstLineY - 1.5)
       setKeyPos({ x: getStartingX(), y: firstLineY })
 
       if (appendImgToCanvas) {

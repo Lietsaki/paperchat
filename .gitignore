@@ -39,3 +39,4 @@ ui-debug.log
 /firebase-config
 .firebaserc
 firebase.json
+.firebase

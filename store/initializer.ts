@@ -3,7 +3,7 @@ import { store } from 'store/store'
 import { setUsername } from 'store/slices/userSlice'
 
 const usernameMinLength = 2
-const usernameMaxLength = 11
+const usernameMaxLength = 10
 
 const initializeUsername = () => {
   const savedUsername = localStorage.getItem('username')

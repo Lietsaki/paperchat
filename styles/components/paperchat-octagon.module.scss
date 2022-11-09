@@ -47,8 +47,13 @@
         color: $dim-beige;
         text-transform: uppercase;
 
+        @include landscape-tablet-up {
+          font-size: 25px;
+          padding-bottom: 1px;
+        }
         @include phones {
           font-size: 22px;
+          padding-left: 8px;
         }
       }
     }
@@ -70,6 +75,11 @@
 
         @include small-height-devices {
           font-size: 22px;
+        }
+
+        @include landscape-tablet-up {
+          font-size: 25px;
+          padding-bottom: 1px;
         }
 
         @include phones {

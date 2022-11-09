@@ -5,7 +5,7 @@ const getRandomUsername = () => {
   const useShortName = getRandomNumber(0, 100) >= 50
 
   if (useShortName) {
-    const shortNameAnimals = customAnimals.filter((animal) => animal.length < 5)
+    const shortNameAnimals = customAnimals.filter((animal) => animal.length < 4)
     const randomShortAnimal = shortNameAnimals[getRandomNumber(0, shortNameAnimals.length - 1)]
     const randomAdjective = customAdjectives[getRandomNumber(0, customAdjectives.length - 1)]
 
@@ -13,7 +13,7 @@ const getRandomUsername = () => {
       randomShortAnimal[0].toUpperCase() + randomShortAnimal.slice(1)
     }`
   } else {
-    const shortAdjectives = customAdjectives.filter((adj) => adj.length < 5)
+    const shortAdjectives = customAdjectives.filter((adj) => adj.length < 4)
     const randomShortAdjective = shortAdjectives[getRandomNumber(0, shortAdjectives.length - 1)]
     const randomAnimal = customAnimals[getRandomNumber(0, customAnimals.length - 1)]
 
