@@ -37,7 +37,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="#cbcbcb" />
 
         <meta name="format-detection" content="telephone=no" />
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content="noindex, nofollow" />
         <meta name="author" content="Ricardo Sandez - Lietsaki" />
         <meta
           name="keywords"
