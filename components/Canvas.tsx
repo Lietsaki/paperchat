@@ -61,6 +61,7 @@ const Canvas = ({
   const strokeRGBArray = [17, 17, 17]
   const smallDevice = typeof window !== 'undefined' ? window.screen.width < 800 : false
   const smallerDevice = smallDevice && window.screen.width < 550
+  const newLineStartX = smallerDevice ? 15 : 5
 
   const getNextYDivision = (y: number) => {
     const nextDivision = y + divisionsHeight
@@ -111,7 +112,9 @@ const Canvas = ({
   const resetPosition = () => setPos({ x: 0, y: 0 })
   const getFontSize = () => getPercentage(canvasRef.current!.width > 295 ? 88 : 94, divisionsHeight)
   // starting X refers to the end of the username rectangle, where the first line of user-generated text can begin
-  const getStartingX = () => nameContainerWidth + getPercentage(3, canvasRef.current!.width)
+  const getStartingX = () =>
+    nameContainerWidth +
+    getPercentage(smallerDevice ? 3 : smallDevice ? 2 : 3, canvasRef.current!.width)
   const posOverflowsX = (pos: positionObj) => pos.x >= getPercentage(98, canvasRef.current!.width)
   const divionsHeightWithMargin = () => divisionsHeight + 6
   const nameContainerWidthWithMargin = () => nameContainerWidth + 8
@@ -127,10 +130,14 @@ const Canvas = ({
     ctx.fillStyle = strokeColor
     const textMetrics = ctx.measureText(key)
     const nextKeyPos = { x: Math.round(keyPosition.x + textMetrics.width), y: keyPosition.y }
-    const nextKeyWillOverflowCanvas = posOverflowsX(nextKeyPos)
+    const marginRight = smallerDevice ? 12 : 0
+    const nextKeyWillOverflowCanvas = posOverflowsX({
+      x: nextKeyPos.x + marginRight,
+      y: nextKeyPos.y
+    })
 
     if (nextKeyWillOverflowCanvas) {
-      nextKeyPos.x = 5
+      nextKeyPos.x = newLineStartX
       nextKeyPos.y = getNextYDivision(keyPosition.y)
     }
 
@@ -156,11 +163,12 @@ const Canvas = ({
 
   const typeSpace = () => {
     if (keyPos.y === -1) return
-    const nextKeyPos = { x: keyPos.x + 5, y: keyPos.y }
+    const spaceVal = smallerDevice ? 12 : 5
+    const nextKeyPos = { x: keyPos.x + spaceVal, y: keyPos.y }
     const nextKeyWillOverflowCanvas = posOverflowsX(nextKeyPos)
 
     if (nextKeyWillOverflowCanvas) {
-      nextKeyPos.x = 5
+      nextKeyPos.x = newLineStartX
       nextKeyPos.y = getNextYDivision(keyPos.y)
     }
 
@@ -170,14 +178,15 @@ const Canvas = ({
 
   const typeEnter = () => {
     if (keyPos.y === -1) return
-    const nextKeyPos = { x: 5, y: getNextYDivision(keyPos.y) }
+
+    const nextKeyPos = { x: newLineStartX, y: getNextYDivision(keyPos.y) }
     const averageLetterHeight = 15
     const wouldKeysBeWithinUsername = isWithinUsername({
-      x: 5,
+      x: newLineStartX,
       y: nextKeyPos.y - averageLetterHeight
     })
 
-    if (wouldKeysBeWithinUsername) nextKeyPos.y += getPercentage(6, canvasRef.current!.height)
+    if (wouldKeysBeWithinUsername) nextKeyPos.y += getPercentage(15, canvasRef.current!.height)
 
     if (nextKeyPos.y !== -1) {
       setKeyPos(nextKeyPos)

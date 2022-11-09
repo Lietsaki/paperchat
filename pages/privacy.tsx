@@ -18,7 +18,6 @@ const Home = () => {
           content="Paperchat's privacy policy, including our cookie usage."
         />
 
-        <meta name="robots" content="noindex, nofollow" />
         <meta name="author" content="Ricardo Sandez - Lietsaki" />
         <meta
           name="keywords"
