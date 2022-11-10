@@ -556,7 +556,11 @@ const Canvas = ({
 
       drawUsernameRectangle(msgCtx, false, false)
 
-      emitter.emit('canvasData', { dataUrl: msgCanvas.toDataURL(), height: msgCanvas.height })
+      emitter.emit('canvasData', {
+        dataUrl: msgCanvas.toDataURL(),
+        height: msgCanvas.height,
+        width: msgCanvas.width
+      })
       playSound('send-message', 0.5)
     } else {
       playSound('btn-denied', 0.4)

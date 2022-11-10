@@ -22,7 +22,7 @@ type contentIndicator = {
   isVisible: boolean
 }
 
-type canvasData = { dataUrl: string; height: number }
+type canvasData = { dataUrl: string; height: number; width: number }
 
 // Types used in Firebase Realtime DB
 type onlineUser = {

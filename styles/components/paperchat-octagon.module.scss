@@ -27,6 +27,10 @@
 
   &.animate_growth {
     animation: goUp 0.2s linear;
+
+    @include phones {
+      animation: none;
+    }
   }
 
   &.paperchat_octagon {

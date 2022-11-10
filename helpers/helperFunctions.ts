@@ -203,6 +203,17 @@ const areDatesOnTheSameDay = (first: Date, second: Date) => {
   )
 }
 
+const calculateAspectRatioFit = (
+  srcWidth: number,
+  srcHeight: number,
+  maxWidth: number,
+  maxHeight: number
+) => {
+  var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight)
+
+  return { width: Math.ceil(srcWidth * ratio), height: Math.ceil(srcHeight * ratio) }
+}
+
 const loadImage = (url: string): Promise<HTMLImageElement> => {
   return new Promise((resolve) => {
     const image = new Image()
@@ -239,5 +250,6 @@ export {
   areDatesOnTheSameDay,
   playSound,
   getLighterHslaShade,
-  loadImage
+  loadImage,
+  calculateAspectRatioFit
 }

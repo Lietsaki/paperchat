@@ -17,7 +17,8 @@ import {
   willContainerBeOverflowed,
   getHighestAndLowestPoints,
   getRandomColor,
-  playSound
+  playSound,
+  calculateAspectRatioFit
 } from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
 import { roomContent, canvasData } from 'types/Room'
@@ -150,13 +151,26 @@ const Room = () => {
     container!.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
   }
 
-  const receiveCanvasData = ({ dataUrl, height }: canvasData) => {
-    const messagesWillTriggerScroll = willContainerBeOverflowed(
-      messagesContainerRef.current!,
-      0,
-      4,
-      height
-    )
+  const receiveCanvasData = ({ dataUrl, width, height }: canvasData) => {
+    let messagesWillTriggerScroll = true
+
+    if (messagesContainerRef.current) {
+      // Calculate how big the image will be when we put it in our messagesContainer
+      const messageHeight = calculateAspectRatioFit(
+        width,
+        height,
+        messagesContainerRef.current!.clientWidth,
+        9999
+      ).height
+
+      // Check if the image would overflow it
+      messagesWillTriggerScroll = willContainerBeOverflowed(
+        messagesContainerRef.current!,
+        0,
+        4,
+        messageHeight
+      )
+    }
 
     setRoomContent([
       ...roomContent,

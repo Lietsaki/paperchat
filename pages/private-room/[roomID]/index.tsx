@@ -19,7 +19,8 @@ import {
   getRandomColor,
   getHighestAndLowestPoints,
   playSound,
-  getSimpleId
+  getSimpleId,
+  calculateAspectRatioFit
 } from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
 import { roomContent, canvasData, firebaseMessage } from 'types/Room'
@@ -376,26 +377,45 @@ const Room = () => {
       roomMessage.imageURL = imageURL
       roomMessage.color = color
       const img = await getImageData(imageURL)
-      messageHeight = img.height
+
+      // Calculate how big the image will be when we put it in our messagesContainer
+      messageHeight = messagesContainerRef.current
+        ? calculateAspectRatioFit(
+            img.width,
+            img.height,
+            messagesContainerRef.current.clientWidth,
+            9999
+          ).height
+        : 40
     }
 
-    roomMessage.animate = !willContainerBeOverflowed(
-      messagesContainerRef.current!,
-      0,
-      4.5,
-      messageHeight
-    )
+    roomMessage.animate = messagesContainerRef.current
+      ? !willContainerBeOverflowed(messagesContainerRef.current, 0, 4.5, messageHeight)
+      : false
 
     return roomMessage
   }
 
-  const receiveCanvasData = ({ dataUrl, height }: canvasData) => {
-    const messagesWillTriggerScroll = willContainerBeOverflowed(
-      messagesContainerRef.current!,
-      0,
-      4,
-      height
-    )
+  const receiveCanvasData = ({ dataUrl, width, height }: canvasData) => {
+    let messagesWillTriggerScroll = true
+
+    if (messagesContainerRef.current) {
+      // Calculate how big the image will be when we put it in our messagesContainer
+      const messageHeight = calculateAspectRatioFit(
+        width,
+        height,
+        messagesContainerRef.current.clientWidth,
+        9999
+      ).height
+
+      // Check if the image would overflow it
+      messagesWillTriggerScroll = willContainerBeOverflowed(
+        messagesContainerRef.current,
+        0,
+        4,
+        messageHeight
+      )
+    }
 
     const id = getSimpleId()
     setRoomContent([
@@ -422,7 +442,7 @@ const Room = () => {
             id={item.id}
             userEntering={item.userEntering}
             userLeaving={item.userLeaving}
-            shouldAnimate={!!item.animate || item.author === getCurrentUserID()}
+            shouldAnimate={!!item.animate}
           />
         )
       }
@@ -434,7 +454,7 @@ const Room = () => {
             id={item.id}
             color={item.color}
             img_uri={item.imageURL}
-            shouldAnimate={!!item.animate && `${item.id}`.length === 14}
+            shouldAnimate={!!item.animate}
           />
         )
       }
