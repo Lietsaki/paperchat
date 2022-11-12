@@ -44,6 +44,10 @@
         height: 190px;
       }
 
+      @include tiny-phones {
+        height: 140px;
+      }
+
       .indictor_container {
         display: flex;
         flex-direction: column;
@@ -121,6 +125,11 @@
           &.overflown_2 {
             width: 20%;
           }
+        }
+
+        @include tiny-phones {
+          height: 2.5px;
+          min-height: 2.5px;
         }
       }
     }
@@ -201,6 +210,11 @@
 
       @include small-phones {
         height: 20px;
+      }
+
+      @include tiny-phones {
+        width: 100px;
+        height: 16px;
       }
     }
   }

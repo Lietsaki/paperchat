@@ -69,6 +69,10 @@
           font-size: 350%;
           top: 0px;
         }
+
+        @include tiny-phones {
+          font-size: 250%;
+        }
       }
 
       svg {
@@ -95,6 +99,10 @@
 
         @include small-phones {
           font-size: 12px;
+        }
+
+        @include tiny-phones {
+          font-size: 10px;
         }
       }
     }
@@ -127,6 +135,9 @@
           @include phones {
             font-size: 230%;
             top: 0px;
+          }
+          @include tiny-phones {
+            font-size: 170%;
           }
         }
 

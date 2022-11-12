@@ -709,10 +709,15 @@ const Room = () => {
       leftBtnText: 'Get Full Link',
       hideOnLeftBtn: false,
       leftBtnFn: async () => {
+        const url =
+          process.env.NODE_ENV === 'production'
+            ? `https://paperchat.net/private-room/${router.query.roomID}?code=${router.query.code}`
+            : window.location.href
+
         if (Capacitor.isNativePlatform()) {
-          await Clipboard.write({ url: window.location.href })
+          await Clipboard.write({ url })
         } else {
-          navigator.clipboard.writeText(window.location.href)
+          navigator.clipboard.writeText(url)
         }
 
         setDialogData({

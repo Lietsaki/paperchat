@@ -28,6 +28,10 @@
     @include small-phones {
       font-size: 22px;
     }
+
+    @include tiny-phones {
+      font-size: 14px;
+    }
   }
 
   @include phones {
@@ -209,6 +213,10 @@
   @media (max-width: 360px) {
     padding: 2px;
   }
+
+  @include tiny-phones {
+    display: none;
+  }
 }
 
 .bottom {
@@ -343,6 +351,11 @@
       width: 4.4%;
       height: 84%;
       @include active-on-click;
+
+      @include tiny-phones {
+        width: 5%;
+        height: 100%;
+      }
     }
   }
 

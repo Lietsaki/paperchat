@@ -59,6 +59,9 @@
           font-size: 22px;
           padding-left: 8px;
         }
+        @include tiny-phones {
+          font-size: 17px;
+        }
       }
     }
   }
@@ -88,6 +91,10 @@
 
         @include phones {
           font-size: 22px;
+        }
+
+        @include tiny-phones {
+          font-size: 15px;
         }
 
         span {

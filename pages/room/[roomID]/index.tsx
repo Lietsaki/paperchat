@@ -654,6 +654,11 @@ const Room = () => {
   }
 
   const showRoomLinkDialog = () => {
+    const url =
+      process.env.NODE_ENV === 'production'
+        ? 'https://paperchat.net/room/' + router.query.roomID
+        : window.location.href
+
     setDialogData({
       open: true,
       text: 'Get your room link. Share it, anyone can join :)',
@@ -662,9 +667,9 @@ const Room = () => {
       hideOnRightBtn: false,
       rightBtnFn: async () => {
         if (Capacitor.isNativePlatform()) {
-          await Clipboard.write({ url: window.location.href })
+          await Clipboard.write({ url })
         } else {
-          navigator.clipboard.writeText(window.location.href)
+          navigator.clipboard.writeText(url)
         }
 
         setDialogData({

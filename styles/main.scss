@@ -29,6 +29,12 @@ $scrollbar-color-dark: rgba(132, 132, 132, 0.6);
 }
 
 // MIXINS
+@mixin tiny-phones {
+  @media (max-width: 320px) {
+    @content;
+  }
+}
+
 @mixin small-phones {
   @media (max-width: 390px) {
     @content;

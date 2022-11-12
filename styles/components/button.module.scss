@@ -27,6 +27,12 @@
       font-size: 14px;
       margin-right: 3px;
     }
+
+    @include tiny-phones {
+      font-size: 9px;
+      width: 70px;
+      filter: blur(0.2px);
+    }
   }
 
   // Remove one pixel from each border
@@ -54,6 +60,7 @@
     border-right: 2px solid #cdcdcd70;
     height: 93%;
     padding: 1px;
+    filter: blur(0.3px);
   }
 
   &:hover {
@@ -83,6 +90,10 @@
     .button_inner {
       padding-bottom: 3px;
     }
+  }
+
+  @include tiny-phones {
+    font-size: 14px;
   }
 
   &.smaller_font {

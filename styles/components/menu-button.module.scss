@@ -27,6 +27,10 @@
   @include phones {
     font-size: 22px;
   }
+
+  @include tiny-phones {
+    font-size: 18px;
+  }
 }
 
 .audio_button {
@@ -94,6 +98,13 @@
       svg {
         height: 9px;
         width: 10px;
+      }
+    }
+
+    @include tiny-phones {
+      svg {
+        height: 7px;
+        width: 8px;
       }
     }
   }

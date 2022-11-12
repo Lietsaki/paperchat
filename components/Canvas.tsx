@@ -86,13 +86,16 @@ const Canvas = ({
   }
 
   const getLineWidth = () => {
+    const pxSize = window.devicePixelRatio || 1
+
     if (usingThickStroke) {
-      if (smallerDevice) return 12
-      if (smallDevice) return 5
-      return 4
+      if (pxSize >= 3) return pxSize * 2.5
+      if (pxSize >= 2) return pxSize * 3
+      return pxSize * 4
     } else {
-      if (smallerDevice) return 3
-      return 2
+      if (pxSize >= 3) return pxSize * 1
+      if (pxSize >= 2) return pxSize * 1.2
+      return pxSize * 1.5
     }
   }
 
@@ -281,11 +284,16 @@ const Canvas = ({
       ctxToUse.fillRect(0, 0, nameContainerWidth + 5, divisionsHeight + 5)
     }
 
+    const lineWidth =
+      (window.devicePixelRatio || 1) >= 2
+        ? window.devicePixelRatio * 1
+        : (window.devicePixelRatio || 1) * 1.5
+
     ctxToUse.globalCompositeOperation = 'source-over'
     ctxToUse.lineJoin = 'bevel'
     ctxToUse.imageSmoothingEnabled = false
     let pixelBorderSize = canvasRef.current!.width >= 400 ? 3 : 2
-    ctxToUse.lineWidth = smallerDevice ? 4 : 2
+    ctxToUse.lineWidth = lineWidth
     ctxToUse.fillStyle = getLighterHslaShade(roomColor)
     ctxToUse.strokeStyle = roomColor
     ctxToUse.beginPath()
@@ -433,13 +441,14 @@ const Canvas = ({
     const transparentDataURL = imgCanvas.toDataURL()
     const transparentImg = await loadImage(transparentDataURL)
 
-    // Draw the transparent image into our ctx.
+    // Draw the transparent image into our ctx. Add +30 in sourceWidth and +20 in sourceHeight
+    // to prevent the image's username rectangle from peeking out of ours.
     ctx.drawImage(
       transparentImg,
       0,
       0,
-      transparentImg.width * (window.devicePixelRatio || 1),
-      transparentImg.height * (window.devicePixelRatio || 1),
+      transparentImg.width * (window.devicePixelRatio || 1) + 30,
+      transparentImg.height * (window.devicePixelRatio || 1) + 20,
       0,
       0,
       transparentImg.width * (window.devicePixelRatio || 1),

@@ -105,6 +105,14 @@
       font-size: 12px;
     }
   }
+
+  @include tiny-phones {
+    .attribution,
+    .privacy_link {
+      font-size: 10px;
+      margin: 5px;
+    }
+  }
 }
 
 .bottom {

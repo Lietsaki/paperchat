@@ -23,6 +23,11 @@
     height: 90px;
   }
 
+  @include tiny-phones {
+    width: 210px;
+    height: 70px;
+  }
+
   .dialog_layer_2 {
     background-color: $strong-orange;
     @include pixelated-rectangle;
@@ -51,6 +56,10 @@
 
         @include phones {
           font-size: 18px;
+        }
+
+        @include tiny-phones {
+          font-size: 15px;
         }
       }
 
@@ -101,6 +110,19 @@
         @include small-phones {
           height: 22px;
         }
+
+        @include tiny-phones {
+          height: 18px;
+
+          div {
+            width: auto;
+            min-width: 70px;
+
+            button {
+              font-size: 14px;
+            }
+          }
+        }
       }
     }
   }
@@ -131,6 +153,11 @@
         margin-top: 10px;
       }
     }
+
+    @include tiny-phones {
+      height: 150px;
+      width: 200px;
+    }
   }
 }
 
@@ -145,6 +172,10 @@
 
     li {
       text-align: left;
+    }
+
+    @include tiny-phones {
+      height: 58px;
     }
   }
 }

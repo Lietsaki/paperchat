@@ -284,6 +284,9 @@
   @include small-phones {
     font-size: 120%;
   }
+  @include tiny-phones {
+    font-size: 90%;
+  }
 
   .regular_key {
     @include base-key;
