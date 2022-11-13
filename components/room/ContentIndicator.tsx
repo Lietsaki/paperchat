@@ -41,10 +41,18 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
 
   const oldestIndicators = [overflowed2OldestIndicator, overflowed1OldestIndicator]
   const newestIndicators = [overflowed1NewestIndicator, overflowed2NewestIndicator]
-  // No need to sort middleIndicatorKeys as roomContent already comes sorted, so indicators will be too.
-  const middleIndicatorKeys = Object.keys(indicators).filter(
-    (key) => !oldestIndicators.includes(key) && !newestIndicators.includes(key)
-  )
+  // Even when roomContent already comes sorted, we still have to sort the indicators to prevent inconsistencies
+  const middleIndicatorKeys = Object.keys(indicators)
+    .filter((key) => !oldestIndicators.includes(key) && !newestIndicators.includes(key))
+    .sort((a, b) => {
+      const aItem: roomContent | undefined = roomContent.find((item) => item.id === a)
+      const bItem: roomContent | undefined = roomContent.find((item) => item.id === b)
+
+      if (!aItem) return -1
+      if (!bItem) return 1
+
+      return aItem.serverTs - bItem.serverTs
+    })
 
   const setupObserver = () => {
     observer = new IntersectionObserver(

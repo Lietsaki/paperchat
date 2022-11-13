@@ -19,6 +19,7 @@ a {
   display: flex;
   justify-content: center;
   background-color: #efefef;
+  width: 100vw;
 }
 
 .floating_key {
@@ -125,4 +126,11 @@ a {
 
 .no_pointer_events {
   pointer-events: none;
+}
+
+body.fixed_body {
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
 }

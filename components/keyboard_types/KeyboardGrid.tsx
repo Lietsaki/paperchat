@@ -37,6 +37,7 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
 
     // Listen for mouseup in the whole document, as the text will be dragged outside the key.
     // Otherwise onMouseUp would only fire within the key, not when dragged into the canvas, for example.
+    document.getElementsByTagName('body')[0].classList.add('fixed_body')
     document.addEventListener('mouseup', handlePointerUp)
     document.addEventListener('touchend', handlePointerUp)
     document.body.style.cursor = 'grabbing'
@@ -62,6 +63,7 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
     setDragginKey('')
     document.removeEventListener('mouseup', handlePointerUp)
     document.removeEventListener('touchend', handlePointerUp)
+    document.getElementsByTagName('body')[0].classList.remove('fixed_body')
     document.body.style.cursor = 'auto'
     removeFloatingKey()
   }
