@@ -4,6 +4,7 @@ import { dialogOptions, DialogProps } from 'types/Dialog'
 import { useState, useEffect } from 'react'
 import { store } from 'store/store'
 import { App } from '@capacitor/app'
+import emitter from 'helpers/MittEmitter'
 
 const Dialog = ({
   showSpinner,
@@ -25,7 +26,7 @@ const Dialog = ({
   const [audio, setAudio] = useState<null | HTMLAudioElement>(null)
 
   useEffect(() => {
-    if (showSpinner && !store.getState().user.muteSounds) {
+    if (showSpinner && !store.getState().user.muteSounds && document.hidden === false) {
       setAudio(new Audio('/sounds/loading.m4a'))
     } else {
       audio?.pause()
@@ -55,6 +56,7 @@ const Dialog = ({
         audio.loop = false
         audio.currentTime = 1
         App.removeAllListeners()
+        emitter.emit('removedAllCapacitorListeners', '')
       }
     }
   }, [audio])

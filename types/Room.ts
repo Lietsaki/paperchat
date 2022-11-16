@@ -5,7 +5,7 @@ type roomContent = {
   imageURL?: string
   paperchatOctagon?: boolean
   animate?: boolean
-  author?: string
+  author: string
   id: string
   serverTs: number
 }

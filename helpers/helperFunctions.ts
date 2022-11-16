@@ -1,5 +1,6 @@
 import { positionObj } from 'types/Position'
 import { store } from 'store/store'
+import { Capacitor } from '@capacitor/core'
 
 const getRandomNumber = (min: number, max: number) => Math.round(Math.random() * (max - min) + min)
 
@@ -227,8 +228,14 @@ const loadImage = (url: string): Promise<HTMLImageElement> => {
   })
 }
 
-const playSound = (filename: string, volume = 1) => {
-  if (store.getState().user.muteSounds) return
+const playSound = (filename: string, volume = 1, playEvenHidden?: boolean) => {
+  if (
+    store.getState().user.muteSounds || // Never play if the user explicitly muted the app
+    (document.hidden && Capacitor.isNativePlatform()) || // Never play on native if hidden
+    (document.hidden && !playEvenHidden) // Allow playing on non-native if playEvenHidden is true
+  ) {
+    return
+  }
 
   const audio = new Audio(`/sounds/${filename}.m4a`)
   audio.volume = volume

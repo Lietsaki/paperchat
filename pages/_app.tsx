@@ -7,9 +7,16 @@ import { store } from 'store/store'
 import { Provider } from 'react-redux'
 import initializeFirebase from 'firebase-config/init'
 import Head from 'next/head'
+import AppNotificationsCleaner from 'components/AppNotificationsCleaner'
+import { Capacitor } from '@capacitor/core'
+import { createNotificationsChannel } from 'helpers/localNotifications'
 
 if (typeof window !== 'undefined') {
   initializeFirebase()
+
+  if (Capacitor.isNativePlatform()) {
+    createNotificationsChannel()
+  }
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -44,6 +51,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           content="paperchat, pictochat online, drawing online, live drawing app, nintendo pictochat, DS drawing app, by lietsaki"
         />
       </Head>
+      <AppNotificationsCleaner />
 
       <Component {...pageProps} />
     </Provider>

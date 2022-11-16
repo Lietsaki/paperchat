@@ -15,6 +15,8 @@ type Events = {
   disbandedRoom: string
   otherError: string
   canvasToCopy: string
+  removedAllCapacitorListeners: string
+  disbandedInactive: string
 }
 
 const emitter: Emitter<Events> = mitt<Events>()

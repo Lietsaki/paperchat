@@ -56,7 +56,6 @@ const {
   send_buttons,
   send_buttons_bg,
   send,
-  send_seal,
   last_canvas,
   clear,
   tool_container,
@@ -77,12 +76,13 @@ const {
 const Room = () => {
   const router = useRouter()
   const user = useSelector(selectUser)
+  const [userLocalID] = useState(getSimpleId())
   const [shouldShowCanvas, setShouldShowCanvas] = useState(true)
   const [usingPencil, setUsingPencil] = useState(true)
   const [usingThickStroke, setUsingThickStroke] = useState(true)
   const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('Alphanumeric')
   const [roomContent, setRoomContent] = useState<roomContent[]>([
-    { paperchatOctagon: true, id: 'paperchat_octagon', serverTs: 1 }
+    { paperchatOctagon: true, id: 'paperchat_octagon', serverTs: 1, author: userLocalID }
   ])
   const [roomColor] = useState(getRandomColor())
   const [adjacentMessages, setAdjacentMessages] = useState({ up: '', down: '' })
@@ -122,6 +122,7 @@ const Room = () => {
 
     return () => {
       App.removeAllListeners()
+      emitter.emit('removedAllCapacitorListeners', '')
     }
   }, [])
 
@@ -139,7 +140,7 @@ const Room = () => {
   const initializeRoom = (username: string) => {
     setRoomContent([
       ...roomContent,
-      { animate: true, id: getSimpleId(), userEntering: username, serverTs: 1 }
+      { animate: true, id: getSimpleId(), userEntering: username, serverTs: 1, author: userLocalID }
     ])
 
     playEnteredSound()
@@ -177,6 +178,7 @@ const Room = () => {
       {
         imageURL: dataUrl,
         id: getSimpleId(),
+        author: userLocalID,
         animate: !messagesWillTriggerScroll,
         color: roomColor,
         serverTs: Date.now()

@@ -62,6 +62,11 @@
   dependencies:
     "tslib" "^2.1.0"
 
+"@capacitor/local-notifications@^4.1.2":
+  "integrity" "sha512-oCUridU+QGQmvPfYgG2T03olsg3gVAMQg64I3azw17Ta6OuPCOJg8tf56OT872H9Dsvz0XBS2vBvNdgkYb2zMg=="
+  "resolved" "https://registry.npmjs.org/@capacitor/local-notifications/-/local-notifications-4.1.2.tgz"
+  "version" "4.1.2"
+
 "@eslint/eslintrc@^1.3.0":
   "integrity" "sha512-UWW0TMTmk2d7hLcWD1/e2g5HDM/HQ3csaLSqXCfqwh4uNDuNqlaKWXmEsL4Cs41Z0KnILNvwbHAah3C2yt06kw=="
   "resolved" "https://registry.npmjs.org/@eslint/eslintrc/-/eslintrc-1.3.0.tgz"

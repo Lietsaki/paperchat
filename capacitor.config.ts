@@ -8,6 +8,11 @@ const config: CapacitorConfig = {
   plugins: {
     SplashScreen: {
       launchShowDuration: 1200
+    },
+    LocalNotifications: {
+      smallIcon: 'paperchat_logo_32',
+      iconColor: '#ffffff',
+      sound: 'send_message.wav'
     }
   },
   server: {

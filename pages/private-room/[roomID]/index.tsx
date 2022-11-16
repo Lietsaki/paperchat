@@ -47,6 +47,7 @@ import getRandomUsername from 'helpers/username-generator/usernameGenerator'
 import { Clipboard } from '@capacitor/clipboard'
 import { Capacitor } from '@capacitor/core'
 import { App } from '@capacitor/app'
+import { notifyNow } from 'helpers/localNotifications'
 
 const {
   username_form,
@@ -98,7 +99,7 @@ const Room = () => {
   const [usingThickStroke, setUsingThickStroke] = useState(true)
   const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('Alphanumeric')
   const [roomContent, setRoomContent] = useState<roomContent[]>([
-    { paperchatOctagon: true, id: '1', serverTs: 1 }
+    { paperchatOctagon: true, id: '1', serverTs: 1, author: getCurrentUserID()! }
   ])
   const [roomColor] = useState(getRandomColor())
   const [adjacentMessages, setAdjacentMessages] = useState({ up: '', down: '' })
@@ -144,13 +145,16 @@ const Room = () => {
     emitter.on('backOnline', showBackOnlineDialog)
     emitter.on('disbandedRoom', showBackOnlineDisbandedDialog)
     emitter.on('otherError', showErrorDialog)
+    emitter.on('disbandedInactive', showDisbandedInactiveRoomDialog)
 
     return () => {
       emitter.off('lostConnection')
       emitter.off('backOnline')
       emitter.off('disbandedRoom')
       emitter.off('otherError')
+      emitter.off('disbandedInactive')
       App.removeAllListeners()
+      emitter.emit('removedAllCapacitorListeners', '')
     }
   }, [router.isReady])
 
@@ -329,6 +333,30 @@ const Room = () => {
     updatedContentArr.sort((a, b) => a.serverTs - b.serverTs)
     setRoomContent(updatedContentArr)
     setRoomUsers(Object.values(users))
+
+    const latestMessage = updatedContentArr[updatedContentArr.length - 1]
+
+    if (loadedRoom && latestMessage.author !== getCurrentUserID()) {
+      if (latestMessage.imageURL) {
+        playSound('received-message', 0.5, true)
+      } else if (latestMessage.userEntering) {
+        playSound('entering-room', 1, true)
+      } else if (latestMessage.userLeaving) {
+        playSound('leave-room', 0.3, true)
+      }
+    }
+
+    if (loadedRoom && latestMessage.author !== getCurrentUserID()) {
+      if (Capacitor.isNativePlatform()) {
+        if (latestMessage.imageURL) {
+          notifyNow({ newMessage: true })
+        } else if (latestMessage.userEntering) {
+          notifyNow({ userEntering: latestMessage.userEntering })
+        } else if (latestMessage.userLeaving) {
+          notifyNow({ userLeaving: latestMessage.userLeaving })
+        }
+      }
+    }
 
     if (missingMessages.length) {
       try {
@@ -534,6 +562,16 @@ const Room = () => {
     setDialogData({
       open: true,
       text: 'There was an error.',
+      showSpinner: false,
+      rightBtnText: 'Go home',
+      rightBtnFn: () => router.push('/')
+    })
+  }
+
+  const showDisbandedInactiveRoomDialog = () => {
+    setDialogData({
+      open: true,
+      text: 'Your room was disbanded due to inactivity.',
       showSpinner: false,
       rightBtnText: 'Go home',
       rightBtnFn: () => router.push('/')
