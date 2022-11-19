@@ -51,9 +51,7 @@ type firebaseMessage = {
   serverTs: number
 }
 
-type roomMessages = {
-  messages: firebaseMessage[]
-}
+type roomMessages = { createdOn: number; messages: firebaseMessage[] }
 
 type queryResult<T> = {
   [key: string]: T

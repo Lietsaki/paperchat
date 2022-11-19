@@ -17,6 +17,16 @@ if (typeof window !== 'undefined') {
   if (Capacitor.isNativePlatform()) {
     createNotificationsChannel()
   }
+
+  // Samsung's browser ignores color-scheme.
+  if (navigator.userAgent.match(/samsung/i)) {
+    alert(
+      'Your browser (Samsung Internet) is not designed to show this ' +
+        'app correctly. Please consider switching to any popular ' +
+        'standards-compliant browser instead. \n\n' +
+        'We recommend Google Chrome, Firefox, or Microsoft Edge.'
+    )
+  }
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -28,6 +38,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           name="description"
           content="Draw in real time with your friends or random people in an online version of Pictochat."
         />
+        <meta name="color-scheme" content="light only" />
 
         <link
           rel="preload"

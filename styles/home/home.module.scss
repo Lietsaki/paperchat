@@ -143,6 +143,47 @@
     filter: blur(0.3px);
   }
 
+  .play_store_btn {
+    grid-row: 1 / 2;
+    grid-column: 1 / 2;
+    width: 65%;
+    height: 75%;
+
+    button {
+      @include flexcenter;
+      border: 2px solid #111;
+      border-left: none;
+      border-top: none;
+      width: 100%;
+      height: 100%;
+
+      img {
+        transition: all 0.2s ease-in-out;
+        width: 70%;
+      }
+    }
+
+    &:hover,
+    button:hover {
+      cursor: pointer;
+    }
+
+    &:active {
+      img {
+        transform: scale(0.9);
+      }
+    }
+
+    @include phones {
+      width: 75%;
+      height: 80%;
+    }
+
+    @include small-phones {
+      height: 120%;
+    }
+  }
+
   .btn_search_rooms {
     grid-row: 2 / 3;
     grid-column: 2 / 6;

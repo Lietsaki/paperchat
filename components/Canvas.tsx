@@ -364,7 +364,7 @@ const Canvas = ({
 
     const firstStroke = timespanStrokes[0]
     const lastStroke = timespanStrokes[timespanStrokes.length - 1]
-    const prudentialWait = 200
+    const prudentialWait = 350
     if (latestFiredStrokeSound && lastStroke.ts < latestFiredStrokeSound + prudentialWait) return
 
     const xDiff = Math.abs(lastStroke.x - firstStroke.x)

@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser, setUsername } from 'store/slices/userSlice'
 import { initializeUsername, usernameMinLength } from 'store/initializer'
+import { Capacitor } from '@capacitor/core'
 import { playSound } from 'helpers/helperFunctions'
 import version from 'store/version'
 import Link from 'next/link'
@@ -20,6 +21,7 @@ const {
   attribution,
   privacy_link,
   bottom,
+  play_store_btn,
   btn_search_rooms,
   btn_create_room,
   btn_join,
@@ -39,9 +41,11 @@ const Home = () => {
 
   const [editingUsername, setEditingUsername] = useState(false)
   const [usernameAreaClasses, setUsernameAreaClasses] = useState(username_input)
+  const [showPlayStoreLink, setShowPlayStoreLink] = useState(false)
 
   const [usernameInputValue, setUsernameInputValue] = useState('')
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
+  const PLAY_STORE_LINK = 'https://play.google.com/store/apps/details?id=net.paperchat.app'
 
   const editUsername = () => {
     if (editingUsername) return
@@ -75,6 +79,7 @@ const Home = () => {
 
   useEffect(() => {
     initializeUsername()
+    if (!Capacitor.isNativePlatform()) setShowPlayStoreLink(true)
   }, [])
 
   useEffect(() => {
@@ -105,6 +110,18 @@ const Home = () => {
     setTimeout(() => router.push('/join-room'), 390)
   }
 
+  const renderPlayStoreButton = () => {
+    if (!showPlayStoreLink) return ''
+
+    return (
+      <a href={PLAY_STORE_LINK} className={play_store_btn} target="_blank" rel="noreferrer">
+        <button>
+          <img src="/icons/play-store.png" alt="Play Store icon" />
+        </button>
+      </a>
+    )
+  }
+
   return (
     <div className="main">
       <div className="screens_section">
@@ -127,6 +144,8 @@ const Home = () => {
         </div>
 
         <div className={`screen ${bottom}`}>
+          {renderPlayStoreButton()}
+
           <div className={btn_search_rooms}>
             <MenuButton onClick={goToFindRooms} text="Search rooms" />
           </div>
