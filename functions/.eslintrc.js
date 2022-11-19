@@ -31,6 +31,7 @@ module.exports = {
     'indent': ['error', 2],
     'comma-dangle': ['error', 'never'],
     'object-curly-spacing': ['error', 'always'],
-    'import/no-unresolved': 0
+    'import/no-unresolved': 0,
+    'max-len': ['error', { code: 100 }]
   }
 }
