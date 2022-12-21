@@ -248,7 +248,7 @@ const Room = () => {
       setShouldShowCanvas(false)
       setTimeout(() => {
         setShouldShowCanvas(true)
-        if (!skipSound && foundCanvasData) playSound('clear-canvas')
+        if (!skipSound && foundCanvasData) playSound('clear-canvas', 0.6)
       }, 30)
     }
 

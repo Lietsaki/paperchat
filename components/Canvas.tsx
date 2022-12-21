@@ -358,6 +358,7 @@ const Canvas = ({
     checkLatestStrokes(updatedStrokes)
   }
 
+  let soundsThisRender = 0
   const checkLatestStrokes = (strokes: historyStroke[]) => {
     const lastHalfSecond = Date.now() - 500
     const timespanStrokes = strokes.filter((stroke) => stroke.ts > lastHalfSecond)
@@ -371,12 +372,15 @@ const Canvas = ({
     const yDiff = Math.abs(lastStroke.y - firstStroke.y)
 
     const distanceToUse = xDiff > yDiff ? xDiff : yDiff
-    const unit = 25
+    const soundTriggeringDistance = 25
 
-    if (distanceToUse >= unit) {
+    // Prevent sounds from accidentally firing twice (or thrice) in a row except if it's the eraser
+    if (distanceToUse >= soundTriggeringDistance && (soundsThisRender < 1 || !usingPencil)) {
+      soundsThisRender++
       setLatestFiredStrokeSound(lastStroke.ts)
-      let volume = usingThickStroke ? 0.2 : 0.1
-      if (smallDevice) volume = 1
+      let volume = usingThickStroke ? 0.3 : 0.15
+
+      if (smallDevice) volume = 0.6
       if (usingPencil) return playSound('pencil-stroke', volume)
       return playSound('eraser-stroke', volume)
     }
