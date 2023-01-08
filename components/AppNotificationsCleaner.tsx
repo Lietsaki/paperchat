@@ -3,7 +3,7 @@ import { App } from '@capacitor/app'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import emitter from 'helpers/MittEmitter'
 
-const AppUrlListener = () => {
+const NotificationsCleaner = () => {
   const listenForStateChanges = () => {
     setTimeout(() => {
       App.addListener('appStateChange', ({ isActive }) => {
@@ -26,4 +26,4 @@ const AppUrlListener = () => {
   return null
 }
 
-export default AppUrlListener
+export default NotificationsCleaner
