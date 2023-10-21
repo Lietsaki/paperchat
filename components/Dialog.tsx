@@ -27,7 +27,7 @@ const Dialog = ({
 
   useEffect(() => {
     if (showSpinner && !store.getState().user.muteSounds && document.hidden === false) {
-      setAudio(new Audio('/sounds/loading.m4a'))
+      setAudio(new Audio('/sounds/loading.mp3'))
     } else {
       audio?.pause()
       setAudio(null)
