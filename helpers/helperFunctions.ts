@@ -231,13 +231,13 @@ const loadImage = (url: string): Promise<HTMLImageElement> => {
 const playSound = (filename: string, volume = 1, playEvenHidden?: boolean) => {
   if (
     store.getState().user.muteSounds || // Never play if the user explicitly muted the app
-    (document.hidden && Capacitor.isNativePlatform()) || // Never play on native if hidden
-    (document.hidden && !playEvenHidden) // Allow playing on non-native if playEvenHidden is true
+    (document.hidden && Capacitor.isNativePlatform()) || // Never play on the mobile app if hidden (push notifications notify users of new messages)
+    (document.hidden && !playEvenHidden) // Allow playing on non-native if playEvenHidden is true (e.g. when notifying of a new message)
   ) {
     return
   }
 
-  const audio = new Audio(`/sounds/${filename}.m4a`)
+  const audio = new Audio(`/sounds/${filename}.mp3`)
   audio.volume = volume
   audio.play()
 }
