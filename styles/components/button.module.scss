@@ -3,7 +3,7 @@
   width: 100%;
 
   @include ds-font;
-  font-size: 25px;
+  font-size: 24px;
   color: #111;
   padding: 0 1px;
   position: relative;
@@ -70,6 +70,10 @@
 
   &:active {
     top: 1px;
+  }
+
+  @include small-height-devices {
+    font-size: 20px;
   }
 
   @include landscape-tablet-up {

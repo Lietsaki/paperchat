@@ -56,6 +56,10 @@
         filter: blur(0.3px);
         position: relative;
 
+        @include small-height-devices {
+          font-size: 430%;
+        }
+
         @include landscape-tablet-up {
           font-size: 430%;
         }
@@ -88,6 +92,10 @@
         grid-column: 1 / -1;
         font-size: 20px;
         color: $dark-gray;
+
+        @include small-height-devices {
+          font-size: 18px;
+        }
 
         @include landscape-tablet-up {
           font-size: 18px;
@@ -129,13 +137,20 @@
         .title {
           font-size: 350%;
 
+          @include small-height-devices {
+            font-size: 280%;
+            top: 1px;
+          }
+
           @include landscape-tablet-up {
             font-size: 300%;
           }
+
           @include phones {
             font-size: 230%;
             top: 0px;
           }
+
           @include tiny-phones {
             font-size: 170%;
           }
