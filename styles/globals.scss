@@ -84,8 +84,11 @@ a {
 // Add a pretty cross-browser scrollbar
 .scrollify {
   overflow-y: scroll;
-  scrollbar-width: thin;
-  scrollbar-color: transparent;
+
+  @supports (not selector(::-webkit-scrollbar)) {
+    scrollbar-width: thin;
+    scrollbar-color: transparent;
+  }
 
   &::-webkit-scrollbar {
     width: 7px;
