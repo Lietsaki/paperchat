@@ -36,6 +36,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         <title>Paperchat - An online Pictochat spiritual successor</title>
 
         {/* META */}
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"
+        ></meta>
         <meta name="theme-color" content="#cbcbcb" />
         <meta name="color-scheme" content="light only" />
         <meta name="format-detection" content="telephone=no" />
