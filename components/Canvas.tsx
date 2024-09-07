@@ -9,7 +9,8 @@ import {
   removeColor,
   getLighterHslaShade,
   loadImage,
-  playSound
+  playSound,
+  getDeviceInfo
 } from 'helpers/helperFunctions'
 
 const { canvas_outline, canvas_content, usernameRectangle } = styles
@@ -32,6 +33,9 @@ interface textData {
   keyHeight?: number
 }
 
+const soundTriggeringDistance = 25
+const averageLetterHeight = 15
+
 const Canvas = ({
   usingThickStroke,
   usingPencil,
@@ -42,6 +46,8 @@ const Canvas = ({
   // REFS
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const prudentialWaitRef = useRef(350)
+  const firstLineYRef = useRef(0)
 
   // DRAWING STATE
   const [pos, setPos] = useState<positionObj>({ x: 0, y: 0 })
@@ -53,6 +59,7 @@ const Canvas = ({
   const [divisionsHeight, setDivisionsHeight] = useState(0)
   const [consecutiveStrokes, setConsecutiveStrokes] = useState<historyStroke[]>([])
   const [latestFiredStrokeSound, setLatestFiredStrokeSound] = useState(0)
+  const [latestFiredDotSound, setLatestFiredDotSound] = useState(0)
 
   // COLOR DATA
   const canvasBgColor = '#FDFDFD'
@@ -65,13 +72,13 @@ const Canvas = ({
 
   const getNextYDivision = (y: number) => {
     const nextDivision = y + divisionsHeight
-    if (nextDivision > canvasRef.current!.height) return -1
+    if (nextDivision > canvasRef.current!.height) return firstLineYRef.current
     return nextDivision
   }
 
   const getPreviousYDivision = (y: number) => {
     const previousDivision = y - divisionsHeight
-    if (0 > previousDivision) return -1
+    if (0 > previousDivision) return 0
     return previousDivision
   }
 
@@ -113,12 +120,19 @@ const Canvas = ({
   }
 
   const resetPosition = () => setPos({ x: 0, y: 0 })
+
   const getFontSize = () => getPercentage(canvasRef.current!.width > 295 ? 88 : 94, divisionsHeight)
+
   // starting X refers to the end of the username rectangle, where the first line of user-generated text can begin
-  const getStartingX = () =>
-    nameContainerWidth +
-    getPercentage(smallerDevice ? 3 : smallDevice ? 2 : 3, canvasRef.current!.width)
+  const getStartingX = () => {
+    return (
+      nameContainerWidth +
+      getPercentage(smallerDevice ? 3 : smallDevice ? 2 : 3, canvasRef.current!.width)
+    )
+  }
+
   const posOverflowsX = (pos: positionObj) => pos.x >= getPercentage(98, canvasRef.current!.width)
+
   const divionsHeightWithMargin = () => divisionsHeight + 6
   const nameContainerWidthWithMargin = () => nameContainerWidth + 8
 
@@ -142,6 +156,12 @@ const Canvas = ({
     if (nextKeyWillOverflowCanvas) {
       nextKeyPos.x = newLineStartX
       nextKeyPos.y = getNextYDivision(keyPosition.y)
+
+      const wouldKeysBeWithinUsername = isWithinUsername({
+        x: newLineStartX,
+        y: nextKeyPos.y - averageLetterHeight
+      })
+      if (wouldKeysBeWithinUsername) nextKeyPos.x = getStartingX()
     }
 
     setTextHistory([
@@ -173,6 +193,12 @@ const Canvas = ({
     if (nextKeyWillOverflowCanvas) {
       nextKeyPos.x = newLineStartX
       nextKeyPos.y = getNextYDivision(keyPos.y)
+
+      const wouldKeysBeWithinUsername = isWithinUsername({
+        x: newLineStartX,
+        y: nextKeyPos.y - averageLetterHeight
+      })
+      if (wouldKeysBeWithinUsername) nextKeyPos.x = getStartingX()
     }
 
     setKeyPos(nextKeyPos)
@@ -180,21 +206,16 @@ const Canvas = ({
   }
 
   const typeEnter = () => {
-    if (keyPos.y === -1) return
-
     const nextKeyPos = { x: newLineStartX, y: getNextYDivision(keyPos.y) }
-    const averageLetterHeight = 15
     const wouldKeysBeWithinUsername = isWithinUsername({
       x: newLineStartX,
       y: nextKeyPos.y - averageLetterHeight
     })
 
-    if (wouldKeysBeWithinUsername) nextKeyPos.y += getPercentage(15, canvasRef.current!.height)
+    if (wouldKeysBeWithinUsername) nextKeyPos.x = getStartingX()
 
-    if (nextKeyPos.y !== -1) {
-      setKeyPos(nextKeyPos)
-      setTextHistory([...textHistory, { isEnter: true, x: nextKeyPos.x, y: nextKeyPos.y }])
-    }
+    setKeyPos(nextKeyPos)
+    setTextHistory([...textHistory, { isEnter: true, x: nextKeyPos.x, y: nextKeyPos.y }])
   }
 
   const typeDel = () => {
@@ -206,21 +227,23 @@ const Canvas = ({
         lastKey.x - 1,
         lastKey.y - (lastKey.keyHeight! - (smallDevice ? 4 : 3)),
         lastKey.keyWidth! + 1,
-        lastKey.keyHeight!
+        lastKey.keyHeight! + 1
       )
       setKeyPos({ x: lastKey.x, y: lastKey.y })
     } else if (lastKey.isSpace) {
       setKeyPos({ x: lastKey.x - 5, y: lastKey.y })
     } else if (lastKey.isEnter) {
       let previousX = getStartingX()
+      let previousY = getPreviousYDivision(lastKey.y)
       const keyBehindPrevious = textHistory[textHistory.length - 2]
 
       if (keyBehindPrevious) {
-        const { x, keyWidth } = keyBehindPrevious
+        const { x, y, keyWidth } = keyBehindPrevious
         previousX = keyWidth ? x + keyWidth : x
+        previousY = y
       }
 
-      setKeyPos({ x: previousX, y: getPreviousYDivision(keyPos.y) })
+      setKeyPos({ x: previousX, y: previousY })
     }
 
     setTextHistory(textHistory.slice(0, -1))
@@ -263,6 +286,7 @@ const Canvas = ({
     const img = new Image()
     img.id = 'canvasDivisions'
     img.src = dataUrl
+    img.draggable = false
     containerRef.current!.append(img)
   }
 
@@ -321,6 +345,8 @@ const Canvas = ({
       ctxToUse.fillText(username, smallerDevice ? 18 : smallDevice ? 10 : 8, firstLineY - 1.5)
       setKeyPos({ x: getStartingX(), y: firstLineY })
 
+      firstLineYRef.current = firstLineY
+
       if (appendImgToCanvas) {
         const dataUrl = usernameCanvas.toDataURL('image/png')
         const existingUserRect = document.getElementById(usernameRectangle)
@@ -328,6 +354,7 @@ const Canvas = ({
         const img = new Image()
         img.id = usernameRectangle
         img.src = dataUrl
+        img.draggable = false
         containerRef.current!.append(img)
       }
     }
@@ -337,6 +364,7 @@ const Canvas = ({
   }
 
   const draw = (e: React.PointerEvent) => {
+    e.preventDefault()
     if (draggingKey) return
     const pointerIsMakingContact = e.buttons === 1
     if (!ctx || !pointerIsMakingContact || isWithinUsername(pos)) return setPos(getPosition(e))
@@ -365,17 +393,21 @@ const Canvas = ({
 
     const firstStroke = timespanStrokes[0]
     const lastStroke = timespanStrokes[timespanStrokes.length - 1]
-    const prudentialWait = 350
-    if (latestFiredStrokeSound && lastStroke.ts < latestFiredStrokeSound + prudentialWait) return
+
+    if (
+      latestFiredStrokeSound &&
+      lastStroke.ts < latestFiredStrokeSound + prudentialWaitRef.current
+    ) {
+      return
+    }
 
     const xDiff = Math.abs(lastStroke.x - firstStroke.x)
     const yDiff = Math.abs(lastStroke.y - firstStroke.y)
 
     const distanceToUse = xDiff > yDiff ? xDiff : yDiff
-    const soundTriggeringDistance = 25
 
-    // Prevent sounds from accidentally firing twice (or thrice) in a row except if it's the eraser
-    if (distanceToUse >= soundTriggeringDistance && (soundsThisRender < 1 || !usingPencil)) {
+    // Prevent sounds from accidentally firing twice (or thrice) in a row
+    if (distanceToUse >= soundTriggeringDistance && soundsThisRender < 1) {
       soundsThisRender++
       setLatestFiredStrokeSound(lastStroke.ts)
       let volume = usingThickStroke ? 0.3 : 0.15
@@ -386,11 +418,13 @@ const Canvas = ({
     }
   }
 
-  const endDrawing = () => {
+  const endDrawing = (e: React.PointerEvent) => {
+    e.preventDefault()
     setConsecutiveStrokes([])
   }
 
   const drawDot = (e: React.PointerEvent) => {
+    e.preventDefault()
     if (draggingKey) return
     const posToUse = e.pointerType !== 'mouse' ? getPosition(e) : pos
     const usedMouseNoLeftBtn = e.pointerType === 'mouse' && e.buttons !== 1
@@ -408,6 +442,12 @@ const Canvas = ({
     ctx.lineTo(posToUse.x, posToUse.y)
     ctx.stroke()
 
+    const latestDotTS = Date.now()
+
+    if (latestFiredDotSound && latestDotTS < latestFiredDotSound + prudentialWaitRef.current) return
+
+    setLatestFiredDotSound(latestDotTS)
+
     if (usingPencil) {
       playSound('draw-dot', 0.04)
     } else {
@@ -417,12 +457,13 @@ const Canvas = ({
 
   const copyCanvas = async (imgUri: string) => {
     if (!ctx || !canvasRef.current) return
+    const dpr = window.devicePixelRatio || 1
 
     // Use a different content (imgCtx) to draw the received image and remove its white background
-    // If we removed it in ctx, it'd cause lag in mobile.
+    // If we removed it in ctx, it'd cause lag on mobile.
     const imgCanvas = document.createElement('canvas')
-    imgCanvas.width = ctx.canvas.width
-    imgCanvas.height = ctx.canvas.height
+    imgCanvas.width = ctx.canvas.width * dpr
+    imgCanvas.height = ctx.canvas.height * dpr
     const imgCtx = imgCanvas.getContext('2d')!
 
     const receivedImg = await loadImage(imgUri)
@@ -433,30 +474,29 @@ const Canvas = ({
       receivedImg,
       0,
       0,
-      receivedImg.width * (window.devicePixelRatio || 1),
-      receivedImg.height * (window.devicePixelRatio || 1),
+      receivedImg.width * dpr,
+      receivedImg.height * dpr,
       0,
       0,
-      ctx.canvas.width * (window.devicePixelRatio || 1),
-      (ctx.canvas.width / ratio) * (window.devicePixelRatio || 1)
+      ctx.canvas.width * dpr,
+      (ctx.canvas.width / ratio) * dpr
     )
 
     removeColor(imgCtx, canvasBgColorArr)
     const transparentDataURL = imgCanvas.toDataURL()
     const transparentImg = await loadImage(transparentDataURL)
 
-    // Draw the transparent image into our ctx. Add +30 in sourceWidth and +20 in sourceHeight
-    // to prevent the image's username rectangle from peeking out of ours.
+    // Draw the transparent image into our ctx
     ctx.drawImage(
       transparentImg,
       0,
       0,
-      transparentImg.width * (window.devicePixelRatio || 1) + 30,
-      transparentImg.height * (window.devicePixelRatio || 1) + 20,
+      transparentImg.width,
+      transparentImg.height,
       0,
       0,
-      transparentImg.width * (window.devicePixelRatio || 1),
-      transparentImg.height * (window.devicePixelRatio || 1)
+      transparentImg.width,
+      transparentImg.height
     )
     playSound('copy-last-canvas', 0.3)
   }
@@ -592,6 +632,10 @@ const Canvas = ({
     setCanvasCtx(ctx)
     setDivisionsHeight(Math.floor(canvas.height / 5))
     setNameContainerWidth(getPercentage(25, canvas.width))
+
+    const deviceInfo = getDeviceInfo()
+    if (deviceInfo.isMobile) prudentialWaitRef.current = 380
+    if (deviceInfo.isIpad) prudentialWaitRef.current = 500
   }, [])
 
   useEffect(() => drawDivisions(), [divisionsHeight])
@@ -648,6 +692,9 @@ const Canvas = ({
           onPointerMove={draw}
           onMouseEnter={(e) => setPos(getPosition(e))}
           onMouseLeave={resetPosition}
+          onTouchStart={(e) => e.preventDefault()}
+          onTouchMove={(e) => e.preventDefault()}
+          onTouchEnd={(e) => e.preventDefault()}
           ref={canvasRef}
         >
           <p>Please use a browser that supports the canvas element</p>

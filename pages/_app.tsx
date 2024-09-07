@@ -38,7 +38,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         {/* META */}
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"
+          content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
         ></meta>
         <meta name="theme-color" content="#cbcbcb" />
         <meta name="color-scheme" content="light only" />

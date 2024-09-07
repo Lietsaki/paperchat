@@ -4,6 +4,12 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  padding-bottom: env(safe-area-inset-bottom);
+
+  * {
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
 }
 
 :root {
@@ -133,11 +139,4 @@ a {
 
 .no_pointer_events {
   pointer-events: none;
-}
-
-body.fixed_body {
-  overflow: hidden;
-  position: fixed;
-  top: 0;
-  left: 0;
 }

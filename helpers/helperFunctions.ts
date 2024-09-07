@@ -1,6 +1,7 @@
 import { positionObj } from 'types/Position'
 import { store } from 'store/store'
 import { Capacitor } from '@capacitor/core'
+import { UAParser } from 'ua-parser-js'
 
 const getRandomNumber = (min: number, max: number) => Math.round(Math.random() * (max - min) + min)
 
@@ -242,6 +243,16 @@ const playSound = (filename: string, volume = 1, playEvenHidden?: boolean) => {
   audio.play()
 }
 
+const getDeviceInfo = () => {
+  // UAParser returns undefined for desktop: https://github.com/faisalman/ua-parser-js/issues/182
+  const parserResults = UAParser()
+
+  return {
+    isMobile: !!parserResults.device.type,
+    isIpad: parserResults.device.model?.toLowerCase() === 'ipad'
+  }
+}
+
 export {
   getRandomNumber,
   getSimpleId,
@@ -258,5 +269,6 @@ export {
   playSound,
   getLighterHslaShade,
   loadImage,
-  calculateAspectRatioFit
+  calculateAspectRatioFit,
+  getDeviceInfo
 }

@@ -65,7 +65,6 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
     document.addEventListener('mouseup', handlePointerUp)
     document.addEventListener('touchend', handlePointerUp)
     document.body.style.cursor = 'grabbing'
-    document.getElementsByTagName('body')[0].classList.add('fixed_body')
     playSound('keydown', 0.1)
   }
 
@@ -88,7 +87,6 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
     setDragginKey('')
     document.removeEventListener('mouseup', handlePointerUp)
     document.removeEventListener('touchend', handlePointerUp)
-    document.getElementsByTagName('body')[0].classList.remove('fixed_body')
     document.body.style.cursor = 'auto'
     removeFloatingKey()
   }

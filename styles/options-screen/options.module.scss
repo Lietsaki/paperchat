@@ -10,6 +10,7 @@
     display: grid;
     grid-template-columns: 100%;
     grid-template-rows: 10% 3px auto 3px 10%;
+    height: 100%;
 
     .dotted_border {
       @include left-column-dotted-separator;
@@ -146,6 +147,7 @@
     flex-direction: column;
     padding: 4px 2px 4px 4px;
     overflow: scroll;
+    height: 100%;
 
     // Hide the scrollbar, but allow to scroll.
     -ms-overflow-style: none;
