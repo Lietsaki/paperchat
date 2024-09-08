@@ -9,8 +9,7 @@ import {
   removeColor,
   getLighterHslaShade,
   loadImage,
-  playSound,
-  getDeviceInfo
+  playSound
 } from 'helpers/helperFunctions'
 
 const { canvas_outline, canvas_content, usernameRectangle } = styles
@@ -35,6 +34,7 @@ interface textData {
 
 const soundTriggeringDistance = 25
 const averageLetterHeight = 15
+const prudentialStrokeWait = 300
 
 const Canvas = ({
   usingThickStroke,
@@ -46,7 +46,6 @@ const Canvas = ({
   // REFS
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const prudentialWaitRef = useRef(350)
   const firstLineYRef = useRef(0)
 
   // DRAWING STATE
@@ -59,7 +58,6 @@ const Canvas = ({
   const [divisionsHeight, setDivisionsHeight] = useState(0)
   const [consecutiveStrokes, setConsecutiveStrokes] = useState<historyStroke[]>([])
   const [latestFiredStrokeSound, setLatestFiredStrokeSound] = useState(0)
-  const [latestFiredDotSound, setLatestFiredDotSound] = useState(0)
 
   // COLOR DATA
   const canvasBgColor = '#FDFDFD'
@@ -394,10 +392,7 @@ const Canvas = ({
     const firstStroke = timespanStrokes[0]
     const lastStroke = timespanStrokes[timespanStrokes.length - 1]
 
-    if (
-      latestFiredStrokeSound &&
-      lastStroke.ts < latestFiredStrokeSound + prudentialWaitRef.current
-    ) {
+    if (latestFiredStrokeSound && lastStroke.ts < latestFiredStrokeSound + prudentialStrokeWait) {
       return
     }
 
@@ -441,12 +436,6 @@ const Canvas = ({
     ctx.moveTo(posToUse.x, posToUse.y)
     ctx.lineTo(posToUse.x, posToUse.y)
     ctx.stroke()
-
-    const latestDotTS = Date.now()
-
-    if (latestFiredDotSound && latestDotTS < latestFiredDotSound + prudentialWaitRef.current) return
-
-    setLatestFiredDotSound(latestDotTS)
 
     if (usingPencil) {
       playSound('draw-dot', 0.04)
@@ -632,10 +621,6 @@ const Canvas = ({
     setCanvasCtx(ctx)
     setDivisionsHeight(Math.floor(canvas.height / 5))
     setNameContainerWidth(getPercentage(25, canvas.width))
-
-    const deviceInfo = getDeviceInfo()
-    if (deviceInfo.isMobile) prudentialWaitRef.current = 380
-    if (deviceInfo.isIpad) prudentialWaitRef.current = 500
   }, [])
 
   useEffect(() => drawDivisions(), [divisionsHeight])
