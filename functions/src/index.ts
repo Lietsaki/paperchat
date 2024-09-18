@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import { roomMessages } from '../../types/Room'
+import { roomMessagesObj, onlineUser } from '../../types/Room'
 
 admin.initializeApp()
 
@@ -46,21 +46,28 @@ exports.deleteEmptyPrivateRoomPictures = functions.database
 
 exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(async () => {
   const db = admin.database()
-  const publicRoomMessages = db.ref('public_room_messages/')
-  const privateRoomMessages = db.ref('private_room_messages/')
+  const publicRoomMessagesRef = db.ref('public_room_messages/')
+  const privateRoomMessagesRef = db.ref('private_room_messages/')
+  const publicRoomsRef = db.ref('public_rooms/')
+  const privateRoomsRef = db.ref('private_rooms/')
+  const onlineUsersRef = db.ref('online_users/')
   const halfAnHourAgo = Date.now() - 1800000
   const publicRoomsToDelete: string[] = []
   const privateRoomsToDelete: string[] = []
 
+  let publicRoomsMessagesObj: roomMessagesObj = {}
+  let privateRoomsMessagesObj: roomMessagesObj = {}
+  let usersObj: { [key: string]: onlineUser | null } = {}
+
   // Get all public room messages
-  await publicRoomMessages.once('value', (snapshot) => {
+  await publicRoomMessagesRef.once('value', (snapshot) => {
     if (!snapshot.exists()) return
 
-    const roomsObj = snapshot.val()
-    const roomKeys = Object.keys(roomsObj)
+    publicRoomsMessagesObj = snapshot.val()
+    const roomKeys = Object.keys(publicRoomsMessagesObj)
 
     for (const roomKey of roomKeys) {
-      const room: roomMessages = roomsObj[roomKey]
+      const room = publicRoomsMessagesObj[roomKey]
       const lastMessage = room.messages[room.messages.length - 1]
 
       if (lastMessage.serverTs < halfAnHourAgo) {
@@ -70,14 +77,14 @@ exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(
   })
 
   // Get all private room messages
-  await privateRoomMessages.once('value', (snapshot) => {
+  await privateRoomMessagesRef.once('value', (snapshot) => {
     if (!snapshot.exists()) return
 
-    const roomsObj = snapshot.val()
-    const roomKeys = Object.keys(roomsObj)
+    privateRoomsMessagesObj = snapshot.val()
+    const roomKeys = Object.keys(privateRoomsMessagesObj)
 
     for (const roomKey of roomKeys) {
-      const room: roomMessages = roomsObj[roomKey]
+      const room = privateRoomsMessagesObj[roomKey]
       const lastMessage = room.messages[room.messages.length - 1]
 
       if (lastMessage.serverTs < halfAnHourAgo) {
@@ -86,7 +93,64 @@ exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(
     }
   })
 
-  if (!publicRoomsToDelete.length && !privateRoomsToDelete.length) return ''
+  // Get all lingering public rooms
+  await publicRoomsRef.once('value', (snapshot) => {
+    if (!snapshot.exists()) return
+
+    const publicRoomsObj = snapshot.val()
+    const roomKeys = Object.keys(publicRoomsObj)
+
+    for (const roomKey of roomKeys) {
+      if (!publicRoomsMessagesObj[roomKey]) {
+        publicRoomsToDelete.push(roomKey)
+      }
+    }
+  })
+
+  // Get all lingering private rooms
+  await privateRoomsRef.once('value', (snapshot) => {
+    if (!snapshot.exists()) return
+
+    const privateRoomsObj = snapshot.val()
+    const roomKeys = Object.keys(privateRoomsObj)
+
+    for (const roomKey of roomKeys) {
+      if (!privateRoomsMessagesObj[roomKey]) {
+        privateRoomsToDelete.push(roomKey)
+      }
+    }
+  })
+
+  // Get all lingering users
+  await onlineUsersRef.once('value', (snapshot) => {
+    if (!snapshot.exists()) return
+
+    usersObj = snapshot.val()
+    const userKeys = Object.keys(usersObj)
+
+    for (const userKey of userKeys) {
+      const user = usersObj[userKey] as onlineUser
+
+      if (user.publicRooms) {
+        user.publicRooms = user.publicRooms.filter((roomKey) => {
+          return publicRoomsMessagesObj[roomKey] && !publicRoomsToDelete.includes(roomKey)
+        })
+      }
+
+      if (user.privateRooms) {
+        user.privateRooms = user.privateRooms.filter((roomKey) => {
+          return privateRoomsMessagesObj[roomKey] && !privateRoomsToDelete.includes(roomKey)
+        })
+      }
+
+      if (
+        (!user.publicRooms || !user.publicRooms.length) &&
+        (!user.privateRooms || !user.privateRooms.length)
+      ) {
+        usersObj[userKey] = null
+      }
+    }
+  })
 
   const dbRef = db.ref('/')
   const updateObj: { [key: string]: null } = {}
@@ -100,5 +164,11 @@ exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(
     updateObj[`/private_rooms/${id}`] = null
   }
 
-  return dbRef.update(updateObj)
+  const promises = [onlineUsersRef.update(usersObj)]
+
+  if (Object.keys(updateObj).length) {
+    promises.push(dbRef.update(updateObj))
+  }
+
+  return Promise.all([promises])
 })

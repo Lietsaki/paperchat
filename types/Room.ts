@@ -52,6 +52,7 @@ type firebaseMessage = {
 }
 
 type roomMessages = { createdOn: number; messages: firebaseMessage[] }
+type roomMessagesObj = { [key: string]: roomMessages }
 
 type queryResult<T> = {
   [key: string]: T
@@ -66,5 +67,6 @@ export type {
   room,
   firebaseMessage,
   roomMessages,
+  roomMessagesObj,
   queryResult
 }
