@@ -730,12 +730,13 @@ const Room = () => {
   }
 
   const saveUsername = () => {
-    if (usernameBeingEdited.length < usernameMinLength) return
+    const trimmedUsername = usernameBeingEdited.trim()
+    if (trimmedUsername.length < usernameMinLength) return
     showLoadingDialog()
 
-    dispatch(setUsername(usernameBeingEdited))
-    localStorage.setItem('username', usernameBeingEdited)
-    setUsernameInputValue(usernameBeingEdited)
+    dispatch(setUsername(trimmedUsername))
+    localStorage.setItem('username', trimmedUsername)
+    setUsernameInputValue(trimmedUsername)
 
     setMustSetUsername(false)
     initializeRoom(router.query.roomID as string)
