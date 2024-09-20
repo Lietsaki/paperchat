@@ -18,7 +18,8 @@ import {
   getHighestAndLowestPoints,
   getRandomColor,
   playSound,
-  calculateAspectRatioFit
+  calculateAspectRatioFit,
+  isUsernameValid
 } from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
 import { roomContent, canvasData } from 'types/Room'
@@ -107,7 +108,7 @@ const Room = () => {
     showLoadingDialog()
     const savedUsername = localStorage.getItem('username')
 
-    if (!savedUsername) {
+    if (!savedUsername || !isUsernameValid(savedUsername)) {
       setDialogData(baseDialogData)
       const randomUsername = getRandomUsername()
       setMustSetUsername(true)

@@ -2,6 +2,7 @@ import { positionObj } from 'types/Position'
 import { store } from 'store/store'
 import { Capacitor } from '@capacitor/core'
 import { Howl } from 'howler'
+import { usernameMinLength, usernameMaxLength } from 'store/initializer'
 
 const getRandomNumber = (min: number, max: number) => Math.round(Math.random() * (max - min) + min)
 
@@ -185,7 +186,7 @@ const getImageData = (url: string) => {
   })
 }
 
-const isValidColor = (color: string) => {
+const isColorValid = (color: string) => {
   if (typeof color !== 'string' || !color || !color.startsWith('hsla') || !color.endsWith('1.0)'))
     return false
 
@@ -194,6 +195,19 @@ const isValidColor = (color: string) => {
   const colorToTest = testElement.style.borderColor
 
   if (colorToTest.length == 0) return false
+  return true
+}
+
+const isUsernameValid = (username: string) => {
+  if (
+    !username ||
+    typeof username !== 'string' ||
+    username.trim().length < usernameMinLength ||
+    username.trim().length > usernameMaxLength
+  ) {
+    return false
+  }
+
   return true
 }
 
@@ -256,11 +270,12 @@ export {
   createActiveColorClass,
   willContainerBeOverflowed,
   getImageData,
-  isValidColor,
+  isColorValid,
   removeColor,
   areDatesOnTheSameDay,
   playSound,
   getLighterHslaShade,
   loadImage,
-  calculateAspectRatioFit
+  calculateAspectRatioFit,
+  isUsernameValid
 }

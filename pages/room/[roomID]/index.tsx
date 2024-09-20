@@ -20,7 +20,8 @@ import {
   getHighestAndLowestPoints,
   playSound,
   getSimpleId,
-  calculateAspectRatioFit
+  calculateAspectRatioFit,
+  isUsernameValid
 } from 'helpers/helperFunctions'
 import { keyboard } from 'types/Keyboard'
 import { roomContent, canvasData, firebaseMessage } from 'types/Room'
@@ -130,7 +131,7 @@ const Room = () => {
     showLoadingDialog()
     const savedUsername = localStorage.getItem('username')
 
-    if (!savedUsername) {
+    if (!savedUsername || !isUsernameValid(savedUsername)) {
       const randomUsername = getRandomUsername()
       setMustSetUsername(true)
       setUsernameInputValue(randomUsername)
