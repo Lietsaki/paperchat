@@ -26,7 +26,7 @@ import { roomContent, canvasData } from 'types/Room'
 import emitter from 'helpers/MittEmitter'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser, setUsername } from 'store/slices/userSlice'
-import { usernameMinLength, usernameMaxLength } from 'store/initializer'
+import { usernameMaxLength } from 'store/initializer'
 import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 import Button from 'components/Button'
@@ -310,7 +310,7 @@ const Room = () => {
 
   const saveUsername = () => {
     const trimmedUsername = usernameBeingEdited.trim()
-    if (trimmedUsername.length < usernameMinLength) return
+    if (!isUsernameValid(trimmedUsername)) return
     showLoadingDialog()
 
     dispatch(setUsername(trimmedUsername))

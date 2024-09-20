@@ -7,9 +7,9 @@ import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser, setUsername } from 'store/slices/userSlice'
-import { initializeUsername, usernameMinLength } from 'store/initializer'
+import { initializeUsername } from 'store/initializer'
 import { Capacitor } from '@capacitor/core'
-import { playSound } from 'helpers/helperFunctions'
+import { isUsernameValid, playSound } from 'helpers/helperFunctions'
 import version from 'store/version'
 import Link from 'next/link'
 
@@ -67,7 +67,7 @@ const Home = () => {
 
   const saveUsername = () => {
     const trimmedUsername = usernameBeingEdited.trim()
-    if (trimmedUsername.length < usernameMinLength) return
+    if (!isUsernameValid(trimmedUsername)) return
 
     dispatch(setUsername(trimmedUsername))
     localStorage.setItem('username', trimmedUsername)

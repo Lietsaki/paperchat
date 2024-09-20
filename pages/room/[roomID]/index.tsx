@@ -39,7 +39,7 @@ import {
   listenForDisconnectAndMessages,
   updateRoomMessages
 } from 'firebase-config/realtimeDB'
-import { usernameMinLength, usernameMaxLength } from 'store/initializer'
+import { usernameMaxLength } from 'store/initializer'
 import { dialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 import Button from 'components/Button'
@@ -732,7 +732,7 @@ const Room = () => {
 
   const saveUsername = () => {
     const trimmedUsername = usernameBeingEdited.trim()
-    if (trimmedUsername.length < usernameMinLength) return
+    if (!isUsernameValid(trimmedUsername)) return
     showLoadingDialog()
 
     dispatch(setUsername(trimmedUsername))
