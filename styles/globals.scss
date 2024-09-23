@@ -5,6 +5,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   padding-bottom: env(safe-area-inset-bottom);
+  background-color: $app-bg;
 
   * {
     user-select: none;
@@ -28,7 +29,7 @@ a {
 .main {
   display: flex;
   justify-content: center;
-  background-color: #efefef;
+  background-color: $app-bg;
   width: 100vw;
 }
 

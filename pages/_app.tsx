@@ -40,7 +40,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           name="viewport"
           content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
         ></meta>
-        <meta name="theme-color" content="#cbcbcb" />
+        <meta name="theme-color" content="#efefef" />
         <meta name="color-scheme" content="light only" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="robots" content="index, follow" />
