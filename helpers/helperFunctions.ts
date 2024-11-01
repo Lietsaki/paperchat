@@ -96,13 +96,22 @@ const getHighestAndLowestPoints = (
   return { highestPoint, lowestPoint, conflictingPoints }
 }
 
-// Takes an array with an rgb color. For example: [0, 0, 255] would remove blue.
-const removeColor = (ctx: CanvasRenderingContext2D, color: number[]) => {
+// Takes an array with an rgb color for the exception, in our case it'll be the white canvas background
+const keepOnlyShadesOfGray = (ctx: CanvasRenderingContext2D, exception: number[]) => {
   const canvasData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)
   const pix = canvasData.data
 
-  for (var i = 0, n = pix.length; i < n; i += 4) {
-    if (pix[i] === color[0] && pix[i + 1] === color[1] && pix[i + 2] === color[2]) {
+  for (let i = 0; i < pix.length; i += 4) {
+    const r = pix[i]
+    const g = pix[i + 1]
+    const b = pix[i + 2]
+    const isException = r === exception[0] && g === exception[1] && b === exception[2]
+
+    // Check if the color is a shade of gray: R, G, and B values should be the same
+    const isGray = Math.abs(r - g) === 0 && Math.abs(r - b) === 0 && Math.abs(g - b) === 0
+
+    // Set the pixel's alpha channel to 0 (make transparent)
+    if (!isGray || isException) {
       pix[i + 3] = 0
     }
   }
@@ -271,7 +280,7 @@ export {
   willContainerBeOverflowed,
   getImageData,
   isColorValid,
-  removeColor,
+  keepOnlyShadesOfGray,
   areDatesOnTheSameDay,
   playSound,
   getLighterHslaShade,

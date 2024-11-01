@@ -6,10 +6,10 @@ import {
   getPercentage,
   dropPosOffset,
   getHighestAndLowestPoints,
-  removeColor,
   getLighterHslaShade,
   loadImage,
-  playSound
+  playSound,
+  keepOnlyShadesOfGray
 } from 'helpers/helperFunctions'
 
 const { canvas_outline, canvas_content, usernameRectangle } = styles
@@ -471,7 +471,7 @@ const Canvas = ({
       (ctx.canvas.width / ratio) * dpr
     )
 
-    removeColor(imgCtx, canvasBgColorArr)
+    keepOnlyShadesOfGray(imgCtx, canvasBgColorArr)
     const transparentDataURL = imgCanvas.toDataURL()
     const transparentImg = await loadImage(transparentDataURL)
 
