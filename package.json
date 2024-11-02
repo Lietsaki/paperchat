@@ -10,6 +10,9 @@
     "lint": "next lint",
     "static": "next build && next export"
   },
+  "engines": {
+    "node": ">= 20.0.0"
+  },
   "dependencies": {
     "@capacitor/android": "^4.4.0",
     "@capacitor/app": "^4.1.0",
