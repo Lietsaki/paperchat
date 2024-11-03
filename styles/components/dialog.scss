@@ -28,6 +28,10 @@
     height: 70px;
   }
 
+  @include ipad-pro-11 {
+    filter: blur(0.1px);
+  }
+
   .dialog_layer_2 {
     background-color: $strong-orange;
     @include pixelated-rectangle;

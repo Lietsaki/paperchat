@@ -33,6 +33,10 @@
       width: 70px;
       filter: blur(0.2px);
     }
+
+    @include ipad-pro-11 {
+      filter: blur(0px);
+    }
   }
 
   // Remove one pixel from each border
@@ -61,6 +65,10 @@
     height: 93%;
     padding: 1px;
     filter: blur(0.3px);
+
+    @include ipad-pro-11 {
+      filter: blur(0.1px);
+    }
   }
 
   &:hover {
