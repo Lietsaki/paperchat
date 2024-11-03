@@ -677,8 +677,6 @@ const Canvas = ({
           onPointerMove={draw}
           onMouseEnter={(e) => setPos(getPosition(e))}
           onMouseLeave={resetPosition}
-          onTouchStart={(e) => e.preventDefault()}
-          onTouchMove={(e) => e.preventDefault()}
           onTouchEnd={(e) => e.preventDefault()}
           ref={canvasRef}
         >
