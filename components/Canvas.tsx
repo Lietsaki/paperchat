@@ -47,6 +47,7 @@ const Canvas = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const firstLineYRef = useRef(0)
+  const usernameRectPixelBorderSize = useRef(0)
 
   // DRAWING STATE
   const [pos, setPos] = useState<positionObj>({ x: 0, y: 0 })
@@ -66,11 +67,14 @@ const Canvas = ({
   const strokeRGBArray = [17, 17, 17]
   const smallDevice = typeof window !== 'undefined' ? window.screen.width < 800 : false
   const smallerDevice = smallDevice && window.screen.width < 550
-  const newLineStartX = smallerDevice ? 15 : 5
+  const newLineStartX = smallerDevice ? 15 : 8
 
   const getNextYDivision = (y: number) => {
-    const nextDivision = y + divisionsHeight
+    const safetyOffset = 1
+    const nextDivision = y + divisionsHeight + safetyOffset
+
     if (nextDivision > canvasRef.current!.height) return firstLineYRef.current
+
     return nextDivision
   }
 
@@ -121,21 +125,23 @@ const Canvas = ({
 
   const getFontSize = () => getPercentage(canvasRef.current!.width > 295 ? 88 : 94, divisionsHeight)
 
-  // starting X refers to the end of the username rectangle, where the first line of user-generated text can begin
-  const getStartingX = () => {
-    return (
-      nameContainerWidth +
-      getPercentage(smallerDevice ? 3 : smallDevice ? 2 : 3, canvasRef.current!.width)
-    )
-  }
-
   const posOverflowsX = (pos: positionObj) => pos.x >= getPercentage(98, canvasRef.current!.width)
 
-  const divionsHeightWithMargin = () => divisionsHeight + 6
-  const nameContainerWidthWithMargin = () => nameContainerWidth + 8
+  const divisionsHeightWithMargin = () => divisionsHeight + 6
+
+  // In drawUsernameRectangle we multiply by 2, do so by 3 here to account for the border's width itself
+  const nameContainerWidthWithExtraPixels = () => {
+    const small_margin = 0.4
+    return nameContainerWidth + usernameRectPixelBorderSize.current * 3 + small_margin
+  }
 
   const isWithinUsername = (pos: positionObj) => {
-    return pos.x < nameContainerWidthWithMargin() && pos.y < divionsHeightWithMargin()
+    return pos.x < nameContainerWidthWithExtraPixels() && pos.y < divisionsHeightWithMargin()
+  }
+
+  // starting X refers to the end of the username rectangle, where the first line of user-generated text can begin
+  const getStartingX = () => {
+    return nameContainerWidthWithExtraPixels() + usernameRectPixelBorderSize.current * 3
   }
 
   const handleTextInsert = (key: string, posToUse?: positionObj) => {
@@ -299,8 +305,8 @@ const Canvas = ({
     const ctxToUse = appendImgToCanvas ? usernameCtx : ctx
 
     if (appendImgToCanvas) {
-      usernameCanvas.width = nameContainerWidthWithMargin()
-      usernameCanvas.height = divionsHeightWithMargin()
+      usernameCanvas.width = nameContainerWidthWithExtraPixels()
+      usernameCanvas.height = divisionsHeightWithMargin()
     } else {
       ctxToUse.fillStyle = canvasBgColor
       ctxToUse.fillRect(0, 0, nameContainerWidth + 5, divisionsHeight + 5)
@@ -311,10 +317,10 @@ const Canvas = ({
         ? window.devicePixelRatio * 1
         : (window.devicePixelRatio || 1) * 1.5
 
+    const pixelBorderSize = usernameRectPixelBorderSize.current
     ctxToUse.globalCompositeOperation = 'source-over'
     ctxToUse.lineJoin = 'bevel'
     ctxToUse.imageSmoothingEnabled = false
-    let pixelBorderSize = canvasRef.current!.width >= 400 ? 3 : 2
     ctxToUse.lineWidth = lineWidth
     ctxToUse.fillStyle = getLighterHslaShade(roomColor)
     ctxToUse.strokeStyle = roomColor
@@ -339,8 +345,13 @@ const Canvas = ({
       if (!ctx || !canvasRef.current) return
       ctxToUse.font = `${getFontSize()}px 'nds', roboto, sans-serif`
       ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
+
       const firstLineY = getPercentage(80, divisionsHeight)
-      ctxToUse.fillText(username, smallerDevice ? 18 : smallDevice ? 10 : 8, firstLineY - 1.5)
+      let usernameX = 8
+      if (smallDevice) usernameX = 10
+      if (smallerDevice) usernameX = 18
+
+      ctxToUse.fillText(username, usernameX, firstLineY - 1.5)
       setKeyPos({ x: getStartingX(), y: firstLineY })
 
       firstLineYRef.current = firstLineY
@@ -515,19 +526,19 @@ const Canvas = ({
       const isNextToUsername =
         lowestPoint[0] > nameContainerWidth &&
         highestPoint[0] > nameContainerWidth &&
-        lowestPoint[1] < divionsHeightWithMargin() &&
-        highestPoint[1] < divionsHeightWithMargin()
+        lowestPoint[1] < divisionsHeightWithMargin() &&
+        highestPoint[1] < divisionsHeightWithMargin()
 
       const hPointNextToUsername =
         !isNextToUsername &&
         highestPoint[0] > nameContainerWidth &&
-        highestPoint[1] < divionsHeightWithMargin()
+        highestPoint[1] < divisionsHeightWithMargin()
 
       const hPointUnderAndOutsideUsername =
-        highestPoint[0] > nameContainerWidth && highestPoint[1] > divionsHeightWithMargin()
+        highestPoint[0] > nameContainerWidth && highestPoint[1] > divisionsHeightWithMargin()
 
       const hPointUnderAndWithinUsername =
-        highestPoint[0] < nameContainerWidth && highestPoint[1] > divionsHeightWithMargin()
+        highestPoint[0] < nameContainerWidth && highestPoint[1] > divisionsHeightWithMargin()
 
       if (isNextToUsername) {
         msgCanvas.height = minHeight
@@ -556,8 +567,8 @@ const Canvas = ({
 
           // Prevent the original username rectangle from appearing on top of the one we're gonna draw
           if (sourceY < divisionsHeight) {
-            msgCanvas.height = lowestPoint[1] + margin - divionsHeightWithMargin()
-            sourceY = divionsHeightWithMargin()
+            msgCanvas.height = lowestPoint[1] + margin - divisionsHeightWithMargin()
+            sourceY = divisionsHeightWithMargin()
           }
         }
       }
@@ -612,15 +623,18 @@ const Canvas = ({
   // CANVAS SETUP - Happens on mounted
   useEffect(() => {
     const canvas = canvasRef.current!
+    const dpr = window.devicePixelRatio || 1
 
     if (!canvas.getContext) return
-    canvas.width = containerRef.current!.offsetWidth * (window.devicePixelRatio || 1)
-    canvas.height = containerRef.current!.offsetHeight * (window.devicePixelRatio || 1)
+    canvas.width = containerRef.current!.offsetWidth * dpr
+    canvas.height = containerRef.current!.offsetHeight * dpr
     const ctx = canvas.getContext('2d')!
 
     setCanvasCtx(ctx)
     setDivisionsHeight(Math.floor(canvas.height / 5))
     setNameContainerWidth(getPercentage(25, canvas.width))
+
+    usernameRectPixelBorderSize.current = Math.floor(2.4 * Math.min(dpr, 2.5))
   }, [])
 
   useEffect(() => drawDivisions(), [divisionsHeight])
