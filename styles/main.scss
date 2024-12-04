@@ -54,7 +54,7 @@ $scrollbar-color-dark: rgba(132, 132, 132, 0.6);
 }
 
 @mixin ipad-pro-11 {
-  @media (min-width: 800px) and (max-width: 834px) and (min-height: 1050px) and (max-height: 1194px) {
+  @media (min-width: 800px) and (max-width: 835px) and (min-height: 1050px) and (max-height: 1195px) {
     @content;
   }
 }

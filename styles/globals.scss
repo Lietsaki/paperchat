@@ -43,12 +43,16 @@ a {
   min-height: 900px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   justify-content: center;
+  padding: 5px 0;
 
   @include small-height-devices {
     width: 450px;
     min-height: 720px;
+  }
+  @include ipad-pro-11 {
+    height: 100vh;
   }
   @include landscape-tablet-up {
     min-width: 400px;
@@ -72,10 +76,6 @@ a {
   overflow: hidden;
   box-shadow: 2px 3px 6px #222;
   @include ds-font;
-
-  &:first-child {
-    margin-bottom: 40px;
-  }
 }
 
 .modal_cover {
