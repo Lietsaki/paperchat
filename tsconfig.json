@@ -16,6 +16,6 @@
     "incremental": true,
     "baseUrl": "." // allow absolute path imports from the root of this dir
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "additional.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "android"]
 }

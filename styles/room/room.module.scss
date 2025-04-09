@@ -19,6 +19,10 @@
       0 -2px $content-visible, 1px 1px $content-visible, -1px -1px $content-visible,
       1px -1px $content-visible, -1px 1px $content-visible;
 
+    @include small-height-devices {
+      font-size: 25px;
+    }
+
     @include phones {
       top: 0px;
       left: 0.5px;
@@ -26,12 +30,16 @@
     }
 
     @include small-phones {
-      font-size: 22px;
+      font-size: 21px;
     }
 
     @include tiny-phones {
       font-size: 14px;
     }
+  }
+
+  @include small-height-devices {
+    border-width: 2px;
   }
 
   @include phones {
@@ -227,6 +235,7 @@
   overflow: hidden;
   user-select: none;
   position: relative;
+  margin-bottom: 12px;
 
   img {
     width: 100%;
@@ -550,6 +559,7 @@
     transform: translateY(0px);
   }
 }
+
 @keyframes appearFromTop {
   0% {
     transform: translateY(-45px);

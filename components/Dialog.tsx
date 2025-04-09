@@ -1,15 +1,17 @@
 import Spinner from './Spinner'
 import Button from './Button'
-import { dialogOptions, DialogProps } from 'types/Dialog'
+import { DialogOptions, DialogProps } from 'types/Dialog'
 import { useState, useEffect } from 'react'
 import { store } from 'store/store'
 import { App } from '@capacitor/app'
 import emitter from 'helpers/MittEmitter'
+import useTranslation from 'i18n/useTranslation'
 
 const Dialog = ({
   showSpinner,
   text,
   largeDialog,
+  skipSmallCnText,
 
   leftBtnText,
   leftBtnFn,
@@ -23,6 +25,7 @@ const Dialog = ({
   rightBtnName,
   rightBtnDebounceMounted
 }: DialogProps) => {
+  const { locale } = useTranslation()
   const [audio, setAudio] = useState<null | HTMLAudioElement>(null)
 
   useEffect(() => {
@@ -79,10 +82,27 @@ const Dialog = ({
     rightBtnFn()
   }
 
+  const getButtonSpacingClass = () => {
+    if (leftBtnFn && rightBtnFn && !largeDialog) {
+      return 'justify_between_around'
+    }
+
+    if (leftBtnFn && rightBtnFn && largeDialog) {
+      return 'justify_around'
+    }
+
+    return ''
+  }
+
+  const getCnTextClass = () => {
+    if (locale !== 'cn' || skipSmallCnText) return ''
+    return 'cn'
+  }
+
   const getOptions = () => {
     if (leftBtnFn || rightBtnFn) {
       return (
-        <div className={`options ${leftBtnFn && rightBtnFn ? 'justify_between_around' : ''}`}>
+        <div className={`options ${getButtonSpacingClass()}`}>
           {leftBtnFn && leftBtnText ? (
             <div className="options__left">
               <Button text={leftBtnText} onClick={triggerLeftBtn} />
@@ -110,11 +130,15 @@ const Dialog = ({
   }
 
   return (
-    <div className={`dialog_layer_1 go_up ${largeDialog ? 'large_dialog' : ''}`}>
+    <div
+      className={`dialog_layer_1 go_up ${largeDialog ? 'large_dialog' : ''} ${
+        locale === 'cn' ? 'cn' : ''
+      }`}
+    >
       <div className="dialog_layer_2">
         <div className="dialog_content">
           <div className="spinner-area-left">{showSpinner ? <Spinner /> : null}</div>
-          <div className="text">{text}</div>
+          <div className={`text ${getCnTextClass()}`}>{text}</div>
           <div className="spinner-area-right">{showSpinner ? <Spinner /> : null}</div>
 
           {getOptions()}
@@ -124,9 +148,9 @@ const Dialog = ({
   )
 }
 
-const baseDialogData: dialogOptions = { text: '', open: false, showSpinner: false }
+const baseDialogData: DialogOptions = { text: '', open: false, showSpinner: false }
 
-const shouldDisplayDialog = (dialogData: dialogOptions) => {
+const shouldDisplayDialog = (dialogData: DialogOptions) => {
   const { open, ...restOfProps } = dialogData
   if (!open) return
 

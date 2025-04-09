@@ -1,21 +1,21 @@
 import styles from 'styles/components/keyboard.module.scss'
 import { createFloatingKey, removeFloatingKey } from 'helpers/floatingKey'
 import { useState, useRef } from 'react'
-import { eventPos } from 'types/Position'
-import { regularAlphaKey, allSpecialKeys } from 'types/Keyboard'
-import { Alphanumeric } from 'static/KeyboardsData'
+import { EventPos } from 'types/Position'
+import { RegularAlphaKey, AllSpecialKeys } from 'types/Keyboard'
+import { Alphanumeric } from 'constants/KeyboardsData'
 import { playSound } from 'helpers/helperFunctions'
 
 const { alphanumeric, key_row, key_container, regular_key, dragging } = styles
 
-type alphanumericProps = {
+type AlphanumericProps = {
   typeKey: (key: string) => void
   typeSpace: () => void
   typeEnter: () => void
   typeDel: () => void
 }
 
-const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphanumericProps) => {
+const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: AlphanumericProps) => {
   const [usingCaps, setCaps] = useState(false)
   const [usingShift, setShift] = useState(false)
   const [activeKey, setActiveKey] = useState('')
@@ -49,7 +49,7 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
     return ''
   }
 
-  const getText = (key: regularAlphaKey) => {
+  const getText = (key: RegularAlphaKey) => {
     if (usingCaps) return key.text.toUpperCase()
     if (usingShift) return key.shiftText || key.text.toUpperCase()
     return key.text
@@ -68,7 +68,7 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
     playSound('keydown', 0.1)
   }
 
-  const handleKeyLeave = (key: string, e: eventPos) => {
+  const handleKeyLeave = (key: string, e: EventPos) => {
     if (activeKey === key && !draggingKey) {
       setDragginKey(key)
       const row = document.getElementsByClassName(key_row)
@@ -95,7 +95,7 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
     playSound('keydown', 0.1)
   }
 
-  const specialMethodKeyup = (specialKey: allSpecialKeys) => {
+  const specialMethodKeyup = (specialKey: AllSpecialKeys) => {
     playSound('keyup', 0.1)
     specialKeyMethods[specialKey]()
   }
@@ -115,7 +115,11 @@ const AlphanumericKeyboard = ({ typeKey, typeSpace, typeEnter, typeDel }: alphan
                     key.specialKey
                   )}`}
                 >
-                  <img src={`/special-keys/${key.specialKey}.png`} alt={key.specialKey} />
+                  <img
+                    src={`/special-keys/${key.specialKey}.png`}
+                    alt={key.specialKey}
+                    draggable="false"
+                  />
                   <div className="active_color"></div>
                 </div>
               )

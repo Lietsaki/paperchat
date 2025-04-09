@@ -1,4 +1,5 @@
 import styles from 'styles/components/room-item.module.scss'
+import useTranslation from 'i18n/useTranslation'
 import { USERS_LIMIT } from 'firebase-config/realtimeDB'
 
 const {
@@ -24,6 +25,8 @@ type RoomItemProps = {
 }
 
 const Button = ({ code, usersNumber, onClick }: RoomItemProps) => {
+  const { t } = useTranslation()
+
   return (
     <div className={room_item} onClick={onClick}>
       <div className={letter_segment}>
@@ -37,12 +40,14 @@ const Button = ({ code, usersNumber, onClick }: RoomItemProps) => {
         </div>
       </div>
 
-      <div className={name_segment}>Chat Room {code}</div>
+      <div className={name_segment}>
+        {t('SEARCH_ROOMS_SCREEN.CHAT_ROOM')} {code}
+      </div>
 
       <div className={users_segment}>
         <div className={user_number_box}>
           <div className={user_icon}>
-            <img src="/icons/room-item-user.png" alt="user icon" />
+            <img src="/icons/room-item-user.png" alt={t('IMAGE_ALTS.USER_ICON')} />
           </div>
           <div className={users_number}>
             {usersNumber}/{USERS_LIMIT}

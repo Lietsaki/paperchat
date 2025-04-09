@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions/v1'
 import * as admin from 'firebase-admin'
-import { roomMessagesObj, onlineUser } from '../../types/Room'
+import { RoomMessagesObj, OnlineUser } from '../../types/Room'
 
 admin.initializeApp()
 
@@ -55,9 +55,9 @@ exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(
   const publicRoomsToDelete: string[] = []
   const privateRoomsToDelete: string[] = []
 
-  let publicRoomsMessagesObj: roomMessagesObj = {}
-  let privateRoomsMessagesObj: roomMessagesObj = {}
-  let usersObj: { [key: string]: onlineUser | null } = {}
+  let publicRoomsMessagesObj: RoomMessagesObj = {}
+  let privateRoomsMessagesObj: RoomMessagesObj = {}
+  let usersObj: { [key: string]: OnlineUser | null } = {}
 
   // Get all public room messages
   await publicRoomMessagesRef.once('value', (snapshot) => {
@@ -129,7 +129,7 @@ exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(
     const userKeys = Object.keys(usersObj)
 
     for (const userKey of userKeys) {
-      const user = usersObj[userKey] as onlineUser
+      const user = usersObj[userKey] as OnlineUser
 
       if (user.publicRooms) {
         user.publicRooms = user.publicRooms.filter((roomKey) => {

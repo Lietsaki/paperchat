@@ -1,9 +1,11 @@
 import emitter from './MittEmitter'
-import { eventPos } from 'types/Position'
+import { EventPos } from 'types/Position'
 
-const createFloatingKey = (key: string, e: eventPos, sampleKey: Element) => {
-  const pageX = e.pageX ? e.pageX : Math.round(e.touches![0].pageX)
-  const pageY = e.pageY ? e.pageY : Math.round(e.touches![0].pageY)
+const createFloatingKey = (key: string, e: EventPos, sampleKey: Element) => {
+  if ((e.pageX === undefined || e.pageY === undefined) && !e.touches) return
+
+  const pageX = typeof e.pageX === 'number' ? e.pageX : Math.round(e.touches![0].pageX)
+  const pageY = typeof e.pageY === 'number' ? e.pageY : Math.round(e.touches![0].pageY)
 
   const main = document.querySelector('.main')
   const floatingKey = document.createElement('div')
@@ -22,9 +24,11 @@ const createFloatingKey = (key: string, e: eventPos, sampleKey: Element) => {
   emitter.emit('draggingKey', key)
 }
 
-const updateFloatingKeyPostion = (e: eventPos) => {
-  const pageX = e.pageX ? e.pageX : Math.round(e.touches![0].pageX)
-  const pageY = e.pageY ? e.pageY : Math.round(e.touches![0].pageY)
+const updateFloatingKeyPostion = (e: EventPos) => {
+  if ((e.pageX === undefined || e.pageY === undefined) && !e.touches) return
+
+  const pageX = typeof e.pageX === 'number' ? e.pageX : Math.round(e.touches![0].pageX)
+  const pageY = typeof e.pageY === 'number' ? e.pageY : Math.round(e.touches![0].pageY)
 
   const floatingKey = document.querySelector('.floating_key') as HTMLDivElement
   floatingKey.style.left = pageX - 10 + 'px'

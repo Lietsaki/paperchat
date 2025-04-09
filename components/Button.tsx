@@ -1,17 +1,19 @@
 import styles from 'styles/components/button.module.scss'
 import { useState, useEffect } from 'react'
-import { dialogDebouncedActionNames } from 'types/Dialog'
+import { DialogDebouncedActionNames } from 'types/Dialog'
+import useTranslation from 'i18n/useTranslation'
 
-const { button_outer, button_inner, smaller_font } = styles
+const { button_outer, button_inner, smaller_font, cn, cn_smaller } = styles
 
 type ButtonProps = {
   text: string
   onClick: () => void
   debounce?: number
-  name?: dialogDebouncedActionNames
+  name?: DialogDebouncedActionNames
   debounceMounted?: boolean
   classes?: string
   id?: string
+  useCnSmaller?: boolean
 }
 
 const Button = ({
@@ -21,8 +23,10 @@ const Button = ({
   debounce = 0,
   debounceMounted,
   classes,
-  id
+  id,
+  useCnSmaller
 }: ButtonProps) => {
+  const { locale } = useTranslation()
   const [time, setTime] = useState<null | number>(null)
 
   useEffect(() => {
@@ -46,12 +50,23 @@ const Button = ({
     if (debounce) setTime(debounce)
   }
 
+  const getLocaleClass = () => {
+    if (locale === 'cn') {
+      if (useCnSmaller) return cn_smaller
+      return cn
+    }
+
+    if (locale !== 'en') return smaller_font
+
+    return ''
+  }
+
   return (
     <button
       onClick={triggerBtn}
       className={`${button_outer} ${time ? smaller_font : ''} ${time ? 'disabled_opacity' : ''} ${
         classes || ''
-      }`}
+      } ${getLocaleClass()}`}
       disabled={!!time}
       type="button"
       id={id}

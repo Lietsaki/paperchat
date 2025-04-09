@@ -2,8 +2,8 @@ const getRoomCode = (lastestName?: string) => {
   if (!lastestName) return 'A'
   if (lastestName === 'Z') return 'A1'
   const unicodeAlphabetStart = 65
-  const aphabetCodes = Array.from(Array(26)).map((code, i) => i + unicodeAlphabetStart)
-  const alphabet = aphabetCodes.map((x) => String.fromCharCode(x))
+  const alphabetCodes = Array.from(Array(26)).map((code, i) => i + unicodeAlphabetStart)
+  const alphabet = alphabetCodes.map((x) => String.fromCharCode(x))
 
   const receivedSingleLetter = lastestName.length === 1
 

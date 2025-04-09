@@ -1,6 +1,6 @@
 import styles from 'styles/options-screen/options.module.scss'
 import { useState, useEffect, useRef } from 'react'
-import { roomContent, contentIndicators } from 'types/Room'
+import { RoomContent, ContentIndicators } from 'types/Room'
 import { willContainerBeOverflowed } from 'helpers/helperFunctions'
 
 const {
@@ -14,16 +14,16 @@ const {
   indictor_container
 } = styles
 
-type adjacentIndicators = { up: string; down: string }
+type AdjacentIndicators = { up: string; down: string }
 
 type ContentIndicatorProps = {
-  roomContent: roomContent[]
-  setAdjacentMessages: (adjacentIndicatorsData: adjacentIndicators) => void
+  roomContent: RoomContent[]
+  setAdjacentMessages: (adjacentIndicatorsData: AdjacentIndicators) => void
 }
 
 const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicatorProps) => {
   const indicatorIdPrefix = 'i-'
-  const [indicators, setIndicators] = useState<contentIndicators>({})
+  const [indicators, setIndicators] = useState<ContentIndicators>({})
   const [latestOverflowedLength, setLatestOverflowedLength] = useState(0)
   const animatedIndicators = useRef<{ [key: string]: boolean }>({})
 
@@ -35,7 +35,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
 
   const middleIndicatorsRef = useRef<HTMLDivElement>(null)
   const indicatorsContainerRef = useRef<HTMLDivElement>(null)
-  const indicatorsRef = useRef<contentIndicators>()
+  const indicatorsRef = useRef<ContentIndicators>(undefined)
   indicatorsRef.current = indicators
   let observer: IntersectionObserver | null = null
 
@@ -45,8 +45,8 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
   const middleIndicatorKeys = Object.keys(indicators)
     .filter((key) => !oldestIndicators.includes(key) && !newestIndicators.includes(key))
     .sort((a, b) => {
-      const aItem: roomContent | undefined = roomContent.find((item) => item.id === a)
-      const bItem: roomContent | undefined = roomContent.find((item) => item.id === b)
+      const aItem: RoomContent | undefined = roomContent.find((item) => item.id === a)
+      const bItem: RoomContent | undefined = roomContent.find((item) => item.id === b)
 
       if (!aItem) return -1
       if (!bItem) return 1
@@ -112,7 +112,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     })
   }
 
-  const handleOverflowedContainer = (indicatorsToHandle: contentIndicators) => {
+  const handleOverflowedContainer = (indicatorsToHandle: ContentIndicators) => {
     const indicators = { ...indicatorsToHandle }
     const indicatorKeys = Object.keys(indicators)
 
@@ -172,7 +172,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
 
   const handleOverflowedIndicatorView = (
     indicatorId: string,
-    indicatorsToHandle: contentIndicators
+    indicatorsToHandle: ContentIndicators
   ) => {
     const indicators = { ...indicatorsToHandle }
     const viewingOldIndicator1 = overflowed1OldestIndicator === indicatorId
@@ -293,7 +293,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
       if (!ind) return ''
 
       // Set the previous indicator as already animated (because we just rendered it)
-      // Keeping trak of the animated indicators prevents animating all indicators from being
+      // Keeping track of the animated indicators prevents all indicators from being
       // animated at the same time when calling setIndicators() in setupObserver()
       if (indicatorKeys[i - 1]) {
         animatedIndicators.current[indicatorKeys[i - 1]] = true

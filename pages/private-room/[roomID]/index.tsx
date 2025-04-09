@@ -2,6 +2,8 @@ import general_styles from 'styles/options-screen/options.module.scss'
 import page_styles from 'styles/room/room.module.scss'
 import home_styles from 'styles/home/home.module.scss'
 import btn_styles from 'styles/components/button.module.scss'
+import MultilangButton from 'components/MultilangButton'
+import MultilangList from 'components/MultilangList'
 import MuteSoundsButton from 'components/MuteSoundsButton'
 import PaperchatOctagon from 'components/PaperchatOctagon'
 import UserInfoOctagon from 'components/room/UserInfoOctagon'
@@ -11,6 +13,7 @@ import Canvas from 'components/Canvas'
 import ContentIndicator from 'components/room/ContentIndicator'
 import ConnectionIndicator from 'components/room/ConnectionIndicator'
 import { useRouter } from 'next/router'
+import useTranslation from 'i18n/useTranslation'
 import { useState, useEffect, useRef, FormEvent } from 'react'
 import {
   createActiveColorClass,
@@ -23,8 +26,8 @@ import {
   calculateAspectRatioFit,
   isUsernameValid
 } from 'helpers/helperFunctions'
-import { keyboard } from 'types/Keyboard'
-import { roomContent, canvasData, firebaseMessage } from 'types/Room'
+import { KeyboardType } from 'types/Keyboard'
+import { RoomContent, CanvasData, FirebaseMessage } from 'types/Room'
 import emitter from 'helpers/MittEmitter'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser, setUsername } from 'store/slices/userSlice'
@@ -40,7 +43,8 @@ import {
   updateRoomMessages
 } from 'firebase-config/realtimeDB'
 import { usernameMaxLength } from 'store/initializer'
-import { dialogOptions } from 'types/Dialog'
+import { DialogOptions } from 'types/Dialog'
+import { LocaleCode } from 'types/Multilang'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 import Button from 'components/Button'
 import UsernameInput from 'components/UsernameInput'
@@ -55,6 +59,7 @@ const {
   username_input,
   editing_username,
   save_username_btn_container,
+  cn: cn_home,
   skip_username_animation
 } = home_styles
 
@@ -93,13 +98,14 @@ const {
 
 const Room = () => {
   const router = useRouter()
+  const { t, locale, changeLocale } = useTranslation()
   const user = useSelector(selectUser)
   const [shouldShowCanvas, setShouldShowCanvas] = useState(true)
   const [roomUsers, setRoomUsers] = useState<string[]>([])
   const [usingPencil, setUsingPencil] = useState(true)
   const [usingThickStroke, setUsingThickStroke] = useState(true)
-  const [currentKeyboard, setCurrentKeyboard] = useState<keyboard>('Alphanumeric')
-  const [roomContent, setRoomContent] = useState<roomContent[]>([
+  const [currentKeyboard, setCurrentKeyboard] = useState<KeyboardType>('Alphanumeric')
+  const [roomContent, setRoomContent] = useState<RoomContent[]>([
     { paperchatOctagon: true, id: '1', serverTs: 1, author: getCurrentUserID()! }
   ])
   const [roomColor] = useState(getRandomColor())
@@ -107,7 +113,9 @@ const Room = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
 
-  const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
+  const [dialogData, setDialogData] = useState<DialogOptions>(baseDialogData)
+  const [langToSwitchTo, setLangToSwitchTo] = useState<LocaleCode>(locale)
+
   const [viewingUsers, setViewingUsers] = useState(false)
   const [mustSetUsername, setMustSetUsername] = useState(false)
   const [loadedRoom, setLoadedRoom] = useState(false)
@@ -115,6 +123,7 @@ const Room = () => {
 
   const [usernameInputValue, setUsernameInputValue] = useState('')
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
+  const [lostConnection, setLostConnection] = useState(false)
 
   const [msgDebounceTime, setMsgDebounceTime] = useState(0)
   const strokeRGBArray = [17, 17, 17]
@@ -198,8 +207,9 @@ const Room = () => {
         open: true,
         largeDialog: true,
         text: getUserList(),
+        skipSmallCnText: true,
         showSpinner: false,
-        rightBtnText: 'Accept',
+        rightBtnText: t('COMMON.ACCEPT'),
         rightBtnFn: () => {
           setDialogData(baseDialogData)
           setViewingUsers(false)
@@ -217,10 +227,15 @@ const Room = () => {
   }, [msgDebounceTime])
 
   useEffect(() => {
-    if (dialogData === baseDialogData) {
+    if (dialogData === baseDialogData && !lostConnection) {
       App.addListener('backButton', () => showAskExitRoomDialog())
     }
-  }, [dialogData])
+
+    return () => {
+      App.removeAllListeners()
+      App.addListener('backButton', () => '')
+    }
+  }, [dialogData, lostConnection])
 
   const initializeRoom = (id: string) => {
     const currentRoom = getCurrentRoomData()
@@ -251,7 +266,7 @@ const Room = () => {
 
     if (res === '404') return showRoomNotFoundDialog(true)
     if (res === 'full-room') return showFullRoomDialog()
-    if (res === 'joined-already') return showJoinedAlreadyDialog()
+    if (res === 'already-joined') return showAlreadyJoinedDialog()
     if (res === 'hit-rooms-limit') return showRoomsLimitDialog()
     if (res === 'invalid-code') return showRoomInvalidCodeDialog()
     if (res === 'error' || !currentRoom.code) return showErrorDialog()
@@ -270,7 +285,7 @@ const Room = () => {
     container?.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
   }
 
-  const receiveFirebaseMessages = async (receivedMessages: firebaseMessage[]) => {
+  const receiveFirebaseMessages = async (receivedMessages: FirebaseMessage[]) => {
     const idsToSkip: { [key: string]: boolean } = {}
     const parsedMessages = await Promise.all(
       receivedMessages.map((message) => parseToRoomContent(message))
@@ -297,8 +312,7 @@ const Room = () => {
         }
 
         if (!users[msg.author!]) users[msg.author!] = msg.userEntering
-      }
-      if (msg.userLeaving) {
+      } else if (msg.userLeaving) {
         delete users[msg.author!]
       }
     }
@@ -322,7 +336,7 @@ const Room = () => {
       parsedMessages.sort((a, b) => a.serverTs - b.serverTs)
     }
 
-    const updatedContent: { [key: string]: roomContent } = {}
+    const updatedContent: { [key: string]: RoomContent } = {}
     for (const msg of roomContent) {
       if (!idsToSkip[msg.id]) updatedContent[msg.id] = msg
     }
@@ -368,7 +382,7 @@ const Room = () => {
     }
   }
 
-  const parseToFirebaseMessages = (messages: roomContent[]): firebaseMessage[] => {
+  const parseToFirebaseMessages = (messages: RoomContent[]): FirebaseMessage[] => {
     return messages
       .filter((item) => !item.paperchatOctagon)
       .map((item) => {
@@ -384,10 +398,10 @@ const Room = () => {
       })
   }
 
-  const parseToRoomContent = async (message: firebaseMessage) => {
+  const parseToRoomContent = async (message: FirebaseMessage) => {
     const { imageURL, userEntering, userLeaving, color, serverTs, author } = message
 
-    const roomMessage: roomContent = { id: message.id, serverTs, author }
+    const roomMessage: RoomContent = { id: message.id, serverTs, author }
     let messageHeight = 0
 
     if (userEntering || userLeaving) {
@@ -425,7 +439,7 @@ const Room = () => {
     return roomMessage
   }
 
-  const receiveCanvasData = ({ dataUrl, width, height }: canvasData) => {
+  const receiveCanvasData = ({ dataUrl, width, height }: CanvasData) => {
     let messagesWillTriggerScroll = true
 
     if (messagesContainerRef.current) {
@@ -472,6 +486,7 @@ const Room = () => {
             userEntering={item.userEntering}
             userLeaving={item.userLeaving}
             shouldAnimate={!!item.animate}
+            roomCode={roomCode}
           />
         )
       }
@@ -554,7 +569,7 @@ const Room = () => {
   const showLoadingDialog = () => {
     setDialogData({
       open: true,
-      text: 'Loading...',
+      text: t('COMMON.LOADING'),
       showSpinner: true
     })
   }
@@ -562,9 +577,9 @@ const Room = () => {
   const showErrorDialog = () => {
     setDialogData({
       open: true,
-      text: 'There was an error.',
+      text: t('COMMON.ERRORS.THERE_WAS'),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
@@ -572,9 +587,9 @@ const Room = () => {
   const showDisbandedInactiveRoomDialog = () => {
     setDialogData({
       open: true,
-      text: 'Your room was disbanded due to inactivity.',
+      text: t('ROOM.ERRORS.DISBANDED_DUE_TO_INACTIVITY'),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
@@ -582,19 +597,19 @@ const Room = () => {
   const showFullRoomDialog = () => {
     setDialogData({
       open: true,
-      text: 'Sorry, but the room is full.',
+      text: t('ROOM.ERRORS.ROOM_IS_FULL'),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
 
-  const showJoinedAlreadyDialog = () => {
+  const showAlreadyJoinedDialog = () => {
     setDialogData({
       open: true,
-      text: "You're already in this room",
+      text: t('ROOM.ERRORS.ALREADY_JOINED'),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
@@ -602,9 +617,9 @@ const Room = () => {
   const showRoomsLimitDialog = () => {
     setDialogData({
       open: true,
-      text: `You can be in up to ${SIMULTANEOUS_ROOMS_LIMIT} rooms at the same time.`,
+      text: t('ROOM.ERRORS.SIMULTANEOUS_ROOMS_LIMIT', { SIMULTANEOUS_ROOMS_LIMIT }),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
@@ -612,9 +627,9 @@ const Room = () => {
   const showRoomInvalidCodeDialog = () => {
     setDialogData({
       open: true,
-      text: 'Invalid code, please try again.',
+      text: t('ROOM.ERRORS.INVALID_CODE'),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
@@ -622,9 +637,9 @@ const Room = () => {
   const showMissingCodeDialog = () => {
     setDialogData({
       open: true,
-      text: 'Room not found: private code missing in URL.',
+      text: t('ROOM.ERRORS.NOT_FOUND_MISSING_CODE'),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
@@ -632,9 +647,11 @@ const Room = () => {
   const showRoomNotFoundDialog = (addMaybe?: boolean) => {
     setDialogData({
       open: true,
-      text: addMaybe ? 'Room not found. Maybe it was disbanded.' : 'Room not found.',
+      text: addMaybe
+        ? t('COMMON.ERRORS.ROOM_NOT_FOUND_MAYBE_DISBANDED')
+        : t('COMMON.ERRORS.ROOM_NOT_FOUND'),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
@@ -644,10 +661,10 @@ const Room = () => {
 
     setDialogData({
       open: true,
-      text: 'Leave room?',
+      text: t('ROOM.LEAVE_ROOM'),
       showSpinner: false,
-      leftBtnText: 'Cancel',
-      rightBtnText: 'Accept',
+      leftBtnText: t('COMMON.CANCEL'),
+      rightBtnText: t('COMMON.ACCEPT'),
       rightBtnFn: () => {
         playSound('leave-room', 0.3)
         router.push('/')
@@ -659,17 +676,21 @@ const Room = () => {
   }
 
   const showLostConnectionDialog = () => {
+    setLostConnection(true)
+
     setDialogData({
       open: true,
-      text: 'Connection lost. Reconnecting...',
+      text: t('ROOM.ERRORS.CONNECTION_LOST_RECONNECTING'),
       showSpinner: true
     })
   }
 
   const showBackOnlineDialog = () => {
+    setLostConnection(false)
+
     setDialogData({
       open: true,
-      text: 'Back online!',
+      text: t('ROOM.ERRORS.BACK_ONLINE'),
       showSpinner: false
     })
     setTimeout(() => {
@@ -681,9 +702,9 @@ const Room = () => {
   const showBackOnlineDisbandedDialog = () => {
     setDialogData({
       open: true,
-      text: 'Back online. Your room was disbanded since it was empty.',
+      text: t('ROOM.ERRORS.BACK_ONLINE_DISBANDED'),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
@@ -692,7 +713,7 @@ const Room = () => {
     return (
       <div className="user_list">
         <div className="title">
-          Room users ({roomUsers.length}/{USERS_LIMIT})
+          {t('ROOM.USERS')} ({roomUsers.length}/{USERS_LIMIT})
         </div>
 
         <ol className="scrollify">
@@ -710,8 +731,9 @@ const Room = () => {
       open: true,
       largeDialog: true,
       text: getUserList(),
+      skipSmallCnText: true,
       showSpinner: false,
-      rightBtnText: 'Accept',
+      rightBtnText: t('COMMON.ACCEPT'),
       rightBtnFn: () => {
         setDialogData(baseDialogData)
         setViewingUsers(false)
@@ -722,9 +744,9 @@ const Room = () => {
   const showPrivateCodeDialog = () => {
     setDialogData({
       open: true,
-      text: 'Share your code with others to let them join your room!',
+      text: t('ROOM.GET_PRIVATE_ROOM_CODE_DIALOG'),
       showSpinner: false,
-      rightBtnText: 'Copy Code',
+      rightBtnText: t('ROOM.COPY_CODE'),
       hideOnRightBtn: false,
       rightBtnFn: async () => {
         if (Capacitor.isNativePlatform()) {
@@ -735,7 +757,7 @@ const Room = () => {
 
         setDialogData({
           open: true,
-          text: 'Copied to clipboard!',
+          text: t('ROOM.COPIED_TO_CLIPBOARD'),
           showSpinner: false
         })
 
@@ -745,7 +767,7 @@ const Room = () => {
         }, 2000)
       },
 
-      leftBtnText: 'Get Full Link',
+      leftBtnText: t('ROOM.COPY_LINK'),
       hideOnLeftBtn: false,
       leftBtnFn: async () => {
         const url =
@@ -761,7 +783,7 @@ const Room = () => {
 
         setDialogData({
           open: true,
-          text: 'Copied to clipboard!',
+          text: t('ROOM.COPIED_TO_CLIPBOARD'),
           showSpinner: false
         })
 
@@ -804,8 +826,8 @@ const Room = () => {
               setUsernameBeingEdited={setUsernameBeingEdited}
             />
 
-            <div className={save_username_btn_container}>
-              <Button onClick={() => saveUsername()} text="Save" />
+            <div className={`${save_username_btn_container} ${locale === 'cn' ? cn_home : ''}`}>
+              <Button onClick={() => saveUsername()} text={t('COMMON.SAVE')} />
             </div>
           </form>
         </div>
@@ -819,7 +841,7 @@ const Room = () => {
     playSound('entering-room')
   }
 
-  const selectKeyboard = (newKeyboard: keyboard) => {
+  const selectKeyboard = (newKeyboard: KeyboardType) => {
     playSound('select-keyboard', 0.1)
     setCurrentKeyboard(newKeyboard)
   }
@@ -858,6 +880,35 @@ const Room = () => {
     }
   }
 
+  const updateLanguageDialogData = (open?: boolean) => {
+    setDialogData({
+      open: open || dialogData.open,
+      largeDialog: true,
+      text: <MultilangList selectedLang={langToSwitchTo} setSelectedLang={setLangToSwitchTo} />,
+      skipSmallCnText: locale === 'cn',
+      showSpinner: false,
+      leftBtnText: t('COMMON.CANCEL'),
+      leftBtnFn: () => {
+        setDialogData(baseDialogData)
+      },
+      rightBtnText: t('COMMON.ACCEPT'),
+      rightBtnFn: () => {
+        changeLocale(langToSwitchTo)
+        setDialogData(baseDialogData)
+      }
+    })
+  }
+
+  const openLanguageModal = () => updateLanguageDialogData(true)
+
+  useEffect(() => {
+    updateLanguageDialogData()
+  }, [langToSwitchTo])
+
+  useEffect(() => {
+    setLangToSwitchTo(locale)
+  }, [locale])
+
   return (
     <div className="main">
       <div className="screens_section">
@@ -887,7 +938,7 @@ const Room = () => {
               className={`${tool_container} ${top_arrow} ${active_on_click}`}
               onClick={() => scrollToAdjacent('up')}
             >
-              <img src="/tool-buttons/top-arrow.png" alt="top arrow button" />
+              <img src="/tool-buttons/top-arrow.png" alt={t('IMAGE_ALTS.TOP_ARROW_BUTTON')} />
               <div className="active_color"></div>
             </div>
 
@@ -897,7 +948,7 @@ const Room = () => {
             >
               <img
                 src="/tool-buttons/down-arrow.png"
-                alt="down arrow button"
+                alt={t('IMAGE_ALTS.DOWN_ARROW_BUTTON')}
                 className={active_on_click}
               />
               <div className="active_color"></div>
@@ -907,7 +958,7 @@ const Room = () => {
               className={`${tool_container} ${pencil} ${usingPencil ? active : ''}`}
               onClick={() => selectPencil()}
             >
-              <img src={`/tool-buttons/pencil.png`} alt="pencil button" />
+              <img src={`/tool-buttons/pencil.png`} alt={t('IMAGE_ALTS.PENCIL_BUTTON')} />
               <div className="active_color bright"></div>
             </div>
 
@@ -915,7 +966,7 @@ const Room = () => {
               className={`${tool_container} ${eraser} ${!usingPencil ? active : ''}`}
               onClick={() => selectEraser()}
             >
-              <img src={`/tool-buttons/eraser.png`} alt="eraser button" />
+              <img src={`/tool-buttons/eraser.png`} alt={t('IMAGE_ALTS.ERASER_BUTTON')} />
               <div className="active_color bright"></div>
             </div>
 
@@ -923,7 +974,10 @@ const Room = () => {
               className={`${tool_container} ${thick_stroke} ${usingThickStroke ? active : ''}`}
               onClick={() => selectThickStroke()}
             >
-              <img src={`/tool-buttons/thick-stroke.png`} alt="thick stroke button" />
+              <img
+                src={`/tool-buttons/thick-stroke.png`}
+                alt={t('IMAGE_ALTS.THICK_STROKE_BUTTON')}
+              />
               <div className="active_color bright"></div>
             </div>
 
@@ -931,7 +985,7 @@ const Room = () => {
               className={`${tool_container} ${thin_stroke} ${!usingThickStroke ? active : ''}`}
               onClick={() => selectThinStroke()}
             >
-              <img src={`/tool-buttons/thin-stroke.png`} alt="thin stroke button" />
+              <img src={`/tool-buttons/thin-stroke.png`} alt={t('IMAGE_ALTS.THIN_STROKE_BUTTON')} />
               <div className="active_color bright"></div>
             </div>
 
@@ -941,7 +995,10 @@ const Room = () => {
               }`}
               onClick={() => selectKeyboard('Alphanumeric')}
             >
-              <img src={`/tool-buttons/alphanumeric.png`} alt="alphanumeric button" />
+              <img
+                src={`/tool-buttons/alphanumeric.png`}
+                alt={t('IMAGE_ALTS.ALPHANUMERIC_BUTTON')}
+              />
               <div className="active_color bright"></div>
             </div>
 
@@ -951,7 +1008,7 @@ const Room = () => {
               }`}
               onClick={() => selectKeyboard('Accents')}
             >
-              <img src={`/tool-buttons/accents.png`} alt="accents button" />
+              <img src={`/tool-buttons/accents.png`} alt={t('IMAGE_ALTS.ACCENTS_BUTTON')} />
               <div className="active_color bright"></div>
             </div>
 
@@ -961,7 +1018,7 @@ const Room = () => {
               }`}
               onClick={() => selectKeyboard('Symbols')}
             >
-              <img src={`/tool-buttons/symbols.png`} alt="symbols button" />
+              <img src={`/tool-buttons/symbols.png`} alt={t('IMAGE_ALTS.SYMBOLS_BUTTON')} />
               <div className="active_color bright"></div>
             </div>
 
@@ -971,28 +1028,31 @@ const Room = () => {
               }`}
               onClick={() => selectKeyboard('Smileys')}
             >
-              <img src={`/tool-buttons/smileys.png`} alt="smileys button" />
+              <img src={`/tool-buttons/smileys.png`} alt={t('IMAGE_ALTS.SMILEYS_BUTTON')} />
               <div className="active_color bright"></div>
             </div>
           </div>
 
           <div className={top_buttons_row}>
+            <MultilangButton onButtonClick={openLanguageModal} useSmallVersion />
             <MuteSoundsButton useSmallVersion />
 
             <Button
               classes={btn_styles.room_top_row_btn}
-              text={`Get Invitation`}
+              text={t('ROOM.GET_INVITATION')}
               onClick={showPrivateCodeDialog}
+              useCnSmaller
             />
 
             <Button
               classes={btn_styles.room_top_row_btn}
-              text={`Room users (${roomUsers.length}/${USERS_LIMIT})`}
+              text={`${t('ROOM.USERS')} (${roomUsers.length}/${USERS_LIMIT})`}
               onClick={showUsersDialog}
+              useCnSmaller
             />
 
             <div className={`${close_btn} ${active_on_click}`} onClick={showAskExitRoomDialog}>
-              <img src="/tool-buttons/close.png" alt="close button" />
+              <img src="/tool-buttons/close.png" alt={t('IMAGE_ALTS.CLOSE_BUTTON')} />
               <div className="active_color bright"></div>
             </div>
           </div>
@@ -1019,30 +1079,21 @@ const Room = () => {
                       msgDebounceTime ? 'no_pointer_events' : ''
                     }`}
                   >
-                    <img src="/send-buttons/SEND.png" alt="send button" />
-                    <img
-                      src="/send-buttons/active/SEND.png"
-                      alt="active send button"
-                      className={active}
-                    />
+                    <img src="/send-buttons/SEND.png" alt={t('IMAGE_ALTS.SEND_MESSAGE_BUTTON')} />
+                    <img src="/send-buttons/active/SEND.png" alt="" className={active} />
 
                     {msgDebounceTime ? <div className={interact_seal}>{msgDebounceTime}</div> : ''}
                   </div>
                   <div className={`${last_canvas} ${active_on_click}`} onClick={copyLastCanvas}>
-                    <img src="/send-buttons/LAST-CANVAS.png" alt="last message button" />
                     <img
-                      src="/send-buttons/active/LAST-CANVAS.png"
-                      alt="active last canvas button"
-                      className={active}
+                      src="/send-buttons/LAST-CANVAS.png"
+                      alt={t('IMAGE_ALTS.COPY_LAST_MESSAGE_BUTTON')}
                     />
+                    <img src="/send-buttons/active/LAST-CANVAS.png" alt="" className={active} />
                   </div>
                   <div className={`${clear} ${active_on_click}`} onClick={() => clearCanvas()}>
-                    <img src="/send-buttons/CLEAR.png" alt="clear button" />
-                    <img
-                      src="/send-buttons/active/CLEAR.png"
-                      alt="active clear button"
-                      className={active}
-                    />
+                    <img src="/send-buttons/CLEAR.png" alt={t('IMAGE_ALTS.CLEAR_CANVAS_BUTTON')} />
+                    <img src="/send-buttons/active/CLEAR.png" alt="" className={active} />
                   </div>
                 </div>
               </div>

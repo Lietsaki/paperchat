@@ -1,7 +1,8 @@
 import styles from 'styles/components/canvas.module.scss'
 import React, { useEffect, useState, useRef } from 'react'
+import useTranslation from 'i18n/useTranslation'
 import emitter from 'helpers/MittEmitter'
-import { clientPos, positionObj, historyStroke } from 'types/Position'
+import { ClientPos, PositionObj, HistoryStroke } from 'types/Position'
 import {
   getPercentage,
   dropPosOffset,
@@ -14,7 +15,7 @@ import {
 
 const { canvas_outline, canvas_content, usernameRectangle } = styles
 
-type canvasProps = {
+type CanvasProps = {
   usingThickStroke: boolean
   usingPencil: boolean
   roomColor: string
@@ -22,7 +23,7 @@ type canvasProps = {
   clearCanvas: (clearEvenEmpty?: boolean, skipSound?: boolean) => void
 }
 
-interface textData {
+interface TextData {
   isSpace?: boolean
   isEnter?: boolean
   isKey?: boolean
@@ -42,7 +43,9 @@ const Canvas = ({
   roomColor,
   username,
   clearCanvas
-}: canvasProps) => {
+}: CanvasProps) => {
+  const { t } = useTranslation()
+
   // REFS
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -50,14 +53,14 @@ const Canvas = ({
   const usernameRectPixelBorderSize = useRef(0)
 
   // DRAWING STATE
-  const [pos, setPos] = useState<positionObj>({ x: 0, y: 0 })
-  const [keyPos, setKeyPos] = useState<positionObj>({ x: 0, y: 0 })
+  const [pos, setPos] = useState<PositionObj>({ x: 0, y: 0 })
+  const [keyPos, setKeyPos] = useState<PositionObj>({ x: 0, y: 0 })
   const [draggingKey, setDraggingKey] = useState('')
-  const [textHistory, setTextHistory] = useState<textData[]>([])
+  const [textHistory, setTextHistory] = useState<TextData[]>([])
   const [ctx, setCanvasCtx] = useState<CanvasRenderingContext2D | null>(null)
   const [nameContainerWidth, setNameContainerWidth] = useState(0)
   const [divisionsHeight, setDivisionsHeight] = useState(0)
-  const [consecutiveStrokes, setConsecutiveStrokes] = useState<historyStroke[]>([])
+  const [consecutiveStrokes, setConsecutiveStrokes] = useState<HistoryStroke[]>([])
   const [latestFiredStrokeSound, setLatestFiredStrokeSound] = useState(0)
 
   // COLOR DATA
@@ -108,7 +111,7 @@ const Canvas = ({
     }
   }
 
-  const getPosition = (e: clientPos) => {
+  const getPosition = (e: ClientPos) => {
     const canvas = canvasRef.current!
     const rect = canvas.getBoundingClientRect() // abs. size of element
     const scaleX = canvas.width / rect.width // relationship bitmap vs. element for x
@@ -125,7 +128,7 @@ const Canvas = ({
 
   const getFontSize = () => getPercentage(canvasRef.current!.width > 295 ? 88 : 94, divisionsHeight)
 
-  const posOverflowsX = (pos: positionObj) => pos.x >= getPercentage(98, canvasRef.current!.width)
+  const posOverflowsX = (pos: PositionObj) => pos.x >= getPercentage(98, canvasRef.current!.width)
 
   const divisionsHeightWithMargin = () => divisionsHeight + 6
 
@@ -135,7 +138,7 @@ const Canvas = ({
     return nameContainerWidth + usernameRectPixelBorderSize.current * 3 + small_margin
   }
 
-  const isWithinUsername = (pos: positionObj) => {
+  const isWithinUsername = (pos: PositionObj) => {
     return pos.x < nameContainerWidthWithExtraPixels() && pos.y < divisionsHeightWithMargin()
   }
 
@@ -144,11 +147,14 @@ const Canvas = ({
     return nameContainerWidthWithExtraPixels() + usernameRectPixelBorderSize.current * 3
   }
 
-  const handleTextInsert = (key: string, posToUse?: positionObj) => {
+  const handleTextInsert = (key: string, posToUse?: PositionObj) => {
     if (!ctx) return
+
     const keyPosition = posToUse || keyPos
     ctx.globalCompositeOperation = 'source-over'
     ctx.fillStyle = strokeColor
+    ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
+
     const textMetrics = ctx.measureText(key)
     const nextKeyPos = { x: Math.round(keyPosition.x + textMetrics.width), y: keyPosition.y }
     const marginRight = smallerDevice ? 12 : 0
@@ -253,7 +259,7 @@ const Canvas = ({
     setTextHistory(textHistory.slice(0, -1))
   }
 
-  const dropDraggingKey = (posToDropIn: clientPos, draggingKey: string) => {
+  const dropDraggingKey = (posToDropIn: ClientPos, draggingKey: string) => {
     if (!draggingKey || !ctx) return
 
     const { height, width } = canvasRef.current!
@@ -395,8 +401,7 @@ const Canvas = ({
     checkLatestStrokes(updatedStrokes)
   }
 
-  let soundsThisRender = 0
-  const checkLatestStrokes = (strokes: historyStroke[]) => {
+  const checkLatestStrokes = (strokes: HistoryStroke[]) => {
     const lastHalfSecond = Date.now() - 500
     const timespanStrokes = strokes.filter((stroke) => stroke.ts > lastHalfSecond)
 
@@ -413,8 +418,7 @@ const Canvas = ({
     const distanceToUse = xDiff > yDiff ? xDiff : yDiff
 
     // Prevent sounds from accidentally firing twice (or thrice) in a row
-    if (distanceToUse >= soundTriggeringDistance && soundsThisRender < 1) {
-      soundsThisRender++
+    if (distanceToUse >= soundTriggeringDistance) {
       setLatestFiredStrokeSound(lastStroke.ts)
       let volume = usingThickStroke ? 0.3 : 0.15
 
@@ -517,6 +521,7 @@ const Canvas = ({
     )
 
     clearCanvas(true, true)
+
     if (highestPoint && lowestPoint) {
       const contentHeight = lowestPoint[1] - highestPoint[1]
       let sourceY = 0
@@ -592,9 +597,12 @@ const Canvas = ({
         }
       }
 
+      // Add a white background for the canvas, without this it'd be
+      // transparent, especially noticeable when downloading pictures
       msgCtx.fillStyle = canvasBgColor
       msgCtx.fillRect(0, 0, msgCanvas.width, msgCanvas.height)
 
+      // Draw the actual canvas content
       msgCtx.drawImage(
         ctx.canvas,
         0,
@@ -607,13 +615,23 @@ const Canvas = ({
         msgCanvas.height
       )
 
-      drawUsernameRectangle(msgCtx, false, false)
+      // Make a username rectangle and put it on our main canvas; the one with the drawing.
+      // This will prevent usernames from overflowing (e.g. chinese characters), we can't draw
+      // the username directly onto our msgCtx because that one has the width of the entire canvas.
+      const msgUsernameCanvas = document.createElement('canvas')
+      const msgUsernameCtx = msgUsernameCanvas.getContext('2d')!
+      msgUsernameCanvas.width = nameContainerWidthWithExtraPixels()
+      msgUsernameCanvas.height = divisionsHeightWithMargin()
+
+      drawUsernameRectangle(msgUsernameCtx, false, false)
+      msgCtx.drawImage(msgUsernameCanvas, 0, 0)
 
       emitter.emit('canvasData', {
         dataUrl: msgCanvas.toDataURL(),
         height: msgCanvas.height,
         width: msgCanvas.width
       })
+
       playSound('send-message', 0.5)
     } else {
       playSound('btn-denied', 0.4)
@@ -694,7 +712,7 @@ const Canvas = ({
           onTouchEnd={(e) => e.preventDefault()}
           ref={canvasRef}
         >
-          <p>Please use a browser that supports the canvas element</p>
+          <p>{t('ROOM.PLEASE_SUPPORT_CANVAS')}</p>
         </canvas>
       </div>
     </div>

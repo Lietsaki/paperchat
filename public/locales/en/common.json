@@ -1,0 +1,131 @@
+{
+  "COMMON": {
+    "SAVE": "Save",
+    "ACCEPT": "Accept",
+    "CANCEL": "Cancel",
+    "RETRY": "Retry",
+    "CODE": "Code",
+    "LOADING": "Loading...",
+    "GO_HOME": "Go home",
+    "ERROR": "Error",
+    "ERRORS": {
+      "GENERIC": "There was an error. Please try again later.",
+      "THERE_WAS": "There was an error.",
+      "ROOM_NOT_FOUND": "Room not found.",
+      "ROOM_NOT_FOUND_MAYBE_DISBANDED": "Room not found. Maybe it was disbanded.",
+      "DAILY_ROOMS_LIMIT": "You can create up to {{DAILY_ROOMS_LIMIT}} rooms per day. Try again tomorrow."
+    }
+  },
+  "HOME": {
+    "PAGE_TITLE": "An online Pictochat spiritual successor",
+    "META_DESCRIPTION": "Draw in real time with your friends or random people in an online Pictochat version",
+    "SEARCH_ROOMS": "Search rooms",
+    "CREATE_ROOM": "Create a room",
+    "JOIN_WITH_CODE": "Join with a code",
+    "USERNAME": "Username",
+    "PRIVACY": "Privacy",
+    "PRIVACY_POLICY": "Privacy policy",
+    "CREDITS": "Credits",
+    "TOGGLE_AUDIO": "Toggle audio",
+    "SWITCH_LANGUAGE": "Switch language"
+  },
+  "SEARCH_ROOMS_SCREEN": {
+    "PAGE_TITLE": "Find Rooms",
+    "META_DESCRIPTION": "Find online rooms to chat and draw in real time in an online Pictochat spiritual successor.",
+    "SECTION_TITLE": "Choose a Chat Room to join",
+    "CHAT_ROOM": "Chat Room",
+    "SEARCHING": "Searching for rooms...",
+    "ERROR_TRY_AGAIN": "An error occurred. Try again?",
+    "NO_ROOMS": "Found no rooms.",
+    "CREATE_ROOM": "Create room",
+    "SEARCH_AGAIN": "Search again"
+  },
+  "CREATE_ROOM_SCREEN": {
+    "PAGE_TITLE": "Create Room",
+    "META_DESCRIPTION": "Create your own room to chat and draw in real time in an online Pictochat spiritual successor.",
+    "SECTION_TITLE": "What room type do you want to create?",
+    "CREATING_YOUR_PUBLIC_ROOM": "Creating your public room",
+    "CREATING_YOUR_PRIVATE_ROOM": "Creating your private room",
+    "PUBLIC": {
+      "TITLE": "Public",
+      "DESCRIPTION": "Your room will be listed and anyone can join."
+    },
+    "PRIVATE": {
+      "TITLE": "Private",
+      "DESCRIPTION": "Hidden room. Users join with an invitation code."
+    },
+    "OFFLINE": {
+      "TITLE": "Offline",
+      "DESCRIPTION": "Draw and have fun with no connection."
+    }
+  },
+  "JOIN_WITH_CODE_SCREEN": {
+    "PAGE_TITLE": "Join Room with a Code",
+    "META_DESCRIPTION": "Join a private room with a code to chat and draw online in a Pictochat online spiritual successor",
+    "SECTION_TITLE": "Join a private room with an invitation code",
+    "JOINING_ROOM": "Joining room...",
+    "JOIN": "Join",
+    "ERRORS": {
+      "INVALID_CODE_CHARACTERS": "The code must have {{PRIVATE_CODE_LENGTH}} characters"
+    }
+  },
+  "ROOM": {
+    "NOW_ENTERING": "Now entering",
+    "NOW_LEAVING": "Now leaving",
+    "LEAVE_ROOM": "Leave room?",
+    "USERS": "Room Users",
+    "GET_ROOM_LINK": "Get Room Link",
+    "GET_INVITATION": "Get Invitation",
+    "GET_PUBLIC_ROOM_LINK_DIALOG": "Get and share your room link, anyone can join :)",
+    "GET_PRIVATE_ROOM_CODE_DIALOG": "Share your code with others to let them join your room!",
+    "COPY_LINK": "Copy Link",
+    "COPY_CODE": "Copy Code",
+    "COPIED_TO_CLIPBOARD": "Copied to clipboard!",
+    "SAVE_IMAGE": "Save image",
+    "PLEASE_SUPPORT_CANVAS": "Please use a browser that supports the canvas element",
+    "ERRORS": {
+      "NOT_FOUND_MISSING_CODE": "Room not found: private code missing in URL.",
+      "INVALID_CODE": "Invalid code, please try again.",
+      "DISBANDED_DUE_TO_INACTIVITY": "Your room was disbanded due to inactivity.",
+      "ROOM_IS_FULL": "Sorry, but the room is full.",
+      "ALREADY_JOINED": "You're already in this room.",
+      "SIMULTANEOUS_ROOMS_LIMIT": "You can be in up to {{SIMULTANEOUS_ROOMS_LIMIT}} rooms at the same time.",
+      "CONNECTION_LOST_RECONNECTING": "Connection lost. Reconnecting...",
+      "BACK_ONLINE": "Back online!",
+      "BACK_ONLINE_DISBANDED": "Back online. Your room was disbanded since it was empty."
+    }
+  },
+  "NOTIFICATIONS": {
+    "NEW_ROOM_MESSAGE": {
+      "TITLE": "New message in your room!",
+      "BODY": "What could it be?"
+    },
+    "USER_ENTERING": {
+      "TITLE": "Somebody entered the room!",
+      "BODY": "Go say hi to {{userEntering}}"
+    },
+    "USER_LEAVING": {
+      "TITLE": "Somebody left the room",
+      "BODY": "Goodbye, {{userLeaving}}"
+    }
+  },
+  "IMAGE_ALTS": {
+    "PLAY_STORE_ICON": "Play Store icon",
+    "USER_ICON": "User icon",
+    "DOWNLOAD_ARROW_ICON": "Download arrow icon",
+    "TOP_ARROW_BUTTON": "Top arrow button",
+    "DOWN_ARROW_BUTTON": "Down arrow button",
+    "PENCIL_BUTTON": "Pencil button",
+    "ERASER_BUTTON": "Eraser button",
+    "THICK_STROKE_BUTTON": "Thick stroke button",
+    "THIN_STROKE_BUTTON": "Thin stroke button",
+    "ALPHANUMERIC_BUTTON": "Alphanumeric button",
+    "ACCENTS_BUTTON": "Accents button",
+    "SYMBOLS_BUTTON": "Symbols button",
+    "SMILEYS_BUTTON": "Smileys button",
+    "CLOSE_BUTTON": "Close button",
+    "SEND_MESSAGE_BUTTON": "Send message button",
+    "COPY_LAST_MESSAGE_BUTTON": "Copy last message button",
+    "CLEAR_CANVAS_BUTTON": "Clear canvas button"
+  }
+}

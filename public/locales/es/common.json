@@ -1,0 +1,131 @@
+{
+  "COMMON": {
+    "SAVE": "Guardar",
+    "ACCEPT": "Aceptar",
+    "CANCEL": "Cancelar",
+    "RETRY": "Reintentar",
+    "CODE": "Código",
+    "LOADING": "Cargando...",
+    "GO_HOME": "Volver al inicio",
+    "ERROR": "Error",
+    "ERRORS": {
+      "GENERIC": "Ha habido un error. Por favor, vuelve a intentarlo de nuevo.",
+      "THERE_WAS": "Ha habido un error.",
+      "ROOM_NOT_FOUND": "No se ha encontrado la sala.",
+      "ROOM_NOT_FOUND_MAYBE_DISBANDED": "No se ha encontrado la sala. Puede que ya no exista.",
+      "DAILY_ROOMS_LIMIT": "Puedes crear hasta {{DAILY_ROOMS_LIMIT}} salas por día. Vuelve a intentarlo mañana."
+    }
+  },
+  "HOME": {
+    "PAGE_TITLE": "Un sucesor espiritual online de Pictochat",
+    "META_DESCRIPTION": "Dibuja en tiempo real con amigos o con otros usuarios en una versión online de Pictochat",
+    "SEARCH_ROOMS": "Buscar sala",
+    "CREATE_ROOM": "Crear sala",
+    "JOIN_WITH_CODE": "Unirse con un código",
+    "USERNAME": "Nombre de usuario",
+    "PRIVACY": "Privacidad",
+    "PRIVACY_POLICY": "Política de privacidad",
+    "CREDITS": "Créditos",
+    "TOGGLE_AUDIO": "Activar audio",
+    "SWITCH_LANGUAGE": "Cambiar de idioma"
+  },
+  "SEARCH_ROOMS_SCREEN": {
+    "PAGE_TITLE": "Buscar sala",
+    "META_DESCRIPTION": "Encuentra salas para chatear y dibujar en tiempo real en un sucesor espiritual online de Pictochat.",
+    "SECTION_TITLE": "Elige la sala de chat en la que quieras entrar",
+    "CHAT_ROOM": "Sala de chat",
+    "SEARCHING": "Buscando salas...",
+    "ERROR_TRY_AGAIN": "Ha habido un error. ¿Volver a intentarlo?",
+    "NO_ROOMS": "No se han encontrado salas.",
+    "CREATE_ROOM": "Crear sala",
+    "SEARCH_AGAIN": "Buscar de nuevo"
+  },
+  "CREATE_ROOM_SCREEN": {
+    "PAGE_TITLE": "Crear sala",
+    "META_DESCRIPTION": "Crea tu propia sala para chatear y dibujar en tiempo real en un sucesor espiritual online de Pictochat.",
+    "SECTION_TITLE": "¿Qué tipo de sala quieres crear?",
+    "CREATING_YOUR_PUBLIC_ROOM": "Creando sala pública",
+    "CREATING_YOUR_PRIVATE_ROOM": "Creando sala privada",
+    "PUBLIC": {
+      "TITLE": "Pública",
+      "DESCRIPTION": "Tu sala estará visible y cualquiera se podrá unir."
+    },
+    "PRIVATE": {
+      "TITLE": "Privada",
+      "DESCRIPTION": "Sala oculta. Los usuarios deben entrar con un código de invitación."
+    },
+    "OFFLINE": {
+      "TITLE": "Offline",
+      "DESCRIPTION": "Dibuja y diviértete sin conexión."
+    }
+  },
+  "JOIN_WITH_CODE_SCREEN": {
+    "PAGE_TITLE": "Unirse a una sala con código",
+    "META_DESCRIPTION": "Únete a una sala privada mediante un código para chatear y dibujar online en un sucesor espiritual online de Pictochat",
+    "SECTION_TITLE": "Unirse a una sala privada mediante código de invitación",
+    "JOINING_ROOM": "Entrando a la sala...",
+    "JOIN": "Unirme",
+    "ERRORS": {
+      "INVALID_CODE_CHARACTERS": "El código debe tener {{PRIVATE_CODE_LENGTH}} caracteres"
+    }
+  },
+  "ROOM": {
+    "NOW_ENTERING": "Entra en la sala",
+    "NOW_LEAVING": "Sale de la sala",
+    "LEAVE_ROOM": "¿Salir de la sala?",
+    "USERS": "Usuarios en la sala",
+    "GET_ROOM_LINK": "Obtener enlace a sala",
+    "GET_INVITATION": "Obtener invitación",
+    "GET_PUBLIC_ROOM_LINK_DIALOG": "Recibe y comparte el enlace a tu sala, cualquiera se puede unir :)",
+    "GET_PRIVATE_ROOM_CODE_DIALOG": "¡Comparte tu código para que otros usuarios puedan unirse a la sala!",
+    "COPY_LINK": "Copiar enlace",
+    "COPY_CODE": "Copiar código",
+    "COPIED_TO_CLIPBOARD": "¡Copiado al portapapeles!",
+    "SAVE_IMAGE": "Guardar imagen",
+    "PLEASE_SUPPORT_CANVAS": "Por favor, utiliza un navegador que sea compatible con el elemento del lienzo",
+    "ERRORS": {
+      "NOT_FOUND_MISSING_CODE": "Sala no encontrada: Falta el código en la URL.",
+      "INVALID_CODE": "Código inválido, por favor inténtalo de nuevo.",
+      "DISBANDED_DUE_TO_INACTIVITY": "Tu sala se ha disuelto por inactividad.",
+      "ROOM_IS_FULL": "Vaya, la sala está llena.",
+      "ALREADY_JOINED": "Ya estás en esta sala.",
+      "SIMULTANEOUS_ROOMS_LIMIT": "Puedes estar en {{SIMULTANEOUS_ROOMS_LIMIT}} salas a la vez.",
+      "CONNECTION_LOST_RECONNECTING": "Conexión perdida. Reconectando...",
+      "BACK_ONLINE": "¡Vuelves a tener conexión!",
+      "BACK_ONLINE_DISBANDED": "Vuelves a tener conexión. Tu sala se ha disuelto porque estaba vacía."
+    }
+  },
+  "NOTIFICATIONS": {
+    "NEW_ROOM_MESSAGE": {
+      "TITLE": "¡Nuevo mensaje en la sala!",
+      "BODY": "¿Qué será?"
+    },
+    "USER_ENTERING": {
+      "TITLE": "¡Alguien ha entrado en la sala!",
+      "BODY": "Dile hola a {{userEntering}}"
+    },
+    "USER_LEAVING": {
+      "TITLE": "Alguien ha abandonado la sala",
+      "BODY": "Hasta luego, {{userLeaving}}"
+    }
+  },
+  "IMAGE_ALTS": {
+    "PLAY_STORE_ICON": "Icono de Play Store",
+    "USER_ICON": "Icono de usuario",
+    "DOWNLOAD_ARROW_ICON": "Icono de flecha de descarga",
+    "TOP_ARROW_BUTTON": "Icono de flecha hacia arriba",
+    "DOWN_ARROW_BUTTON": "Icono de flecha hacia abajo",
+    "PENCIL_BUTTON": "Botón de lápiz",
+    "ERASER_BUTTON": "Botón de borrador",
+    "THICK_STROKE_BUTTON": "Botón de trazo grueso",
+    "THIN_STROKE_BUTTON": "Botón de trazo fino",
+    "ALPHANUMERIC_BUTTON": "Botón alfanumérico",
+    "ACCENTS_BUTTON": "Botón de acentos",
+    "SYMBOLS_BUTTON": "Botón de símbolos",
+    "SMILEYS_BUTTON": "Botón de emoticonos",
+    "CLOSE_BUTTON": "Botón de cerrar",
+    "SEND_MESSAGE_BUTTON": "Botón de enviar mensaje",
+    "COPY_LAST_MESSAGE_BUTTON": "Botón de copiar el último mensaje",
+    "CLEAR_CANVAS_BUTTON": "Botón de limpiar el lienzo"
+  }
+}

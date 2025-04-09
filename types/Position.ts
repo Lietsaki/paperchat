@@ -1,23 +1,23 @@
-type eventPos = {
+type EventPos = {
   pageX?: number
   pageY?: number
   touches?: TouchList
 }
 
-type clientPos = {
+type ClientPos = {
   clientX: number
   clientY: number
 }
 
-interface positionObj {
+interface PositionObj {
   x: number
   y: number
 }
 
-interface historyStroke {
+interface HistoryStroke {
   x: number
   y: number
   ts: number
 }
 
-export type { eventPos, clientPos, positionObj, historyStroke }
+export type { EventPos, ClientPos, PositionObj, HistoryStroke }

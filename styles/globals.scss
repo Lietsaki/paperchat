@@ -6,6 +6,7 @@ body {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   padding-bottom: env(safe-area-inset-bottom);
   background-color: $app-bg;
+  overflow-x: hidden;
 
   * {
     user-select: none;
@@ -123,6 +124,10 @@ a {
   @include phones {
     justify-content: space-around !important;
   }
+}
+
+.justify_around {
+  justify-content: space-around !important;
 }
 
 .justify_evenly {

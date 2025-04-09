@@ -1,15 +1,17 @@
 import styles from 'styles/components/menu-button.module.scss'
 import { useEffect } from 'react'
+import useTranslation from 'i18n/useTranslation'
 import { selectUser, setMuteSounds } from 'store/slices/userSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 const { audio_button, small_version } = styles
 
-type audioButtonProps = {
+type AudioButtonProps = {
   useSmallVersion?: boolean
 }
 
-const MuteSoundsButton = ({ useSmallVersion }: audioButtonProps) => {
+const MuteSoundsButton = ({ useSmallVersion }: AudioButtonProps) => {
+  const { t } = useTranslation()
   const { muteSounds } = useSelector(selectUser)
   const dispatch = useDispatch()
 
@@ -32,6 +34,7 @@ const MuteSoundsButton = ({ useSmallVersion }: audioButtonProps) => {
 
   return (
     <button
+      aria-label={t('HOME.TOGGLE_AUDIO')}
       onClick={toggleAudio}
       className={`${audio_button} ${useSmallVersion ? small_version : ''}`}
     >

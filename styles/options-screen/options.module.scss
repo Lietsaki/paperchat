@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: 7.5% 1fr;
   user-select: none;
+  margin: 10px 0 30px 0;
 
   .left_column {
     background-color: $clear-bg;
@@ -42,7 +43,7 @@
       }
 
       @include small-phones {
-        height: 190px;
+        height: 180px;
       }
 
       @include tiny-phones {
@@ -138,6 +139,10 @@
     .bottom_section {
       @include flexcenter;
     }
+
+    @include small-phones {
+      grid-template-rows: 11% 3px auto 3px 10%;
+    }
   }
 
   .right_column {
@@ -166,6 +171,7 @@
   grid-template-rows: 12% auto 12%;
   overflow: hidden;
   position: relative;
+  margin-bottom: 12px;
 
   .bottom_top {
     @include flexcenter;
@@ -182,6 +188,38 @@
       }
       @include small-phones {
         font-size: 16px;
+      }
+    }
+  }
+
+  &.cn {
+    .bottom_top {
+      p {
+        font-size: 25px;
+        letter-spacing: 1.5px;
+
+        @include phones {
+          font-size: 18px;
+        }
+        @include small-phones {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  &.smaller_section_title {
+    .bottom_top {
+      p {
+        font-size: 22px;
+
+        @include phones {
+          font-size: 18px;
+        }
+
+        @include small-phones {
+          font-size: 16px;
+        }
       }
     }
   }
@@ -204,7 +242,8 @@
 
     .bottom_btn_container {
       height: 70%;
-      width: 150px;
+      min-width: 150px;
+      width: max-content;
 
       @include phones {
         width: 120px;

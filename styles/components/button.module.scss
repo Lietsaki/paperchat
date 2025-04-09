@@ -12,12 +12,12 @@
   transition: all 0.2s ease-in-out;
 
   &.room_top_row_btn {
-    width: 118px;
+    min-width: 118px;
+    width: max-content;
     height: 84%;
     font-size: 18px;
     margin-right: 7px;
     filter: blur(0.4px);
-    text-transform: capitalize;
 
     .button_inner {
       border-top: 1px solid #cdcdcd;
@@ -26,16 +26,40 @@
     @include phones {
       font-size: 14px;
       margin-right: 3px;
+      min-width: unset;
     }
 
-    @include tiny-phones {
-      font-size: 9px;
-      width: 70px;
-      filter: blur(0.2px);
+    @include small-phones {
+      font-size: 12px;
+      margin-right: 3px;
     }
 
     @include ipad-pro-11 {
       filter: blur(0px);
+    }
+
+    @include tiny-phones {
+      font-size: 8px;
+      width: 70px;
+      filter: blur(0.2px);
+    }
+  }
+
+  &.cn {
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+
+  &.cn_smaller {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+
+    @include phones {
+      font-size: 10px;
+    }
+
+    @include small-phones {
+      font-size: 9px;
     }
   }
 
@@ -63,7 +87,7 @@
     border-left: 2px solid #cdcdcd70;
     border-right: 2px solid #cdcdcd70;
     height: 93%;
-    padding: 1px;
+    padding: 1px 8px;
     filter: blur(0.3px);
 
     @include ipad-pro-11 {
@@ -94,6 +118,10 @@
     .button_inner {
       padding-bottom: 2px;
     }
+
+    &.cn {
+      font-size: 12px;
+    }
   }
 
   @include small-phones {
@@ -120,6 +148,22 @@
 
       .button_inner {
         padding-bottom: 3px;
+      }
+    }
+
+    &.room_top_row_btn {
+      font-size: 18px;
+
+      @include small-height-devices {
+        font-size: 14px;
+      }
+
+      @include phones {
+        font-size: 12px;
+      }
+
+      @include small-phones {
+        font-size: 9.5px;
       }
     }
   }

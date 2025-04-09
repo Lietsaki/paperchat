@@ -1,5 +1,6 @@
 import { LocalNotifications } from '@capacitor/local-notifications'
 import { App } from '@capacitor/app'
+import getT from 'i18n/getT'
 
 // The sound specified in a channel overwrites the one specified in capacitor.config.ts
 // but individual notifications (those created with .schedule) can't overwrite the channel's sound.
@@ -17,6 +18,20 @@ const createNotificationsChannel = async () => {
   })
 }
 
+const initializeLocalNotifications = async () => {
+  const permissionStatus = await LocalNotifications.checkPermissions()
+
+  if (permissionStatus.display !== 'granted') {
+    const permissionResponse = await LocalNotifications.requestPermissions()
+
+    if (permissionResponse.display === 'granted') {
+      await createNotificationsChannel()
+    }
+  } else {
+    await createNotificationsChannel()
+  }
+}
+
 const notifyNow = async (payload: {
   newMessage?: boolean
   userEntering?: string
@@ -26,33 +41,26 @@ const notifyNow = async (payload: {
   if (isActive) return
 
   const { newMessage, userEntering, userLeaving } = payload
-
-  const newMessageNotification = {
-    title: 'New message in your room!',
-    body: 'What could it be?',
-    iconColor: '#ffffff'
-  }
-
-  const userEnteringNotification = {
-    title: 'Somebody entered the room!',
-    body: `Go say hi to ${userEntering}`,
-    iconColor: '#ddec00'
-  }
-
-  const userLeavingNotification = {
-    title: 'Somebody left the room',
-    body: `Goodbye, ${userLeaving}`,
-    iconColor: '#18e0c5'
-  }
-
   let notificationToUse = { title: '', body: '', iconColor: '' }
 
   if (newMessage) {
-    notificationToUse = newMessageNotification
+    notificationToUse = {
+      title: getT('NOTIFICATIONS.NEW_ROOM_MESSAGE.TITLE'),
+      body: getT('NOTIFICATIONS.NEW_ROOM_MESSAGE.BODY'),
+      iconColor: '#ffffff'
+    }
   } else if (userEntering) {
-    notificationToUse = userEnteringNotification
+    notificationToUse = {
+      title: getT('NOTIFICATIONS.USER_ENTERING.TITLE'),
+      body: getT('NOTIFICATIONS.USER_ENTERING.BODY', { userEntering }),
+      iconColor: '#ddec00'
+    }
   } else if (userLeaving) {
-    notificationToUse = userLeavingNotification
+    notificationToUse = {
+      title: getT('NOTIFICATIONS.USER_LEAVING.TITLE'),
+      body: getT('NOTIFICATIONS.USER_LEAVING.BODY', { userLeaving }),
+      iconColor: '#18e0c5'
+    }
   }
 
   await LocalNotifications.schedule({
@@ -69,4 +77,4 @@ const notifyNow = async (payload: {
   })
 }
 
-export { createNotificationsChannel, notifyNow }
+export { initializeLocalNotifications, notifyNow }

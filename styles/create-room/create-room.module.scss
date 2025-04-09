@@ -56,32 +56,59 @@
         filter: blur(0.3px);
         position: relative;
 
+        &.smaller_title {
+          font-size: 460%;
+          line-height: 1;
+          top: 4px;
+        }
+
         @include small-height-devices {
           font-size: 430%;
+
+          &.smaller_title {
+            font-size: 400%;
+            top: -0px;
+          }
         }
 
         @include landscape-tablet-up {
           font-size: 430%;
+
+          &.smaller_title {
+            font-size: 400%;
+          }
         }
 
         @include phones {
           font-size: 330%;
           top: 3px;
+
+          &.smaller_title {
+            font-size: 300%;
+          }
         }
 
         @include small-phones {
           font-size: 350%;
           top: 0px;
+
+          &.smaller_title {
+            font-size: 300%;
+          }
         }
 
         @include tiny-phones {
           font-size: 250%;
+
+          &.smaller_title {
+            font-size: 230%;
+          }
         }
       }
 
       svg {
         position: relative;
-        top: 10px;
+        top: 12px;
         fill: $dark-gray;
         height: 100%;
         width: 100%;
@@ -93,25 +120,58 @@
         font-size: 20px;
         color: $dark-gray;
 
+        &.smaller_description {
+          font-size: 17px;
+        }
+
         @include small-height-devices {
           font-size: 18px;
+
+          &.smaller_description {
+            font-size: 13.5px;
+          }
         }
 
         @include landscape-tablet-up {
           font-size: 18px;
+
+          &.smaller_description {
+            font-size: 17px;
+          }
         }
 
         @include phones {
           font-size: 15px;
+
+          &.smaller_description {
+            font-size: 12px;
+          }
         }
 
         @include small-phones {
           font-size: 12px;
+
+          &.smaller_description {
+            font-size: 11px;
+          }
         }
 
         @include tiny-phones {
           font-size: 10px;
+
+          &.smaller_description {
+            font-size: 10px;
+          }
         }
+      }
+    }
+  }
+
+  & > .card {
+    .card__inner {
+      svg {
+        top: 5px;
+        height: 92%;
       }
     }
   }
@@ -169,6 +229,61 @@
               bottom: 15px;
             }
           }
+        }
+      }
+    }
+  }
+
+  &.cn {
+    .card .card__inner {
+      .title {
+        font-size: 300%;
+        top: 15px;
+      }
+
+      .description {
+        letter-spacing: 0.5px;
+        font-size: 18px;
+      }
+    }
+
+    .double_cards .card .card__inner {
+      .title {
+        font-size: 220%;
+        top: 2px;
+      }
+
+      .description {
+        line-height: 1.2;
+      }
+    }
+
+    @include phones {
+      .card .card__inner {
+        .title {
+          font-size: 200%;
+        }
+
+        .description {
+          font-size: 13px;
+        }
+      }
+
+      .double_cards .card .card__inner {
+        .title {
+          font-size: 150%;
+        }
+      }
+    }
+
+    @include small-phones {
+      .card .card__inner {
+        .title {
+          top: 12px;
+        }
+
+        .description {
+          font-size: 10px;
         }
       }
     }

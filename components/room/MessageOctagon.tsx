@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react'
 import styles from 'styles/components/paperchat-octagon.module.scss'
+import React, { useRef, useState } from 'react'
+import useTranslation from 'i18n/useTranslation'
 import { Capacitor } from '@capacitor/core'
 
 const {
@@ -15,14 +16,16 @@ const {
   smaller_options
 } = styles
 
-type messageOctagonProps = {
+type MessageOctagonProps = {
   img_uri: string
   color: string
   id: string
   shouldAnimate: boolean
 }
 
-const MessageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonProps) => {
+const MessageOctagon = ({ img_uri, color, id, shouldAnimate }: MessageOctagonProps) => {
+  const { t } = useTranslation()
+
   const outlineRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
@@ -87,8 +90,8 @@ const MessageOctagon = ({ img_uri, color, id, shouldAnimate }: messageOctagonPro
       return (
         <div className={`${options_modal} ${shortMessage ? smaller_options : ''}`}>
           <div className={download_message} onClick={() => downloadImage(img_uri)}>
-            <span>Save Image</span>
-            <img src="/icons/download-arrow.svg" alt="download arrow icon" />
+            <span>{t('ROOM.SAVE_IMAGE')}</span>
+            <img src="/icons/download-arrow.svg" alt={t('IMAGE_ALTS.DOWNLOAD_ARROW_ICON')} />
           </div>
         </div>
       )

@@ -1,6 +1,8 @@
 import { customAnimals, customAdjectives } from './dictionaries'
 import { getRandomNumber } from 'helpers/helperFunctions'
 
+// Get a random username. Character limit is 10, so combine short names
+// with longer adjectives and vice versa.
 const getRandomUsername = () => {
   const useShortName = getRandomNumber(0, 100) >= 50
 

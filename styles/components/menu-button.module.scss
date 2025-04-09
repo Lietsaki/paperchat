@@ -12,6 +12,19 @@
   transition: all 0.2s ease-in-out;
   background-image: url('/backgrounds/menu-btn-bg.png');
 
+  &.cn {
+    letter-spacing: 2px;
+    font-size: 23px;
+
+    @include phones {
+      font-size: 20px;
+    }
+
+    @include tiny-phones {
+      font-size: 17px;
+    }
+  }
+
   &:active {
     top: 1px;
     filter: brightness(85%);
@@ -92,8 +105,16 @@
       fill: #222;
     }
 
+    @include small-height-devices {
+      svg {
+        height: 13px;
+        width: 13px;
+      }
+    }
+
     @include phones {
       margin-right: 3px;
+      width: 38px;
 
       svg {
         height: 9px;
@@ -101,11 +122,116 @@
       }
     }
 
+    @include small-phones {
+      width: 35px;
+    }
+
     @include tiny-phones {
       svg {
         height: 7px;
         width: 8px;
       }
+    }
+  }
+}
+
+.multilang_button {
+  @include flexcenter;
+  background-color: $clear-bg;
+  background-image: url('/backgrounds/menu-btn-bg.png');
+  width: 100%;
+  height: 55px;
+  border: 2px solid #111;
+  border-top: none;
+  border-right: none;
+
+  img {
+    transition: all 0.2s ease-in-out;
+    width: 45%;
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    img {
+      transform: scale(0.95);
+    }
+  }
+
+  @include small-height-devices {
+    img {
+      width: 52%;
+    }
+  }
+
+  @include phones {
+    height: 80%;
+
+    img {
+      width: 50%;
+    }
+    &:hover img {
+      width: 45%;
+    }
+  }
+
+  @include small-phones {
+    height: 120%;
+
+    img {
+      width: 55%;
+    }
+  }
+
+  &.small_version {
+    width: 40px;
+    height: 84%;
+    margin-right: 7px;
+    border: 2px solid $dark-gray;
+    filter: blur(0.4px);
+
+    // Remove one pixel from each border
+    clip-path: polygon(
+      0px 2px,
+      2px 2px,
+      2px 0px,
+      calc(100% - 2px) 0px,
+      calc(100% - 2px) 2px,
+      100% 2px,
+      100% calc(100% - 2px),
+      calc(100% - 2px) calc(100% - 2px),
+      calc(100% - 2px) 100%,
+      2px 100%,
+      2px calc(100% - 2px),
+      0px calc(100% - 2px)
+    );
+
+    img {
+      width: 100%;
+      object-fit: cover;
+      object-position: 0px -1px;
+    }
+
+    @include small-height-devices {
+      img {
+        width: 100%;
+        height: 120%;
+      }
+    }
+
+    @include phones {
+      margin-right: 3px;
+      width: 38px;
+
+      img {
+        width: 95%;
+        height: 135%;
+        object-position: 0px -0.5px;
+      }
+    }
+
+    @include small-phones {
+      width: 35px;
     }
   }
 }

@@ -1,6 +1,6 @@
-import { keys, alphaKeys } from 'types/Keyboard'
+import { Keys, AlphaKeys } from 'types/Keyboard'
 
-const Alphanumeric: alphaKeys = [
+const Alphanumeric: AlphaKeys = [
   [
     {
       text: '1',
@@ -182,7 +182,7 @@ const Alphanumeric: alphaKeys = [
   ]
 ]
 
-const Accents: keys = [
+const Accents: Keys = [
   {
     text: 'à'
   },
@@ -350,7 +350,7 @@ const Accents: keys = [
   }
 ]
 
-const Symbols: keys = [
+const Symbols: Keys = [
   {
     text: '!'
   },
@@ -527,7 +527,7 @@ const Symbols: keys = [
   }
 ]
 
-const Smileys: keys = [
+const Smileys: Keys = [
   {
     text: '1'
   },

@@ -3,11 +3,13 @@ import PaperchatOctagon from 'components/PaperchatOctagon'
 import Button from 'components/Button'
 import { useRouter } from 'next/router'
 import page_styles from 'styles/create-room/create-room.module.scss'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createRoom, SIMULTANEOUS_ROOMS_LIMIT, DAILY_ROOMS_LIMIT } from 'firebase-config/realtimeDB'
-import { dialogOptions } from 'types/Dialog'
+import { DialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 import { playSound } from 'helpers/helperFunctions'
+import { initializeUsername } from 'store/initializer'
+import useTranslation from 'i18n/useTranslation'
 import Head from 'next/head'
 
 const {
@@ -20,26 +22,45 @@ const {
   bottom_top,
   bottom_bottom,
   bottom_btn_container,
-  dotted_border
+  dotted_border,
+  cn: cn_general_styles
 } = general_styles
 
-const { option_cards, card, card__inner, title, icon, dino, description, double_cards } =
-  page_styles
+const {
+  option_cards,
+  card,
+  card__inner,
+  title,
+  icon,
+  dino,
+  description,
+  double_cards,
+  cn,
+  smaller_title,
+  smaller_description
+} = page_styles
 
 const CreateRoom = () => {
   const router = useRouter()
-  const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
+  const { t, locale } = useTranslation()
+  const getTitleText = () => `Paperchat - ${t('CREATE_ROOM_SCREEN.PAGE_TITLE')}`
+
+  const [dialogData, setDialogData] = useState<DialogOptions>(baseDialogData)
+
+  useEffect(() => {
+    initializeUsername()
+  }, [])
 
   const createPublicRoom = async () => {
     setDialogData({
       open: true,
-      text: 'Creating your public room',
+      text: t('CREATE_ROOM_SCREEN.CREATING_YOUR_PUBLIC_ROOM'),
       showSpinner: true
     })
 
     const roomID = await createRoom(false)
     if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
-    if (roomID === 'joined-already') return showJoinedAlreadyDialog()
+    if (roomID === 'already-joined') return showAlreadyJoinedDialog()
     if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
     if (roomID === 'error') return showErrorDialog()
     setDialogData(baseDialogData)
@@ -49,12 +70,12 @@ const CreateRoom = () => {
   const createPrivateRoom = async () => {
     setDialogData({
       open: true,
-      text: 'Creating your private room',
+      text: t('CREATE_ROOM_SCREEN.CREATING_YOUR_PRIVATE_ROOM'),
       showSpinner: true
     })
     const roomURL = await createRoom(true)
     if (roomURL === 'hit-creation-limit') return showCreationLimitDialog()
-    if (roomURL === 'joined-already') return showJoinedAlreadyDialog()
+    if (roomURL === 'already-joined') return showAlreadyJoinedDialog()
     if (roomURL === 'hit-rooms-limit') return showRoomsLimitDialog()
     if (roomURL === 'error') return showErrorDialog()
     setDialogData(baseDialogData)
@@ -69,19 +90,19 @@ const CreateRoom = () => {
   const showCreationLimitDialog = () => {
     setDialogData({
       open: true,
-      text: `You can create up to ${DAILY_ROOMS_LIMIT} rooms per day. Try again tomorrow.`,
+      text: t('COMMON.ERRORS.DAILY_ROOMS_LIMIT', { DAILY_ROOMS_LIMIT }),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
 
-  const showJoinedAlreadyDialog = () => {
+  const showAlreadyJoinedDialog = () => {
     setDialogData({
       open: true,
-      text: "You're already in this room",
+      text: t('ROOM.ERRORS.ALREADY_JOINED'),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
@@ -89,9 +110,9 @@ const CreateRoom = () => {
   const showRoomsLimitDialog = () => {
     setDialogData({
       open: true,
-      text: `You can be in up to ${SIMULTANEOUS_ROOMS_LIMIT} rooms at the same time.`,
+      text: t('ROOM.ERRORS.SIMULTANEOUS_ROOMS_LIMIT', { SIMULTANEOUS_ROOMS_LIMIT }),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
@@ -99,10 +120,10 @@ const CreateRoom = () => {
   const showErrorDialog = () => {
     setDialogData({
       open: true,
-      text: 'There was an error. Please try again later.',
+      text: t('COMMON.ERRORS.GENERIC'),
       showSpinner: false,
       rightBtnFn: () => setDialogData(baseDialogData),
-      rightBtnText: 'Accept'
+      rightBtnText: t('COMMON.ACCEPT')
     })
   }
 
@@ -111,14 +132,21 @@ const CreateRoom = () => {
     router.push('/')
   }
 
+  const getMainTitleClass = () => {
+    if (locale === 'en') return title
+    return `${title} ${smaller_title}`
+  }
+
+  const getDescriptionClass = () => {
+    if (locale === 'en') return description
+    return `${description} ${smaller_description}`
+  }
+
   return (
     <div className="main">
       <Head>
-        <title>Paperchat - Create Room</title>
-        <meta
-          name="description"
-          content="Create your own room to chat and draw in real time in this online Pictochat spiritual successor."
-        />
+        <title>{getTitleText()}</title>
+        <meta name="description" content={t('CREATE_ROOM_SCREEN.META_DESCRIPTION')} />
         <meta
           name="keywords"
           content="paperchat create rooms, pictochat online, drawing online, live drawing app, nintendo pictochat, DS drawing app, by lietsaki"
@@ -139,15 +167,15 @@ const CreateRoom = () => {
           </div>
         </div>
 
-        <div className={`screen ${bottom}`}>
+        <div className={`screen ${bottom} ${locale === 'cn' ? cn_general_styles : ''}`}>
           <div className={bottom_top}>
-            <p>What room type do you want to create?</p>
+            <p>{t('CREATE_ROOM_SCREEN.SECTION_TITLE')}</p>
           </div>
 
-          <div className={option_cards}>
+          <div className={`${option_cards} ${locale === 'cn' ? cn : ''}`}>
             <div className={card} onClick={createPublicRoom}>
               <div className={card__inner}>
-                <div className={title}>Public</div>
+                <div className={getMainTitleClass()}>{t('CREATE_ROOM_SCREEN.PUBLIC.TITLE')}</div>
                 <div className={icon}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -160,14 +188,14 @@ const CreateRoom = () => {
                   </svg>
                 </div>
 
-                <div className={description}>Your room will be listed and anyone can join</div>
+                <div className={description}>{t('CREATE_ROOM_SCREEN.PUBLIC.DESCRIPTION')}</div>
               </div>
             </div>
 
             <div className={double_cards}>
               <div className={card} onClick={goToOfflineRoom}>
                 <div className={card__inner}>
-                  <div className={title}>Offline</div>
+                  <div className={title}>{t('CREATE_ROOM_SCREEN.OFFLINE.TITLE')}</div>
                   <div className={`${icon} ${dino}`}>
                     <svg
                       width="144"
@@ -184,13 +212,13 @@ const CreateRoom = () => {
                     </svg>
                   </div>
 
-                  <div className={description}>Draw and have fun with no connection</div>
+                  <div className={description}>{t('CREATE_ROOM_SCREEN.OFFLINE.DESCRIPTION')}</div>
                 </div>
               </div>
 
               <div className={card} onClick={createPrivateRoom}>
                 <div className={card__inner}>
-                  <div className={title}>Private</div>
+                  <div className={title}>{t('CREATE_ROOM_SCREEN.PRIVATE.TITLE')}</div>
                   <div className={icon}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -203,7 +231,9 @@ const CreateRoom = () => {
                     </svg>
                   </div>
 
-                  <div className={description}>Hidden room. Users join with an invitation code</div>
+                  <div className={getDescriptionClass()}>
+                    {t('CREATE_ROOM_SCREEN.PRIVATE.DESCRIPTION')}
+                  </div>
                 </div>
               </div>
             </div>
@@ -211,7 +241,7 @@ const CreateRoom = () => {
 
           <div className={bottom_bottom}>
             <div className={bottom_btn_container}>
-              <Button onClick={goHome} text="Cancel" />
+              <Button onClick={goHome} text={t('COMMON.CANCEL')} />
             </div>
           </div>
 

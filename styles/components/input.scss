@@ -35,6 +35,16 @@
     }
   }
 
+  &.cn {
+    .title {
+      font-size: 13px;
+    }
+
+    input {
+      font-size: 20px;
+    }
+  }
+
   &:focus-within {
     &::after {
       @include pixelated-rectangle-except-left;
@@ -68,6 +78,21 @@
         padding-left: 10px;
       }
     }
+
+    &.cn .title {
+      font-size: 12px;
+    }
+  }
+
+  @include small-height-devices {
+    .title {
+      font-size: 12px;
+      padding: 2px 0 2px 5px;
+    }
+
+    &.cn .title {
+      font-size: 12px;
+    }
   }
 
   @include phones {
@@ -87,6 +112,16 @@
       &::after {
         height: 70%;
         bottom: 57%;
+      }
+    }
+
+    &.cn {
+      .title {
+        font-size: 10px;
+      }
+
+      input {
+        font-size: 18px;
       }
     }
   }

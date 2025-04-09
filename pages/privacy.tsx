@@ -1,18 +1,43 @@
 import styles from 'styles/home/home.module.scss'
 import Button from 'components/Button'
 import { useRouter } from 'next/router'
+import useTranslation from 'i18n/useTranslation'
 import version from 'store/version'
 import Head from 'next/head'
 
-const { top, title, title_text, privacy_link, bottom, privacy, privacy_content, home_btn } = styles
+const {
+  top,
+  title,
+  title_text,
+  lowercase,
+  privacy_and_credits,
+  privacy_title,
+  de,
+  es,
+  cat,
+  cn,
+  bottom,
+  privacy,
+  privacy_content,
+  privacy_back_home_btn
+} = styles
 
-const Home = () => {
+const Privacy = () => {
   const router = useRouter()
+  const { t, locale } = useTranslation()
+  const getTitleText = () => `Paperchat - ${t('HOME.PRIVACY_POLICY')}`
+
+  const localeClasses: { [key: string]: string } = {
+    de,
+    es,
+    cat,
+    cn
+  }
 
   return (
     <div className="main">
       <Head>
-        <title>Paperchat - Privacy Policy</title>
+        <title>{getTitleText()}</title>
         <meta
           name="description"
           content="Paperchat's privacy policy, including our cookie usage."
@@ -28,10 +53,14 @@ const Home = () => {
       <div className="screens_section">
         <div className={`screen ${top}`}>
           <div className={title}>
-            <span className={title_text}>privacy policy </span>
+            <span
+              className={`${title_text} ${lowercase} ${privacy_title} ${localeClasses[locale]}`}
+            >
+              {t('HOME.PRIVACY_POLICY')}
+            </span>
           </div>
 
-          <div className={privacy_link}>
+          <div className={privacy_and_credits}>
             <span>v{version}</span>
           </div>
         </div>
@@ -125,7 +154,7 @@ const Home = () => {
               has collected. Request that a business that sells a {`consumer's`} personal data, not
               sell the {`consumer's`} personal data. If you make a request, we have one month to
               respond to you. If you would like to exercise any of these rights, please contact us
-              at whoolsodev@gmail.com
+              at whoolsodev@gmail.com.
             </p>
 
             <h3>GDPR Data Protection Rights</h3>
@@ -164,8 +193,8 @@ const Home = () => {
             </p>
           </div>
 
-          <div className={home_btn}>
-            <Button onClick={() => router.push('/')} text="Go Home" />
+          <div className={privacy_back_home_btn}>
+            <Button onClick={() => router.push('/')} text={t('COMMON.GO_HOME')} />
           </div>
         </div>
       </div>
@@ -173,4 +202,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Privacy

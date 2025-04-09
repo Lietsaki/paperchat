@@ -1,20 +1,20 @@
 import styles from 'styles/components/keyboard.module.scss'
 import Alphanumeric from './keyboard_types/Alphanumeric'
 import KeyboardGrid from './keyboard_types/KeyboardGrid'
-import { keyboard } from 'types/Keyboard'
-import { Accents, Smileys, Symbols } from 'static/KeyboardsData'
+import { KeyboardType } from 'types/Keyboard'
+import { Accents, Smileys, Symbols } from 'constants/KeyboardsData'
 
 const { keyboard_bg, keyboard_content } = styles
 
-type keyboardProps = {
-  currentKeyboard: keyboard
+type KeyboardProps = {
+  currentKeyboard: KeyboardType
   typeKey: (key: string) => void
   typeSpace: () => void
   typeEnter: () => void
   typeDel: () => void
 }
 
-const Keyboard = ({ typeKey, typeSpace, typeEnter, typeDel, currentKeyboard }: keyboardProps) => {
+const Keyboard = ({ typeKey, typeSpace, typeEnter, typeDel, currentKeyboard }: KeyboardProps) => {
   const typeFunctions = { typeKey, typeSpace, typeEnter, typeDel }
   const keySets = { Accents, Smileys, Symbols }
 

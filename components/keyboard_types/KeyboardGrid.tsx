@@ -1,21 +1,21 @@
 import styles from 'styles/components/keyboard.module.scss'
 import { createFloatingKey, removeFloatingKey } from 'helpers/floatingKey'
 import { useState, useRef } from 'react'
-import { keys, gridSpecialKeys } from 'types/Keyboard'
-import { eventPos } from 'types/Position'
+import { Keys, GridSpecialKeys } from 'types/Keyboard'
+import { EventPos } from 'types/Position'
 import { playSound } from 'helpers/helperFunctions'
 
 const { keyboard_grid, key_container, regular_key, dragging } = styles
 
-type keyboardGridProps = {
+type KeyboardGridProps = {
   typeKey: (key: string) => void
   typeSpace: () => void
   typeEnter: () => void
   typeDel: () => void
-  keySet: keys
+  keySet: Keys
 }
 
-const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboardGridProps) => {
+const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: KeyboardGridProps) => {
   const [activeKey, setActiveKey] = useState('')
   const [draggingKey, setDragginKey] = useState('')
   const draggingKeyRef = useRef('')
@@ -43,7 +43,7 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
     playSound('keydown', 0.1)
   }
 
-  const handleKeyLeave = (key: string, e: eventPos) => {
+  const handleKeyLeave = (key: string, e: EventPos) => {
     if (activeKey === key && !draggingKey) {
       setDragginKey(key)
       const row = document.getElementsByClassName(keyboard_grid)
@@ -70,7 +70,7 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
     playSound('keydown', 0.1)
   }
 
-  const specialMethodKeyup = (specialKey: gridSpecialKeys) => {
+  const specialMethodKeyup = (specialKey: GridSpecialKeys) => {
     playSound('keyup', 0.1)
     specialKeyMethods[specialKey]()
   }
@@ -85,7 +85,7 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: keyboa
             key={key.specialKey}
             className={`${styles.special_key} ${styles[key.specialKey]}`}
           >
-            <img src={getSpecialKeyImg(key.specialKey)} alt={key.specialKey} />
+            <img src={getSpecialKeyImg(key.specialKey)} alt={key.specialKey} draggable="false" />
             <div className="active_color"></div>
           </div>
         )

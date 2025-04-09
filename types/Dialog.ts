@@ -1,9 +1,12 @@
-type dialogDebouncedActionNames = 'roomSearch' | 'retryRoomSearch' | 'retryJoinPrivateRoomAttempt'
+import { JSX } from 'react'
 
-type dialogOptions = {
+type DialogDebouncedActionNames = 'roomSearch' | 'retryRoomSearch' | 'retryJoinPrivateRoomAttempt'
+
+type DialogOptions = {
   open: boolean
   text: string | JSX.Element
   largeDialog?: boolean
+  skipSmallCnText?: boolean
   showSpinner: boolean
 
   leftBtnText?: string
@@ -15,7 +18,7 @@ type dialogOptions = {
   hideOnRightBtn?: boolean
 
   rightBtnDebounce?: number
-  rightBtnName?: dialogDebouncedActionNames
+  rightBtnName?: DialogDebouncedActionNames
   rightBtnDebounceMounted?: boolean
 }
 
@@ -23,6 +26,7 @@ type DialogProps = {
   text: string | JSX.Element
   showSpinner?: boolean
   largeDialog?: boolean
+  skipSmallCnText?: boolean
 
   leftBtnText?: string
   leftBtnFn?: () => void
@@ -33,8 +37,8 @@ type DialogProps = {
   hideOnRightBtn?: boolean
 
   rightBtnDebounce?: number
-  rightBtnName?: dialogDebouncedActionNames
+  rightBtnName?: DialogDebouncedActionNames
   rightBtnDebounceMounted?: boolean
 }
 
-export type { dialogOptions, DialogProps, dialogDebouncedActionNames }
+export type { DialogOptions, DialogProps, DialogDebouncedActionNames }

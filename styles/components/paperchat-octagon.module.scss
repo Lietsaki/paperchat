@@ -73,15 +73,66 @@
 
     .octagon_outline {
       background-color: $clear-bg;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       .octagon_content {
         background-color: #000;
         color: $clear-bg;
-        font-size: 30px;
+        font-size: 28px;
         justify-content: flex-start;
+
+        span {
+          margin-right: 5px;
+        }
+
+        .now_entering,
+        .now_leaving {
+          line-height: 1.2;
+
+          .room_code {
+            border-width: 4px 3px 4px 3px;
+            border-style: solid;
+            display: inline-block;
+            transform: scaleY(0.6);
+            padding: 0px 3px 1px 4px;
+            line-height: 1;
+            font-size: 25px;
+          }
+        }
+
+        .now_entering {
+          color: $now-entering;
+
+          .room_code {
+            border-color: $now-entering;
+          }
+        }
+
+        .now_leaving {
+          color: $now-leaving;
+
+          .room_code {
+            border-color: $now-leaving;
+          }
+        }
+
+        .two_dots {
+          position: relative;
+          top: 1px;
+          margin-right: 8px;
+        }
 
         @include small-height-devices {
           font-size: 22px;
+
+          .now_entering .room_code,
+          .now_leaving .room_code {
+            font-size: 18px;
+            border-width: 3px 2px 3px 2px;
+            padding: 0px 2px 0px 3px;
+          }
         }
 
         @include landscape-tablet-up {
@@ -91,22 +142,42 @@
 
         @include phones {
           font-size: 22px;
+
+          .now_entering .room_code,
+          .now_leaving .room_code {
+            font-size: 18px;
+            border-width: 3px 2px 3px 2px;
+            padding: 0px 2px 1px 3px;
+            font-weight: 600;
+          }
+
+          .two_dots {
+            top: 0px;
+          }
         }
 
         @include tiny-phones {
           font-size: 15px;
         }
+      }
+    }
+  }
 
-        span {
-          margin-right: 5px;
-        }
+  &.cn {
+    &.info .octagon_outline .octagon_content {
+      font-size: 18px;
+      letter-spacing: 1px;
 
-        .now_entering {
-          color: $now-entering;
-        }
-        .now_leaving {
-          color: $now-leaving;
-        }
+      .two_dots {
+        font-size: 20px;
+      }
+
+      @include phones {
+        font-size: 15px;
+      }
+
+      @include tiny-phones {
+        font-size: 15px;
       }
     }
   }
@@ -230,11 +301,9 @@
         font-size: 28px;
         padding-bottom: 1px;
       }
-      @include phones {
-        padding-bottom: 1px;
-      }
 
       @include phones {
+        padding-bottom: 1px;
         width: 99%;
         height: 89%;
         font-size: 20px;

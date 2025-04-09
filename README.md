@@ -78,7 +78,7 @@ export { uploadAndGetUrl }
 
 ## Bug reporting
 
-Please feel free to open an issue if you think you've found a bug, provide least the following information:
+Please feel free to open an issue if you think you've found a bug, provide at least the following information:
 
 - Description of the problem.
 - Platform (desktop browser, mobile browser, android app)

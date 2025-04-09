@@ -1,17 +1,23 @@
-import styles from 'styles/home/home.module.scss'
-import MenuButton from 'components/MenuButton'
-import MuteSoundsButton from 'components/MuteSoundsButton'
-import Button from 'components/Button'
-import UsernameInput from 'components/UsernameInput'
 import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import { Capacitor } from '@capacitor/core'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser, setUsername } from 'store/slices/userSlice'
 import { initializeUsername } from 'store/initializer'
-import { Capacitor } from '@capacitor/core'
-import { isUsernameValid, playSound } from 'helpers/helperFunctions'
+import useTranslation from 'i18n/useTranslation'
+import styles from 'styles/home/home.module.scss'
 import version from 'store/version'
 import Link from 'next/link'
+import MenuButton from 'components/MenuButton'
+import MuteSoundsButton from 'components/MuteSoundsButton'
+import MultilangButton from 'components/MultilangButton'
+import MultilangList from 'components/MultilangList'
+import Button from 'components/Button'
+import UsernameInput from 'components/UsernameInput'
+import { isUsernameValid, playSound } from 'helpers/helperFunctions'
+import { DialogOptions } from 'types/Dialog'
+import { LocaleCode } from 'types/Multilang'
+import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 
 const {
   top,
@@ -19,7 +25,7 @@ const {
   icon,
   title_text,
   attribution,
-  privacy_link,
+  privacy_and_credits,
   bottom,
   play_store_btn,
   btn_search_rooms,
@@ -31,11 +37,14 @@ const {
   editing_username,
   back_to_corner,
   save_username_btn_container,
-  sounds_btn
+  cn,
+  sounds_btn,
+  multilang_btn
 } = styles
 
 const Home = () => {
   const router = useRouter()
+  const { t, locale, changeLocale } = useTranslation()
   const { username } = useSelector(selectUser)
   const dispatch = useDispatch()
 
@@ -45,6 +54,10 @@ const Home = () => {
 
   const [usernameInputValue, setUsernameInputValue] = useState('')
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
+
+  const [dialogData, setDialogData] = useState<DialogOptions>(baseDialogData)
+  const [langToSwitchTo, setLangToSwitchTo] = useState<LocaleCode>(locale as LocaleCode)
+
   const PLAY_STORE_LINK = 'https://play.google.com/store/apps/details?id=net.paperchat.app'
 
   const editUsername = () => {
@@ -118,11 +131,40 @@ const Home = () => {
     return (
       <a href={PLAY_STORE_LINK} className={play_store_btn} target="_blank" rel="noreferrer">
         <button>
-          <img src="/icons/play-store.png" alt="Play Store icon" />
+          <img src="/icons/play-store.png" alt={t('IMAGE_ALTS.PLAY_STORE_ICON')} />
         </button>
       </a>
     )
   }
+
+  const updateLanguageDialogData = (open?: boolean) => {
+    setDialogData({
+      open: open || dialogData.open,
+      largeDialog: true,
+      text: <MultilangList selectedLang={langToSwitchTo} setSelectedLang={setLangToSwitchTo} />,
+      skipSmallCnText: locale === 'cn',
+      showSpinner: false,
+      leftBtnText: t('COMMON.CANCEL'),
+      leftBtnFn: () => {
+        setDialogData(baseDialogData)
+      },
+      rightBtnText: t('COMMON.ACCEPT'),
+      rightBtnFn: () => {
+        changeLocale(langToSwitchTo)
+        setDialogData(baseDialogData)
+      }
+    })
+  }
+
+  const openLanguageModal = () => updateLanguageDialogData(true)
+
+  useEffect(() => {
+    updateLanguageDialogData()
+  }, [langToSwitchTo])
+
+  useEffect(() => {
+    setLangToSwitchTo(locale)
+  }, [locale])
 
   return (
     <div className="main">
@@ -133,29 +175,43 @@ const Home = () => {
           </div>
 
           <div className={attribution}>
+            <a href="https://www.linkedin.com/in/ricardo-sandez/" target="_blank" rel="noreferrer">
+              Ricardo Sandez
+            </a>
+            <span>-</span>
             <a href="https://github.com/lietsaki/paperchat" target="_blank" rel="noreferrer">
-              By Lietsaki - Fork me!
+              Fork me!
             </a>
           </div>
 
-          <div className={privacy_link}>
-            <span>
-              v{version} - <Link href="/privacy">Privacy</Link>
-            </span>
+          <div className={privacy_and_credits}>
+            <span>v{version}</span>
+            <span> - </span>
+            <Link href="/privacy" className={`${locale === 'cn' ? cn : ''}`}>
+              {t('HOME.PRIVACY')}
+            </Link>
+            <span> - </span>
+            <Link href="/credits" className={`${locale === 'cn' ? cn : ''}`}>
+              {t('HOME.CREDITS')}
+            </Link>
           </div>
         </div>
 
         <div className={`screen ${bottom}`}>
           {renderPlayStoreButton()}
 
+          <div className={multilang_btn}>
+            <MultilangButton onButtonClick={openLanguageModal} />
+          </div>
+
           <div className={btn_search_rooms}>
-            <MenuButton onClick={goToFindRooms} text="Search rooms" />
+            <MenuButton onClick={goToFindRooms} text={t('HOME.SEARCH_ROOMS')} />
           </div>
           <div className={btn_create_room}>
-            <MenuButton onClick={goToCreateRoom} text="Create a room" />
+            <MenuButton onClick={goToCreateRoom} text={t('HOME.CREATE_ROOM')} />
           </div>
           <div className={btn_join}>
-            <MenuButton onClick={goToJoinRoom} text="Join with a code" />
+            <MenuButton onClick={goToJoinRoom} text={t('HOME.JOIN_WITH_CODE')} />
           </div>
 
           <div onClick={editUsername} className={usernameAreaClasses}>
@@ -167,8 +223,8 @@ const Home = () => {
               />
 
               {editingUsername ? (
-                <div className={save_username_btn_container}>
-                  <Button onClick={saveUsername} text="Save" />
+                <div className={`${save_username_btn_container} ${locale === 'cn' ? cn : ''}`}>
+                  <Button onClick={saveUsername} text={t('COMMON.SAVE')} />
                 </div>
               ) : null}
             </form>
@@ -179,6 +235,7 @@ const Home = () => {
           </div>
 
           {editingUsernameModalCover()}
+          {shouldDisplayDialog(dialogData)}
         </div>
       </div>
     </div>

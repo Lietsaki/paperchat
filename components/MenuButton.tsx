@@ -1,6 +1,7 @@
 import styles from 'styles/components/menu-button.module.scss'
+import useTranslation from 'i18n/useTranslation'
 
-const { menu_button } = styles
+const { menu_button, cn } = styles
 
 type MenuButtonProps = {
   text: string
@@ -8,8 +9,10 @@ type MenuButtonProps = {
 }
 
 const MenuButton = ({ text, onClick }: MenuButtonProps) => {
+  const { locale } = useTranslation()
+
   return (
-    <button onClick={onClick} className={menu_button}>
+    <button onClick={onClick} className={`${menu_button} ${locale === 'cn' ? cn : ''}`}>
       <div className="">{text}</div>
     </button>
   )

@@ -512,3 +512,14 @@ div.main {
     opacity: 0;
   }
 }
+
+@keyframes binaryBlink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}

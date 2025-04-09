@@ -2,10 +2,10 @@ import general_styles from 'styles/options-screen/options.module.scss'
 import RoomItem from 'components/RoomItem'
 import PaperchatOctagon from 'components/PaperchatOctagon'
 import Button from 'components/Button'
-import { room } from 'types/Room'
+import { Room } from 'types/Room'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
-import { dialogOptions } from 'types/Dialog'
+import { DialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 import {
   searchForRooms,
@@ -14,6 +14,7 @@ import {
   DAILY_ROOMS_LIMIT
 } from 'firebase-config/realtimeDB'
 import { playSound } from 'helpers/helperFunctions'
+import useTranslation from 'i18n/useTranslation'
 import Head from 'next/head'
 
 const {
@@ -28,21 +29,24 @@ const {
   bottom_bottom,
   bottom_btn_container,
   dotted_border,
-  higher_z_index
+  higher_z_index,
+  cn: cn_general_styles
 } = general_styles
 
 const FindRooms = () => {
   const router = useRouter()
+  const { t, locale } = useTranslation()
+  const getTitleText = () => `Paperchat - ${t('SEARCH_ROOMS_SCREEN.PAGE_TITLE')}`
 
-  const [rooms, setRooms] = useState<room[]>([])
-  const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
+  const [rooms, setRooms] = useState<Room[]>([])
+  const [dialogData, setDialogData] = useState<DialogOptions>(baseDialogData)
 
   useEffect(() => {
     searchRooms()
   }, [])
 
   const searchRooms = async () => {
-    setDialogData({ text: 'Searching for rooms...', open: true, showSpinner: true })
+    setDialogData({ text: t('SEARCH_ROOMS_SCREEN.SEARCHING'), open: true, showSpinner: true })
     const rooms = await searchForRooms()
     if (rooms === 'error') return showSearchErrorDialog()
 
@@ -57,12 +61,12 @@ const FindRooms = () => {
   const showSearchErrorDialog = () => {
     setDialogData({
       open: true,
-      text: 'An error occurred. Try again?',
+      text: t('SEARCH_ROOMS_SCREEN.ERROR_TRY_AGAIN'),
       showSpinner: false,
-      rightBtnText: 'Accept',
+      rightBtnText: t('COMMON.ACCEPT'),
       rightBtnFn: () => searchRooms(),
 
-      leftBtnText: 'Go home',
+      leftBtnText: t('COMMON.GO_HOME'),
       leftBtnFn: () => router.push('/'),
       hideOnRightBtn: false
     })
@@ -71,9 +75,9 @@ const FindRooms = () => {
   const showNoRoomsDialog = () => {
     setDialogData({
       open: true,
-      text: 'Found no rooms.',
+      text: t('SEARCH_ROOMS_SCREEN.NO_ROOMS'),
       showSpinner: false,
-      rightBtnText: 'Retry',
+      rightBtnText: t('COMMON.RETRY'),
       rightBtnFn: () => searchRooms(),
       hideOnRightBtn: false,
 
@@ -86,19 +90,19 @@ const FindRooms = () => {
   const showCreationLimitDialog = () => {
     setDialogData({
       open: true,
-      text: `You can create up to ${DAILY_ROOMS_LIMIT} rooms per day. Try again tomorrow.`,
+      text: t('COMMON.ERRORS.DAILY_ROOMS_LIMIT', { DAILY_ROOMS_LIMIT }),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
 
-  const showJoinedAlreadyDialog = () => {
+  const showAlreadyJoinedDialog = () => {
     setDialogData({
       open: true,
-      text: "You're already in this room",
+      text: t('ROOM.ERRORS.ALREADY_JOINED'),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
@@ -106,9 +110,9 @@ const FindRooms = () => {
   const showRoomsLimitDialog = () => {
     setDialogData({
       open: true,
-      text: `You can be in up to ${SIMULTANEOUS_ROOMS_LIMIT} rooms at the same time.`,
+      text: t('ROOM.ERRORS.SIMULTANEOUS_ROOMS_LIMIT', { SIMULTANEOUS_ROOMS_LIMIT }),
       showSpinner: false,
-      rightBtnText: 'Go home',
+      rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
     })
   }
@@ -116,22 +120,22 @@ const FindRooms = () => {
   const showCreateRoomErrorDialog = () => {
     setDialogData({
       open: true,
-      text: 'There was an error. Please try again later.',
+      text: t('COMMON.ERRORS.GENERIC'),
       showSpinner: false,
       rightBtnFn: () => router.push('/'),
-      rightBtnText: 'Go home'
+      rightBtnText: t('COMMON.GO_HOME')
     })
   }
 
   const createPublicRoom = async () => {
     setDialogData({
       open: true,
-      text: 'Creating your public room',
+      text: t('CREATE_ROOM_SCREEN.CREATING_YOUR_PUBLIC_ROOM'),
       showSpinner: true
     })
     const roomID = await createRoom(false)
     if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
-    if (roomID === 'joined-already') return showJoinedAlreadyDialog()
+    if (roomID === 'already-joined') return showAlreadyJoinedDialog()
     if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
     if (roomID === 'error') return showCreateRoomErrorDialog()
     setDialogData(baseDialogData)
@@ -159,7 +163,11 @@ const FindRooms = () => {
     if (!rooms.length)
       return (
         <div className={bottom_btn_container}>
-          <Button name="roomSearch" onClick={() => createPublicRoom()} text="Create room" />
+          <Button
+            name="roomSearch"
+            onClick={() => createPublicRoom()}
+            text={t('SEARCH_ROOMS_SCREEN.CREATE_ROOM')}
+          />
         </div>
       )
 
@@ -170,7 +178,7 @@ const FindRooms = () => {
           debounce={30}
           debounceMounted
           onClick={() => searchRooms()}
-          text="Search again"
+          text={t('SEARCH_ROOMS_SCREEN.SEARCH_AGAIN')}
         />
       </div>
     )
@@ -186,11 +194,8 @@ const FindRooms = () => {
   return (
     <div className="main">
       <Head>
-        <title>Paperchat - Find Rooms</title>
-        <meta
-          name="description"
-          content="Find online rooms to chat and draw in real time in this online Pictochat spiritual successor."
-        />
+        <title>{getTitleText()}</title>
+        <meta name="description" content={t('SEARCH_ROOMS_SCREEN.META_DESCRIPTION')} />
         <meta
           name="keywords"
           content="paperchat find rooms, pictochat online, drawing online, live drawing app, nintendo pictochat, DS drawing app, by lietsaki"
@@ -211,16 +216,16 @@ const FindRooms = () => {
           </div>
         </div>
 
-        <div className={`screen ${bottom}`}>
+        <div className={`screen ${bottom} ${locale === 'cn' ? cn_general_styles : ''}`}>
           <div className={bottom_top}>
-            <p>Choose a Chat Room to join</p>
+            <p>{t('SEARCH_ROOMS_SCREEN.SECTION_TITLE')}</p>
           </div>
 
           {renderRooms()}
 
           <div className={`${bottom_bottom} ${higher_z_index} justify_evenly`}>
             <div className={bottom_btn_container}>
-              <Button onClick={goHome} text="Cancel" />
+              <Button onClick={goHome} text={t('COMMON.CANCEL')} />
             </div>
 
             {renderRightBtn()}

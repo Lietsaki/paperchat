@@ -1,5 +1,5 @@
 import mitt, { Emitter } from 'mitt'
-import { canvasData, firebaseMessage } from 'types/Room'
+import { CanvasData, FirebaseMessage } from 'types/Room'
 
 type Events = {
   typeKey: string
@@ -8,8 +8,8 @@ type Events = {
   typeDel: string
   draggingKey: string
   sendMessage: string
-  canvasData: canvasData
-  receivedFirebaseMessages: firebaseMessage[]
+  canvasData: CanvasData
+  receivedFirebaseMessages: FirebaseMessage[]
   lostConnection: string
   backOnline: string
   disbandedRoom: string

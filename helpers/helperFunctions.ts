@@ -1,4 +1,4 @@
-import { positionObj } from 'types/Position'
+import { PositionObj } from 'types/Position'
 import { store } from 'store/store'
 import { Capacitor } from '@capacitor/core'
 import { Howl } from 'howler'
@@ -15,6 +15,14 @@ const getRandomColor = () => {
   )}%, 1.0)`
 }
 
+const isFirefoxDesktop = () => {
+  const ua = navigator.userAgent.toLowerCase()
+  const isFirefox = ua.includes('firefox')
+  const isMobile = /mobi|android|tablet|ipad|iphone/.test(ua)
+
+  return isFirefox && !isMobile
+}
+
 // Color is a string obtained from getRandomColor()
 const getLighterHslaShade = (color: string) => {
   const lightIndex = color.lastIndexOf('%')
@@ -28,28 +36,30 @@ const getLighterHslaShade = (color: string) => {
 
 const getPercentage = (percentage: number, of: number) => Math.floor((percentage / 100) * of)
 
-const dropPosOffset = (dropPos: positionObj, width: number, height: number) => {
+const dropPosOffset = (dropPos: PositionObj, width: number, height: number) => {
   const offsetAppliedPos = { ...dropPos }
+  const smallDevice = window.innerWidth < 500
 
-  // Tablets and desktop
-  if (width > 380 && height > 168) {
-    offsetAppliedPos.x -= getPercentage(2.2, width)
-    offsetAppliedPos.y += getPercentage(3, height)
+  // Mid-large mobile phones
+  if (width > 1000 && height > 350) {
+    offsetAppliedPos.x -= getPercentage(3, width)
+    offsetAppliedPos.y += getPercentage(0.4, height)
 
-    // Large mobile phones
-  } else if (width > 338 && height > 116) {
-    offsetAppliedPos.x -= getPercentage(3.2, width)
-    offsetAppliedPos.y -= 0.4
+    // Tablets and desktop
+  } else if (width > 600 && height > 168 && !smallDevice) {
+    const y = isFirefoxDesktop() ? 6 : 3
+    offsetAppliedPos.x -= getPercentage(2, width)
+    offsetAppliedPos.y += getPercentage(y, height)
 
     // Small mobile phones
-  } else if (width > 290 && height > 100) {
-    offsetAppliedPos.x -= getPercentage(3.5, width)
-    offsetAppliedPos.y -= 0.4
-
-    // Extremely small phones/fallback
-  } else {
+  } else if (width > 600 && height > 200) {
     offsetAppliedPos.x -= getPercentage(3, width)
-    offsetAppliedPos.y += -0.5
+    offsetAppliedPos.y -= 0.5
+
+    // Extremely small devices / Fallback
+  } else {
+    offsetAppliedPos.x -= getPercentage(2.4, width)
+    offsetAppliedPos.y += 4
   }
 
   return offsetAppliedPos
@@ -58,7 +68,7 @@ const dropPosOffset = (dropPos: positionObj, width: number, height: number) => {
 const getHighestAndLowestPoints = (
   ctx: CanvasRenderingContext2D,
   color: number[],
-  belowThisPos?: positionObj
+  belowThisPos?: PositionObj
 ) => {
   const w = ctx.canvas.width
   const h = ctx.canvas.height

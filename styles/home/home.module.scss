@@ -3,6 +3,7 @@
   background-position: bottom;
   background-size: 21%;
   background-position: 3% 0%;
+  margin: 10px 0 30px 0;
 
   @include landscape-tablet-up {
     background-size: 21.5%;
@@ -22,12 +23,41 @@
     span.title_text {
       font-size: 50px;
       animation: appearFromLeft ease-in-out 1.5s;
+
+      &.lowercase {
+        text-transform: lowercase;
+      }
+
+      &.privacy_title {
+        &.cn {
+          letter-spacing: 2px;
+        }
+
+        &.de,
+        &.es,
+        &.cat {
+          font-size: 45px;
+        }
+      }
     }
 
     span.icon {
       font-size: 80px;
       margin: 3px 10px 0px 0px;
       animation: appearPopAndMoveLeft ease-in-out 0.5s;
+    }
+
+    @include phones {
+      span.title_text.privacy_title {
+        &.es,
+        &.cat {
+          font-size: 40px;
+        }
+
+        &.de {
+          font-size: 35px;
+        }
+      }
     }
 
     @include small-phones {
@@ -80,35 +110,53 @@
     display: flex;
     align-items: flex-end;
     width: max-content;
+
+    span {
+      margin: 0 5px;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
   }
 
-  .privacy_link {
+  .privacy_and_credits {
     grid-row: 3 / 4;
-    grid-column: 3 / 4;
+    grid-column: 2 / 4;
     margin: 10px;
 
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
+    gap: 5px;
+
+    .cn {
+      font-size: 12px;
+      letter-spacing: 1px;
+
+      @include small-phones {
+        font-size: 10px;
+      }
+    }
   }
 
   @include phones {
     .attribution,
-    .privacy_link {
+    .privacy_and_credits {
       font-size: 14px;
     }
   }
 
   @include small-phones {
     .attribution,
-    .privacy_link {
+    .privacy_and_credits {
       font-size: 12px;
     }
   }
 
   @include tiny-phones {
     .attribution,
-    .privacy_link {
+    .privacy_and_credits {
       font-size: 10px;
       margin: 5px;
     }
@@ -124,6 +172,7 @@
   grid-template-columns: 18% 16% 16% 16% 16% 18%;
   position: relative;
   overflow: hidden;
+  margin-bottom: 12px;
 
   @include standard-laptop {
     grid-template-rows: 17% 22% 22% 21% 18%;
@@ -147,7 +196,7 @@
     grid-row: 1 / 2;
     grid-column: 1 / 2;
     width: 65%;
-    height: 75%;
+    height: 55px;
 
     button {
       @include flexcenter;
@@ -159,7 +208,7 @@
 
       img {
         transition: all 0.2s ease-in-out;
-        width: 70%;
+        width: 60%;
       }
     }
 
@@ -171,6 +220,14 @@
     &:active {
       img {
         transform: scale(0.9);
+      }
+    }
+
+    @include small-height-devices {
+      width: 85%;
+
+      button img {
+        width: 50%;
       }
     }
 
@@ -222,6 +279,14 @@
     align-items: flex-end;
   }
 
+  .multilang_btn {
+    grid-row: 1 / 2;
+    grid-column: 6 / 7;
+    display: flex;
+    justify-content: flex-end;
+    justify-self: end;
+  }
+
   @keyframes moveUp1 {
     0% {
       transform: translateY(0%);
@@ -260,19 +325,36 @@
       position: relative;
       text-align: justify;
       user-select: text;
+      width: 100%;
+      padding: 0 15px 40px 8px;
 
       -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
       mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-      padding-bottom: 40px;
-      padding-right: 15px;
 
       a {
         text-decoration: underline;
       }
     }
 
-    .home_btn {
-      width: 30%;
+    .credits_content {
+      line-height: 1;
+
+      @include small-phones {
+        font-size: 15px;
+      }
+
+      span.cn {
+        font-size: 12px;
+      }
+
+      li {
+        margin-bottom: 5px;
+      }
+    }
+
+    .privacy_back_home_btn {
+      min-width: 30%;
+      width: max-content;
     }
   }
 }
@@ -296,8 +378,13 @@
     cursor: pointer;
   }
 
+  @include phones {
+    width: 106%;
+  }
+
   @include small-phones {
     grid-column: 1 / 4;
+    width: 100%;
   }
 
   &.editing_username {
@@ -336,8 +423,17 @@
 
       button {
         font-size: 22px;
+
         @include phones {
           font-size: 20px;
+        }
+      }
+
+      &.cn button {
+        font-size: 18px;
+
+        @include phones {
+          font-size: 16px;
         }
       }
     }
@@ -359,6 +455,7 @@
       transform: translate(-50%, -50%);
     }
   }
+
   @keyframes moveToCorner {
     0% {
       left: 50%;
@@ -376,6 +473,7 @@
       grid-column: unset;
     }
   }
+
   @keyframes moveDown {
     0% {
       transform: translateY(-60px);

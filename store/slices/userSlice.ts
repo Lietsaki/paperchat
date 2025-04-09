@@ -2,12 +2,12 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 
-export interface userState {
+interface UserState {
   username: string
   muteSounds: boolean
 }
 
-const initialState: userState = {
+const initialState: UserState = {
   username: '',
   muteSounds: false
 }

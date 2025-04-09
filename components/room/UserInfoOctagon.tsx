@@ -1,4 +1,5 @@
 import styles from 'styles/components/paperchat-octagon.module.scss'
+import useTranslation from 'i18n/useTranslation'
 
 const {
   octagon_outside,
@@ -8,37 +9,52 @@ const {
   info,
   now_entering,
   now_leaving,
-  animate_growth
+  room_code,
+  two_dots,
+  animate_growth,
+  cn
 } = styles
 
-type userInfoOctagonProps = {
+type UserInfoOctagonProps = {
   userEntering?: string
   userLeaving?: string
   shouldAnimate: boolean
   id: string
+  roomCode: string
 }
 
 const UserInfoOctagon = ({
   id,
   userEntering,
   userLeaving,
-  shouldAnimate
-}: userInfoOctagonProps) => {
+  shouldAnimate,
+  roomCode
+}: UserInfoOctagonProps) => {
+  const { t, locale } = useTranslation()
+
   const leaving = (
     <>
-      <span className={now_leaving}>Now leaving</span>: {userLeaving}
+      <div className={now_leaving}>
+        {t('ROOM.NOW_LEAVING')} <span className={room_code}>{roomCode}</span>
+      </div>
+      <span className={two_dots}>:</span> {userLeaving}
     </>
   )
 
   const entering = (
     <>
-      <span className={now_entering}>Now entering</span>: {userEntering}
+      <div className={now_entering}>
+        {t('ROOM.NOW_ENTERING')} <span className={room_code}>{roomCode}</span>
+      </div>
+      <span className={two_dots}>:</span> {userEntering}
     </>
   )
 
   return (
     <div
-      className={`${octagon_outside} ${blur} ${info} ${shouldAnimate ? animate_growth : ''}`}
+      className={`${octagon_outside} ${blur} ${info} ${shouldAnimate ? animate_growth : ''} ${
+        locale === 'cn' ? cn : ''
+      }`}
       id={id}
     >
       <div className={octagon_outline}>

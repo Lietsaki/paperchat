@@ -1,4 +1,4 @@
-type roomContent = {
+type RoomContent = {
   userEntering?: string
   userLeaving?: string
   color?: string
@@ -10,7 +10,7 @@ type roomContent = {
   serverTs: number
 }
 
-type contentIndicators = {
+type ContentIndicators = {
   [key: string]: {
     isVisible: boolean
     isOverflowedIndicator1?: boolean
@@ -18,21 +18,17 @@ type contentIndicators = {
   }
 }
 
-type contentIndicator = {
-  isVisible: boolean
-}
-
-type canvasData = { dataUrl: string; height: number; width: number }
+type CanvasData = { dataUrl: string; height: number; width: number }
 
 // Types used in Firebase Realtime DB
-type onlineUser = {
+type OnlineUser = {
   username: string
   createdOn: number
   publicRooms?: string[]
   privateRooms?: string[]
 }
 
-type room = {
+type Room = {
   code: string
   users: string[]
   usersNumber: number
@@ -41,7 +37,7 @@ type room = {
   id?: string
 }
 
-type firebaseMessage = {
+type FirebaseMessage = {
   imageURL?: string
   color?: string
   author: string
@@ -51,22 +47,21 @@ type firebaseMessage = {
   serverTs: number
 }
 
-type roomMessages = { createdOn: number; messages: firebaseMessage[] }
-type roomMessagesObj = { [key: string]: roomMessages }
+type RoomMessages = { createdOn: number; messages: FirebaseMessage[] }
+type RoomMessagesObj = { [key: string]: RoomMessages }
 
-type queryResult<T> = {
+type QueryResult<T> = {
   [key: string]: T
 }
 
 export type {
-  roomContent,
-  contentIndicators,
-  contentIndicator,
-  canvasData,
-  onlineUser,
-  room,
-  firebaseMessage,
-  roomMessages,
-  roomMessagesObj,
-  queryResult
+  RoomContent,
+  ContentIndicators,
+  CanvasData,
+  OnlineUser,
+  Room,
+  FirebaseMessage,
+  RoomMessages,
+  RoomMessagesObj,
+  QueryResult
 }

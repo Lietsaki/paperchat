@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, BaseSyntheticEvent } from 'react'
+import useTranslation from 'i18n/useTranslation'
 import { usernameMinLength, usernameMaxLength } from '../store/initializer'
 
 type UsernameInputProps = {
@@ -8,6 +9,7 @@ type UsernameInputProps = {
 }
 
 const UsernameInput = ({ editing, receivedValue, setUsernameBeingEdited }: UsernameInputProps) => {
+  const { t, locale } = useTranslation()
   const inputRef = useRef<HTMLInputElement>(null)
   let [inputValue, setInputValue] = useState('')
 
@@ -32,8 +34,10 @@ const UsernameInput = ({ editing, receivedValue, setUsernameBeingEdited }: Usern
   }
 
   return (
-    <div className={`input_container ${shouldBeCompleteRectangle()}`}>
-      <div className="title">Username</div>
+    <div
+      className={`input_container ${shouldBeCompleteRectangle()} ${locale === 'cn' ? 'cn' : ''}`}
+    >
+      <div className="title">{t('HOME.USERNAME')}</div>
       <input
         type="text"
         spellCheck="false"

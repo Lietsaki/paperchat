@@ -6,9 +6,10 @@ import Button from 'components/Button'
 import { PRIVATE_CODE_LENGTH, requestJoinPrivateRoom } from 'firebase-config/realtimeDB'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { dialogOptions } from 'types/Dialog'
+import { DialogOptions } from 'types/Dialog'
 import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
 import { playSound } from 'helpers/helperFunctions'
+import useTranslation from 'i18n/useTranslation'
 import Head from 'next/head'
 
 const {
@@ -21,14 +22,19 @@ const {
   bottom_top,
   bottom_bottom,
   bottom_btn_container,
-  dotted_border
+  dotted_border,
+  cn: cn_general_styles,
+  smaller_section_title
 } = general_styles
 
 const { midsection } = page_styles
 
 const JoinWithACode = () => {
   const router = useRouter()
-  const [dialogData, setDialogData] = useState<dialogOptions>(baseDialogData)
+  const { t, locale } = useTranslation()
+  const getTitleText = () => `Paperchat - ${t('JOIN_WITH_CODE_SCREEN.PAGE_TITLE')}`
+
+  const [dialogData, setDialogData] = useState<DialogOptions>(baseDialogData)
 
   const join = async (code: string) => {
     if (!code || !code.trim()) return
@@ -49,17 +55,17 @@ const JoinWithACode = () => {
   const showCodeLengthDialog = () => {
     setDialogData({
       open: true,
-      text: `The code must have ${PRIVATE_CODE_LENGTH} characters.`,
+      text: t('JOIN_WITH_CODE_SCREEN.ERRORS.INVALID_CODE_CHARACTERS', { PRIVATE_CODE_LENGTH }),
       showSpinner: false,
       rightBtnFn: () => setDialogData(baseDialogData),
-      rightBtnText: 'Accept'
+      rightBtnText: t('COMMON.ACCEPT')
     })
   }
 
   const showLoadingDialog = () => {
     setDialogData({
       open: true,
-      text: 'Joining room...',
+      text: t('JOIN_WITH_CODE_SCREEN.JOINING_ROOM'),
       showSpinner: true
     })
   }
@@ -67,20 +73,20 @@ const JoinWithACode = () => {
   const showNotFoundDialog = () => {
     setDialogData({
       open: true,
-      text: 'Room not found.',
+      text: t('COMMON.ERRORS.ROOM_NOT_FOUND'),
       showSpinner: false,
       rightBtnFn: () => setDialogData(baseDialogData),
-      rightBtnText: 'Accept'
+      rightBtnText: t('COMMON.ACCEPT')
     })
   }
 
   const showErrorDialog = () => {
     setDialogData({
       open: true,
-      text: 'There was an error. Please try again later.',
+      text: t('COMMON.ERRORS.GENERIC'),
       showSpinner: false,
       rightBtnFn: () => setDialogData(baseDialogData),
-      rightBtnText: 'Accept'
+      rightBtnText: t('COMMON.ACCEPT')
     })
   }
 
@@ -89,14 +95,16 @@ const JoinWithACode = () => {
     router.push('/')
   }
 
+  const getSectionTitleClass = () => {
+    if (locale === 'cn' || locale === 'en') return ''
+    return smaller_section_title
+  }
+
   return (
     <div className="main">
       <Head>
-        <title>Paperchat - Join Room with a Code</title>
-        <meta
-          name="description"
-          content="Join a private room with a code to chat and draw online in this Pictochat online spiritual successor."
-        />
+        <title>{getTitleText()}</title>
+        <meta name="description" content={t('JOIN_WITH_CODE_SCREEN.META_DESCRIPTION')} />
         <meta
           name="keywords"
           content="paperchat join private room, pictochat online, drawing online, live drawing app, nintendo pictochat, DS drawing app, by lietsaki"
@@ -117,16 +125,20 @@ const JoinWithACode = () => {
           </div>
         </div>
 
-        <div className={`screen ${bottom}`}>
+        <div
+          className={`screen ${bottom} ${
+            locale === 'cn' ? cn_general_styles : ''
+          } ${getSectionTitleClass()}`}
+        >
           <div className={bottom_top}>
-            <p>Join a private room with an invitation code</p>
+            <p>{t('JOIN_WITH_CODE_SCREEN.SECTION_TITLE')}</p>
           </div>
           <div className={midsection}>
             <JoinRoomInput handleCodeSubmit={join} />
           </div>
           <div className={bottom_bottom}>
             <div className={bottom_btn_container}>
-              <Button onClick={goHome} text="Cancel" />
+              <Button onClick={goHome} text={t('COMMON.CANCEL')} />
             </div>
           </div>
 
