@@ -17,6 +17,7 @@
     "@capacitor/app": "^7.0.0",
     "@capacitor/clipboard": "^7.0.0",
     "@capacitor/core": "^7.1.0",
+    "@capacitor/keyboard": "^7.0.1",
     "@capacitor/local-notifications": "^7.0.0",
     "@reduxjs/toolkit": "^1.8.5",
     "firebase": "^9.10.0",

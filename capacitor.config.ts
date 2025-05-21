@@ -12,6 +12,10 @@ const config: CapacitorConfig = {
       smallIcon: 'paperchat_logo_32',
       iconColor: '#ffffff',
       sound: 'send_message.wav'
+    },
+    Keyboard: {
+      resize: 'body',
+      resizeOnFullScreen: true
     }
   }
 }
