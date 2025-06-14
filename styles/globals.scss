@@ -118,6 +118,10 @@ a {
   }
 }
 
+.no-scroll-y {
+  overflow-y: hidden;
+}
+
 .justify_between_around {
   justify-content: space-between !important;
 

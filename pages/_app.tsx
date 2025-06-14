@@ -18,6 +18,8 @@ if (typeof window !== 'undefined') {
 
   if (Capacitor.isNativePlatform()) {
     initializeLocalNotifications()
+    document.body.classList.add('no-scroll-y')
+    document.documentElement.classList.add('no-scroll-y')
   }
 
   // Samsung's browser ignores color-scheme.
