@@ -11,7 +11,7 @@ const Dialog = ({
   showSpinner,
   text,
   largeDialog,
-  skipSmallCnText,
+  skipSmallJaText,
 
   leftBtnText,
   leftBtnFn,
@@ -94,9 +94,9 @@ const Dialog = ({
     return ''
   }
 
-  const getCnTextClass = () => {
-    if (locale !== 'cn' || skipSmallCnText) return ''
-    return 'cn'
+  const getJaTextClass = () => {
+    if (locale !== 'ja' || skipSmallJaText) return ''
+    return 'ja'
   }
 
   const getOptions = () => {
@@ -130,15 +130,11 @@ const Dialog = ({
   }
 
   return (
-    <div
-      className={`dialog_layer_1 go_up ${largeDialog ? 'large_dialog' : ''} ${
-        locale === 'cn' ? 'cn' : ''
-      }`}
-    >
+    <div className={`dialog_layer_1 go_up ${largeDialog ? 'large_dialog' : ''} ${locale}`}>
       <div className="dialog_layer_2">
         <div className="dialog_content">
           <div className="spinner-area-left">{showSpinner ? <Spinner /> : null}</div>
-          <div className={`text ${getCnTextClass()}`}>{text}</div>
+          <div className={`text ${getJaTextClass()}`}>{text}</div>
           <div className="spinner-area-right">{showSpinner ? <Spinner /> : null}</div>
 
           {getOptions()}

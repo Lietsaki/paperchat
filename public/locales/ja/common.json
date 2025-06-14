@@ -1,0 +1,131 @@
+{
+  "COMMON": {
+    "SAVE": "保存",
+    "ACCEPT": "承諾",
+    "CANCEL": "キャンセル",
+    "RETRY": "再試行",
+    "CODE": "コード",
+    "LOADING": "読み込み中…",
+    "GO_HOME": "ホームへ戻る",
+    "ERROR": "エラー",
+    "ERRORS": {
+      "GENERIC": "エラーが発生しました。後でもう一度お試しください。",
+      "THERE_WAS": "エラーが発生しました。",
+      "ROOM_NOT_FOUND": "ルームが見つかりません。",
+      "ROOM_NOT_FOUND_MAYBE_DISBANDED": "ルームが見つかりません。解散された可能性があります。",
+      "DAILY_ROOMS_LIMIT": "1日に最大{{DAILY_ROOMS_LIMIT}}件のルームを作成できます。明日再度お試しください。"
+    }
+  },
+  "HOME": {
+    "PAGE_TITLE": "オンライン Pictochat の精神的後継",
+    "META_DESCRIPTION": "オンラインで友達やランダムな人とリアルタイムで描画できる Pictochat バージョン",
+    "SEARCH_ROOMS": "ルームを検索",
+    "CREATE_ROOM": "ルームを作成",
+    "JOIN_WITH_CODE": "コードで参加",
+    "USERNAME": "ユーザー名",
+    "PRIVACY": "プライバシー",
+    "PRIVACY_POLICY": "プライバシーポリシー",
+    "CREDITS": "クレジット",
+    "TOGGLE_AUDIO": "オーディオ切替",
+    "SWITCH_LANGUAGE": "言語を切替"
+  },
+  "SEARCH_ROOMS_SCREEN": {
+    "PAGE_TITLE": "ルームを探す",
+    "META_DESCRIPTION": "オンライン Pictochat の精神的後継で、リアルタイムにチャット＆描画できるルームを探します。",
+    "SECTION_TITLE": "参加するチャットルームを選ぶ",
+    "CHAT_ROOM": "チャットルーム",
+    "SEARCHING": "ルームを検索中…",
+    "ERROR_TRY_AGAIN": "エラーが発生しました。再試行しますか？",
+    "NO_ROOMS": "ルームが見つかりませんでした。",
+    "CREATE_ROOM": "ルームを作成",
+    "SEARCH_AGAIN": "再検索"
+  },
+  "CREATE_ROOM_SCREEN": {
+    "PAGE_TITLE": "ルーム作成",
+    "META_DESCRIPTION": "リアルタイムでチャット＆描画できるルームを作成します。",
+    "SECTION_TITLE": "どのタイプのルームを作成しますか？",
+    "CREATING_YOUR_PUBLIC_ROOM": "公開ルームを作成中",
+    "CREATING_YOUR_PRIVATE_ROOM": "非公開ルームを作成中",
+    "PUBLIC": {
+      "TITLE": "公開",
+      "DESCRIPTION": "あなたのルームは一覧に表示され、誰でも参加可能です。"
+    },
+    "PRIVATE": {
+      "TITLE": "非公開",
+      "DESCRIPTION": "招待コードで参加する隠しルームです。"
+    },
+    "OFFLINE": {
+      "TITLE": "オフライン",
+      "DESCRIPTION": "接続なしで描いて楽しめます。"
+    }
+  },
+  "JOIN_WITH_CODE_SCREEN": {
+    "PAGE_TITLE": "コードで参加",
+    "META_DESCRIPTION": "招待コードで非公開ルームに参加し、オンラインでチャット＆描画できます。",
+    "SECTION_TITLE": "招待コードでルームに参加",
+    "JOINING_ROOM": "ルームに参加中…",
+    "JOIN": "参加",
+    "ERRORS": {
+      "INVALID_CODE_CHARACTERS": "コードは{{PRIVATE_CODE_LENGTH}}文字である必要があります"
+    }
+  },
+  "ROOM": {
+    "NOW_ENTERING": "入室中",
+    "NOW_LEAVING": "退出中",
+    "LEAVE_ROOM": "ルームを退出しますか？",
+    "USERS": "ルームユーザー",
+    "GET_ROOM_LINK": "ルームリンクを取得",
+    "GET_INVITATION": "招待状を取得",
+    "GET_PUBLIC_ROOM_LINK_DIALOG": "ルームリンクを取得して共有できます。誰でも参加可能です :)",
+    "GET_PRIVATE_ROOM_CODE_DIALOG": "コードを共有して他の人を招待しましょう！",
+    "COPY_LINK": "リンクをコピー",
+    "COPY_CODE": "コードをコピー",
+    "COPIED_TO_CLIPBOARD": "クリップボードにコピーされました！",
+    "SAVE_IMAGE": "画像を保存",
+    "PLEASE_SUPPORT_CANVAS": "Canvas 要素対応のブラウザを使用してください",
+    "ERRORS": {
+      "NOT_FOUND_MISSING_CODE": "ルームが見つかりません：URL にプライベートコードがありません。",
+      "INVALID_CODE": "無効なコードです。もう一度お試しください。",
+      "DISBANDED_DUE_TO_INACTIVITY": "非アクティブのためルームが解散されました。",
+      "ROOM_IS_FULL": "申し訳ありません、ルームが満員です。",
+      "ALREADY_JOINED": "既にこのルームに参加しています。",
+      "SIMULTANEOUS_ROOMS_LIMIT": "同時に最大 {{SIMULTANEOUS_ROOMS_LIMIT}} ルームに参加できます。",
+      "CONNECTION_LOST_RECONNECTING": "接続が切断されました。再接続中…",
+      "BACK_ONLINE": "オンラインに戻りました！",
+      "BACK_ONLINE_DISBANDED": "オンラインに戻りました。空のためルームは解散されました。"
+    }
+  },
+  "NOTIFICATIONS": {
+    "NEW_ROOM_MESSAGE": {
+      "TITLE": "ルームに新しいメッセージ！",
+      "BODY": "何だろう？"
+    },
+    "USER_ENTERING": {
+      "TITLE": "誰かが入室しました！",
+      "BODY": "{{userEntering}} に挨拶しに行きましょう"
+    },
+    "USER_LEAVING": {
+      "TITLE": "誰かが退出しました",
+      "BODY": "{{userLeaving}}、さようなら"
+    }
+  },
+  "IMAGE_ALTS": {
+    "PLAY_STORE_ICON": "Play ストア アイコン",
+    "USER_ICON": "ユーザー アイコン",
+    "DOWNLOAD_ARROW_ICON": "ダウンロード矢印アイコン",
+    "TOP_ARROW_BUTTON": "上矢印ボタン",
+    "DOWN_ARROW_BUTTON": "下矢印ボタン",
+    "PENCIL_BUTTON": "鉛筆ボタン",
+    "ERASER_BUTTON": "消しゴムボタン",
+    "THICK_STROKE_BUTTON": "太い線ボタン",
+    "THIN_STROKE_BUTTON": "細い線ボタン",
+    "ALPHANUMERIC_BUTTON": "英数字ボタン",
+    "ACCENTS_BUTTON": "アクセントボタン",
+    "SYMBOLS_BUTTON": "記号ボタン",
+    "SMILEYS_BUTTON": "絵文字ボタン",
+    "CLOSE_BUTTON": "閉じるボタン",
+    "SEND_MESSAGE_BUTTON": "メッセージ送信ボタン",
+    "COPY_LAST_MESSAGE_BUTTON": "最後のメッセージをコピーボタン",
+    "CLEAR_CANVAS_BUTTON": "キャンバスクリアボタン"
+  }
+}

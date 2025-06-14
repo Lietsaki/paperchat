@@ -1,4 +1,4 @@
-type LocaleCode = 'en' | 'es' | 'cat' | 'de' | 'cn'
+type LocaleCode = 'en' | 'es' | 'pt' | 'fr' | 'de' | 'ja'
 
 type LocaleDataObj = {
   code: LocaleCode

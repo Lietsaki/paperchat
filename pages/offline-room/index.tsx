@@ -43,7 +43,7 @@ const {
   username_input,
   editing_username,
   save_username_btn_container,
-  cn: cn_home,
+  ja: ja_home,
   skip_username_animation
 } = home_styles
 
@@ -344,7 +344,7 @@ const Room = () => {
               setUsernameBeingEdited={setUsernameBeingEdited}
             />
 
-            <div className={`${save_username_btn_container} ${locale === 'cn' ? cn_home : ''}`}>
+            <div className={`${save_username_btn_container} ${locale === 'ja' ? ja_home : ''}`}>
               <Button onClick={() => saveUsername()} text={t('COMMON.SAVE')} />
             </div>
           </form>
@@ -403,7 +403,7 @@ const Room = () => {
       open: open || dialogData.open,
       largeDialog: true,
       text: <MultilangList selectedLang={langToSwitchTo} setSelectedLang={setLangToSwitchTo} />,
-      skipSmallCnText: locale === 'cn',
+      skipSmallJaText: true,
       showSpinner: false,
       leftBtnText: t('COMMON.CANCEL'),
       leftBtnFn: () => {

@@ -6,7 +6,7 @@ type DialogOptions = {
   open: boolean
   text: string | JSX.Element
   largeDialog?: boolean
-  skipSmallCnText?: boolean
+  skipSmallJaText?: boolean
   showSpinner: boolean
 
   leftBtnText?: string
@@ -26,7 +26,7 @@ type DialogProps = {
   text: string | JSX.Element
   showSpinner?: boolean
   largeDialog?: boolean
-  skipSmallCnText?: boolean
+  skipSmallJaText?: boolean
 
   leftBtnText?: string
   leftBtnFn?: () => void

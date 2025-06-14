@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { DialogDebouncedActionNames } from 'types/Dialog'
 import useTranslation from 'i18n/useTranslation'
 
-const { button_outer, button_inner, smaller_font, cn, cn_smaller } = styles
+const { button_outer, button_inner, smaller_font, ja, ja_smaller } = styles
 
 type ButtonProps = {
   text: string
@@ -13,7 +13,7 @@ type ButtonProps = {
   debounceMounted?: boolean
   classes?: string
   id?: string
-  useCnSmaller?: boolean
+  useJaSmaller?: boolean
 }
 
 const Button = ({
@@ -24,7 +24,7 @@ const Button = ({
   debounceMounted,
   classes,
   id,
-  useCnSmaller
+  useJaSmaller
 }: ButtonProps) => {
   const { locale } = useTranslation()
   const [time, setTime] = useState<null | number>(null)
@@ -51,9 +51,9 @@ const Button = ({
   }
 
   const getLocaleClass = () => {
-    if (locale === 'cn') {
-      if (useCnSmaller) return cn_smaller
-      return cn
+    if (locale === 'ja') {
+      if (useJaSmaller) return ja_smaller
+      return ja
     }
 
     if (locale !== 'en') return smaller_font

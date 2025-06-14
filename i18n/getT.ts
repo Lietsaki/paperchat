@@ -1,19 +1,22 @@
+import { getCurrentLocale } from './i18nHelpers'
+
 import en from '../public/locales/en/common.json'
 import es from '../public/locales/es/common.json'
-import cat from '../public/locales/cat/common.json'
+import pt from '../public/locales/pt/common.json'
+import fr from '../public/locales/fr/common.json'
 import de from '../public/locales/de/common.json'
-import cn from '../public/locales/cn/common.json'
-import { getCurrentLocale } from './i18nHelpers'
+import ja from '../public/locales/ja/common.json'
 
 const locales = {
   en,
   es,
-  cat,
+  pt,
+  fr,
   de,
-  cn
+  ja
 }
 
-// Function to get a translation function without hooks
+// Function to get a translation string without hooks
 const getT = (key: string, values: { [key: string]: string | number } = {}): string => {
   const currentLocale = getCurrentLocale()
 

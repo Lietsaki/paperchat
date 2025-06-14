@@ -192,10 +192,9 @@
     }
   }
 
-  &.cn {
+  &.ja {
     .bottom_top {
       p {
-        font-size: 25px;
         letter-spacing: 1.5px;
 
         @include phones {

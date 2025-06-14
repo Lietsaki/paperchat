@@ -30,7 +30,7 @@ const {
   bottom_btn_container,
   dotted_border,
   higher_z_index,
-  cn: cn_general_styles
+  ja
 } = general_styles
 
 const FindRooms = () => {
@@ -216,7 +216,7 @@ const FindRooms = () => {
           </div>
         </div>
 
-        <div className={`screen ${bottom} ${locale === 'cn' ? cn_general_styles : ''}`}>
+        <div className={`screen ${bottom} ${locale === 'ja' ? ja : ''}`}>
           <div className={bottom_top}>
             <p>{t('SEARCH_ROOMS_SCREEN.SECTION_TITLE')}</p>
           </div>

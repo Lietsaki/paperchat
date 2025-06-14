@@ -34,9 +34,7 @@ const UsernameInput = ({ editing, receivedValue, setUsernameBeingEdited }: Usern
   }
 
   return (
-    <div
-      className={`input_container ${shouldBeCompleteRectangle()} ${locale === 'cn' ? 'cn' : ''}`}
-    >
+    <div className={`input_container ${shouldBeCompleteRectangle()} ${locale}`}>
       <div className="title">{t('HOME.USERNAME')}</div>
       <input
         type="text"

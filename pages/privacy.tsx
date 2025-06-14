@@ -14,8 +14,8 @@ const {
   privacy_title,
   de,
   es,
-  cat,
-  cn,
+  pt,
+  ja,
   bottom,
   privacy,
   privacy_content,
@@ -30,8 +30,8 @@ const Privacy = () => {
   const localeClasses: { [key: string]: string } = {
     de,
     es,
-    cat,
-    cn
+    pt,
+    ja
   }
 
   return (

@@ -7,7 +7,7 @@ type MultilangListProps = {
 }
 
 const MultilangList = ({ selectedLang, setSelectedLang }: MultilangListProps) => {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
 
   const selectLanguage = (selectedLocale: LocaleCode) => {
     setSelectedLang(selectedLocale)
@@ -16,14 +16,15 @@ const MultilangList = ({ selectedLang, setSelectedLang }: MultilangListProps) =>
   const langs: LocaleDataObj[] = [
     { code: 'en', label: 'English' },
     { code: 'es', label: 'Español' },
-    { code: 'cat', label: 'Català' },
-    { code: 'cn', label: '中文' },
-    { code: 'de', label: 'Deutsch' }
+    { code: 'pt', label: 'Português' },
+    { code: 'fr', label: 'Français' },
+    { code: 'de', label: 'Deutsch' },
+    { code: 'ja', label: '日本語' }
   ]
 
   return (
     <div className="language_list">
-      <div className="title">{t('HOME.SWITCH_LANGUAGE')}</div>
+      <div className={`title ${locale}`}>{t('HOME.SWITCH_LANGUAGE')}</div>
 
       <ul className="scrollify">
         {langs.map((lang, i) => (

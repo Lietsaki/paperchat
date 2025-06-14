@@ -23,7 +23,7 @@ const {
   bottom_bottom,
   bottom_btn_container,
   dotted_border,
-  cn: cn_general_styles
+  ja: ja_general_styles
 } = general_styles
 
 const {
@@ -35,7 +35,8 @@ const {
   dino,
   description,
   double_cards,
-  cn,
+  ja,
+  fr,
   smaller_title,
   smaller_description
 } = page_styles
@@ -167,12 +168,14 @@ const CreateRoom = () => {
           </div>
         </div>
 
-        <div className={`screen ${bottom} ${locale === 'cn' ? cn_general_styles : ''}`}>
+        <div className={`screen ${bottom} ${locale === 'ja' ? ja_general_styles : ''}`}>
           <div className={bottom_top}>
             <p>{t('CREATE_ROOM_SCREEN.SECTION_TITLE')}</p>
           </div>
 
-          <div className={`${option_cards} ${locale === 'cn' ? cn : ''}`}>
+          <div
+            className={`${option_cards} ${locale === 'ja' ? ja : ''} ${locale === 'fr' ? fr : ''}`}
+          >
             <div className={card} onClick={createPublicRoom}>
               <div className={card__inner}>
                 <div className={getMainTitleClass()}>{t('CREATE_ROOM_SCREEN.PUBLIC.TITLE')}</div>

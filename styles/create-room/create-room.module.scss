@@ -234,7 +234,7 @@
     }
   }
 
-  &.cn {
+  &.ja {
     .card .card__inner {
       .title {
         font-size: 300%;
@@ -284,6 +284,33 @@
 
         .description {
           font-size: 10px;
+        }
+      }
+    }
+  }
+
+  &.fr {
+    .double_cards .card:first-child .card__inner {
+      .title {
+        font-size: 220%;
+        top: 2px;
+      }
+
+      .description {
+        line-height: 1.2;
+        font-size: 18px;
+      }
+    }
+
+    @include phones {
+      .double_cards .card:first-child .card__inner {
+        .title {
+          font-size: 150%;
+          top: 2px;
+        }
+
+        .description {
+          font-size: 12px;
         }
       }
     }

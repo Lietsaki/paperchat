@@ -12,7 +12,7 @@ const {
   room_code,
   two_dots,
   animate_growth,
-  cn
+  ja
 } = styles
 
 type UserInfoOctagonProps = {
@@ -53,7 +53,7 @@ const UserInfoOctagon = ({
   return (
     <div
       className={`${octagon_outside} ${blur} ${info} ${shouldAnimate ? animate_growth : ''} ${
-        locale === 'cn' ? cn : ''
+        locale === 'ja' ? ja : ''
       }`}
       id={id}
     >

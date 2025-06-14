@@ -9,19 +9,19 @@
     "GO_HOME": "Volver al inicio",
     "ERROR": "Error",
     "ERRORS": {
-      "GENERIC": "Ha habido un error. Por favor, vuelve a intentarlo de nuevo.",
-      "THERE_WAS": "Ha habido un error.",
-      "ROOM_NOT_FOUND": "No se ha encontrado la sala.",
-      "ROOM_NOT_FOUND_MAYBE_DISBANDED": "No se ha encontrado la sala. Puede que ya no exista.",
-      "DAILY_ROOMS_LIMIT": "Puedes crear hasta {{DAILY_ROOMS_LIMIT}} salas por día. Vuelve a intentarlo mañana."
+      "GENERIC": "Ha ocurrido un error. Por favor, vuelve a intentarlo de nuevo.",
+      "THERE_WAS": "Ha ocurrido un error.",
+      "ROOM_NOT_FOUND": "No encontramos la sala!",
+      "ROOM_NOT_FOUND_MAYBE_DISBANDED": "No encontramos la sala. Tal vez fue disuelta.",
+      "DAILY_ROOMS_LIMIT": "Puedes crear hasta {{DAILY_ROOMS_LIMIT}} salas por día. Inténtalo mañana."
     }
   },
   "HOME": {
     "PAGE_TITLE": "Un sucesor espiritual online de Pictochat",
-    "META_DESCRIPTION": "Dibuja en tiempo real con amigos o con otros usuarios en una versión online de Pictochat",
+    "META_DESCRIPTION": "Dibuja en tiempo real con amigos u otros usuarios en una versión online de Pictochat",
     "SEARCH_ROOMS": "Buscar sala",
     "CREATE_ROOM": "Crear sala",
-    "JOIN_WITH_CODE": "Unirse con un código",
+    "JOIN_WITH_CODE": "Unirse con código",
     "USERNAME": "Nombre de usuario",
     "PRIVACY": "Privacidad",
     "PRIVACY_POLICY": "Política de privacidad",
@@ -35,7 +35,7 @@
     "SECTION_TITLE": "Elige la sala de chat en la que quieras entrar",
     "CHAT_ROOM": "Sala de chat",
     "SEARCHING": "Buscando salas...",
-    "ERROR_TRY_AGAIN": "Ha habido un error. ¿Volver a intentarlo?",
+    "ERROR_TRY_AGAIN": "Ha ocurrido un error. ¿Volver a intentarlo?",
     "NO_ROOMS": "No se han encontrado salas.",
     "CREATE_ROOM": "Crear sala",
     "SEARCH_AGAIN": "Buscar de nuevo"
@@ -48,7 +48,7 @@
     "CREATING_YOUR_PRIVATE_ROOM": "Creando sala privada",
     "PUBLIC": {
       "TITLE": "Pública",
-      "DESCRIPTION": "Tu sala estará visible y cualquiera se podrá unir."
+      "DESCRIPTION": "Tu sala será visible y cualquiera se podrá unir."
     },
     "PRIVATE": {
       "TITLE": "Privada",
@@ -82,14 +82,14 @@
     "COPY_CODE": "Copiar código",
     "COPIED_TO_CLIPBOARD": "¡Copiado al portapapeles!",
     "SAVE_IMAGE": "Guardar imagen",
-    "PLEASE_SUPPORT_CANVAS": "Por favor, utiliza un navegador que sea compatible con el elemento del lienzo",
+    "PLEASE_SUPPORT_CANVAS": "Por favor, utiliza un navegador que sea compatible con el elemento Canvas.",
     "ERRORS": {
       "NOT_FOUND_MISSING_CODE": "Sala no encontrada: Falta el código en la URL.",
       "INVALID_CODE": "Código inválido, por favor inténtalo de nuevo.",
       "DISBANDED_DUE_TO_INACTIVITY": "Tu sala se ha disuelto por inactividad.",
       "ROOM_IS_FULL": "Vaya, la sala está llena.",
       "ALREADY_JOINED": "Ya estás en esta sala.",
-      "SIMULTANEOUS_ROOMS_LIMIT": "Puedes estar en {{SIMULTANEOUS_ROOMS_LIMIT}} salas a la vez.",
+      "SIMULTANEOUS_ROOMS_LIMIT": "Sólo puedes estar en {{SIMULTANEOUS_ROOMS_LIMIT}} salas a la vez.",
       "CONNECTION_LOST_RECONNECTING": "Conexión perdida. Reconectando...",
       "BACK_ONLINE": "¡Vuelves a tener conexión!",
       "BACK_ONLINE_DISBANDED": "Vuelves a tener conexión. Tu sala se ha disuelto porque estaba vacía."
@@ -126,6 +126,6 @@
     "CLOSE_BUTTON": "Botón de cerrar",
     "SEND_MESSAGE_BUTTON": "Botón de enviar mensaje",
     "COPY_LAST_MESSAGE_BUTTON": "Botón de copiar el último mensaje",
-    "CLEAR_CANVAS_BUTTON": "Botón de limpiar el lienzo"
+    "CLEAR_CANVAS_BUTTON": "Botón de limpiar el canvas"
   }
 }

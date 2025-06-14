@@ -37,11 +37,7 @@ const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
     <div className={join_area}>
       <div>
         <form className={input_area} onSubmit={(e) => handleCodeSubmitWithCheck(e, code)}>
-          <div
-            className={`input_container simple_width make_complete_rectangle ${
-              locale === 'cn' ? 'cn' : ''
-            }`}
-          >
+          <div className={`input_container simple_width make_complete_rectangle ${locale}`}>
             <div className="title extra_pad_left">{t('COMMON.CODE')}</div>
             <input
               ref={inputRef}

@@ -59,7 +59,7 @@ const {
   username_input,
   editing_username,
   save_username_btn_container,
-  cn: cn_home,
+  ja: ja_home,
   skip_username_animation
 } = home_styles
 
@@ -207,7 +207,7 @@ const Room = () => {
         open: true,
         largeDialog: true,
         text: getUserList(),
-        skipSmallCnText: true,
+        skipSmallJaText: true,
         showSpinner: false,
         rightBtnText: t('COMMON.ACCEPT'),
         rightBtnFn: () => {
@@ -704,7 +704,7 @@ const Room = () => {
       open: true,
       largeDialog: true,
       text: getUserList(),
-      skipSmallCnText: true,
+      skipSmallJaText: true,
       showSpinner: false,
       rightBtnText: t('COMMON.ACCEPT'),
       rightBtnFn: () => {
@@ -778,7 +778,7 @@ const Room = () => {
               setUsernameBeingEdited={setUsernameBeingEdited}
             />
 
-            <div className={`${save_username_btn_container} ${locale === 'cn' ? cn_home : ''}`}>
+            <div className={`${save_username_btn_container} ${locale === 'ja' ? ja_home : ''}`}>
               <Button onClick={() => saveUsername()} text={t('COMMON.SAVE')} />
             </div>
           </form>
@@ -837,7 +837,7 @@ const Room = () => {
       open: open || dialogData.open,
       largeDialog: true,
       text: <MultilangList selectedLang={langToSwitchTo} setSelectedLang={setLangToSwitchTo} />,
-      skipSmallCnText: locale === 'cn',
+      skipSmallJaText: true,
       showSpinner: false,
       leftBtnText: t('COMMON.CANCEL'),
       leftBtnFn: () => {
@@ -993,14 +993,14 @@ const Room = () => {
               classes={btn_styles.room_top_row_btn}
               text={t('ROOM.GET_ROOM_LINK')}
               onClick={showRoomLinkDialog}
-              useCnSmaller
+              useJaSmaller
             />
 
             <Button
               classes={btn_styles.room_top_row_btn}
               text={`${t('ROOM.USERS')} (${roomUsers.length}/${USERS_LIMIT})`}
               onClick={showUsersDialog}
-              useCnSmaller
+              useJaSmaller
             />
 
             <div className={`${close_btn} ${active_on_click}`} onClick={showAskExitRoomDialog}>

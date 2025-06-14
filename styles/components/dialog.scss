@@ -143,11 +143,11 @@
     }
   }
 
-  &.cn {
+  &.ja {
     .dialog_layer_2 {
       .dialog_content {
-        .text.cn {
-          font-size: 15px;
+        .text.ja {
+          font-size: 18px;
           letter-spacing: 1px;
           line-height: 1.4;
           margin: 8px 0 3px 0;
@@ -224,6 +224,11 @@
 
   .title {
     margin: 5px 0 12px 0;
+
+    &.ja {
+      font-size: 20px;
+      letter-spacing: 2px;
+    }
   }
 
   ul {
@@ -243,8 +248,12 @@
       line-height: 1;
       transition: all 0.2s ease-in-out;
 
-      &.cn {
+      &.ja {
         font-size: 20px;
+      }
+
+      &.pt.selected_lang::before {
+        right: 90px;
       }
 
       &:hover {
@@ -263,7 +272,7 @@
       }
 
       &.selected_lang {
-        &:before {
+        &::before {
           content: '';
           position: absolute;
           right: 70px;
@@ -291,7 +300,7 @@
       li {
         font-size: 20px;
 
-        &.cn {
+        &.ja {
           font-size: 16px;
         }
       }

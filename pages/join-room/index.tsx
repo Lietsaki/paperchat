@@ -23,7 +23,7 @@ const {
   bottom_bottom,
   bottom_btn_container,
   dotted_border,
-  cn: cn_general_styles,
+  ja,
   smaller_section_title
 } = general_styles
 
@@ -96,7 +96,7 @@ const JoinWithACode = () => {
   }
 
   const getSectionTitleClass = () => {
-    if (locale === 'cn' || locale === 'en') return ''
+    if (locale === 'ja' || locale === 'en') return ''
     return smaller_section_title
   }
 
@@ -125,11 +125,7 @@ const JoinWithACode = () => {
           </div>
         </div>
 
-        <div
-          className={`screen ${bottom} ${
-            locale === 'cn' ? cn_general_styles : ''
-          } ${getSectionTitleClass()}`}
-        >
+        <div className={`screen ${bottom} ${locale === 'ja' ? ja : ''} ${getSectionTitleClass()}`}>
           <div className={bottom_top}>
             <p>{t('JOIN_WITH_CODE_SCREEN.SECTION_TITLE')}</p>
           </div>

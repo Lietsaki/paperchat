@@ -1,131 +1,131 @@
 {
   "COMMON": {
     "SAVE": "Speichern",
-    "ACCEPT": "Annehmen",
+    "ACCEPT": "Akzeptieren",
     "CANCEL": "Abbrechen",
-    "RETRY": "Wieder versuchen",
+    "RETRY": "Erneut versuchen",
     "CODE": "Code",
-    "LOADING": "Laden...",
-    "GO_HOME": "Zur Startseite gehen",
+    "LOADING": "Wird geladen...",
+    "GO_HOME": "Zur Startseite",
     "ERROR": "Fehler",
     "ERRORS": {
-      "GENERIC": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-      "THERE_WAS": "Es ist ein Fehler aufgetreten.",
+      "GENERIC": "Ein Fehler ist aufgetreten. Bitte versuche es später erneut.",
+      "THERE_WAS": "Ein Fehler ist aufgetreten.",
       "ROOM_NOT_FOUND": "Raum nicht gefunden.",
-      "ROOM_NOT_FOUND_MAYBE_DISBANDED": "Raum nicht gefunden. Möglicherweise wurde er gelöscht.",
-      "DAILY_ROOMS_LIMIT": "Sie können bis zu {{DAILY_ROOMS_LIMIT}} Räume pro Tag erstellen. Versuchen Sie es morgen noch einmal."
+      "ROOM_NOT_FOUND_MAYBE_DISBANDED": "Raum nicht gefunden. Vielleicht wurde er aufgelöst.",
+      "DAILY_ROOMS_LIMIT": "Du kannst bis zu {{DAILY_ROOMS_LIMIT}} Räume pro Tag erstellen. Versuche es morgen erneut."
     }
   },
   "HOME": {
-    "PAGE_TITLE": "Ein online spiritueller Pictochat-Nachfolger",
-    "META_DESCRIPTION": "Zeichnen Sie in Echtzeit mit Ihren FreundInnen oder zufälligen Personen in einer Online-Pictochat-Version",
+    "PAGE_TITLE": "Ein Online-Pictochat-Spiritual-Successor",
+    "META_DESCRIPTION": "Zeichne in Echtzeit mit Freunden oder Fremden in einer Online-Pictochat-Version",
     "SEARCH_ROOMS": "Räume suchen",
-    "CREATE_ROOM": "Einen Raum erstellen",
-    "JOIN_WITH_CODE": "Mit einem Code beitreten",
+    "CREATE_ROOM": "Raum erstellen",
+    "JOIN_WITH_CODE": "Mit Code beitreten",
     "USERNAME": "Benutzername",
     "PRIVACY": "Datenschutz",
-    "PRIVACY_POLICY": "Datenschutzbestimmungen",
-    "CREDITS": "Abspann",
-    "TOGGLE_AUDIO": "Audio umschalten",
+    "PRIVACY_POLICY": "Datenschutz-Richtlinie",
+    "CREDITS": "Impressum",
+    "TOGGLE_AUDIO": "Audio ein/aus",
     "SWITCH_LANGUAGE": "Sprache wechseln"
   },
   "SEARCH_ROOMS_SCREEN": {
-    "PAGE_TITLE": "Räume suchen",
-    "META_DESCRIPTION": "Suchen Sie Online-Räume zum Chatten und Zeichnen in Echtzeit in einem online spirituellen Pictochat-Nachfolger.",
-    "SECTION_TITLE": "Wählen Sie einen Chat-Raum",
+    "PAGE_TITLE": "Räume finden",
+    "META_DESCRIPTION": "Finde Online-Räume zum Chatten und Zeichnen in Echtzeit in einer Pictochat-Spiritual-Successor.",
+    "SECTION_TITLE": "Wähle einen Chat-Raum zum Beitreten",
     "CHAT_ROOM": "Chat-Raum",
-    "SEARCHING": "Auf der Suche nach Raüme...",
-    "ERROR_TRY_AGAIN": "Es ist ein Fehler aufgetreten. Nochmals versuchen?",
+    "SEARCHING": "Suche nach Räumen...",
+    "ERROR_TRY_AGAIN": "Ein Fehler ist aufgetreten. Erneut versuchen?",
     "NO_ROOMS": "Keine Räume gefunden.",
-    "CREATE_ROOM": "Einen Raum erstellen",
+    "CREATE_ROOM": "Raum erstellen",
     "SEARCH_AGAIN": "Nochmals suchen"
   },
   "CREATE_ROOM_SCREEN": {
-    "PAGE_TITLE": "Einen Raum erstellen",
-    "META_DESCRIPTION": "Erstellen Sie Ihren eigenen Raum zum Chatten und Zeichnen in Echtzeit in einem online spirituellen Pictochat-Nachfolger.",
-    "SECTION_TITLE": "Welchen Raumtyp möchten Sie schaffen?",
-    "CREATING_YOUR_PUBLIC_ROOM": "Ihren öffentlichen Raum gestalten",
-    "CREATING_YOUR_PRIVATE_ROOM": "Ihren privaten Raum gestalten",
+    "PAGE_TITLE": "Raum erstellen",
+    "META_DESCRIPTION": "Erstelle deinen eigenen Raum zum Chatten und Zeichnen in Echtzeit.",
+    "SECTION_TITLE": "Welchen Raumtyp möchtest du erstellen?",
+    "CREATING_YOUR_PUBLIC_ROOM": "Erstelle deinen öffentlichen Raum",
+    "CREATING_YOUR_PRIVATE_ROOM": "Erstelle deinen privaten Raum",
     "PUBLIC": {
       "TITLE": "Öffentlich",
-      "DESCRIPTION": "Ihr Raum wird aufgelistet und jedermann kann teilnehmen."
+      "DESCRIPTION": "Dein Raum wird gelistet und jeder kann beitreten."
     },
     "PRIVATE": {
       "TITLE": "Privat",
-      "DESCRIPTION": "Versteckter Raum. Die Benutzer treten mit einem Einladungscode bei."
+      "DESCRIPTION": "Versteckter Raum. Benutzer treten mit Einladungscode bei."
     },
     "OFFLINE": {
       "TITLE": "Offline",
-      "DESCRIPTION": "Zeichnen und Spaß haben ohne Verbindung."
+      "DESCRIPTION": "Zeichne und hab Spaß ganz ohne Verbindung."
     }
   },
   "JOIN_WITH_CODE_SCREEN": {
-    "PAGE_TITLE": "Raum mit einem Code betreten",
-    "META_DESCRIPTION": "Treten Sie mit einem Code einem privaten Raum bei, um in einem online spirituellen Pictochat-Nachfolger zu chatten und zu zeichnen",
-    "SECTION_TITLE": "Treten Sie einem privaten Raum mit einem Einladungscode bei",
-    "JOINING_ROOM": "Raum betreten...",
+    "PAGE_TITLE": "Raum über Code beitreten",
+    "META_DESCRIPTION": "Betritt einen privaten Raum mit einem Code zum Chatten und Zeichnen online.",
+    "SECTION_TITLE": "Betrete mit Einladungscode",
+    "JOINING_ROOM": "Raum beitreten...",
     "JOIN": "Beitreten",
     "ERRORS": {
-      "INVALID_CODE_CHARACTERS": "Der Code muss aus {{PRIVATE_CODE_LENGTH}} Zeichen bestehen"
+      "INVALID_CODE_CHARACTERS": "Der Code muss {{PRIVATE_CODE_LENGTH}} Zeichen lang sein"
     }
   },
   "ROOM": {
-    "NOW_ENTERING": "Betreten",
-    "NOW_LEAVING": "Verlassen",
+    "NOW_ENTERING": "Betrete Raum",
+    "NOW_LEAVING": "Verlasse Raum",
     "LEAVE_ROOM": "Raum verlassen?",
     "USERS": "Raumbenutzer",
-    "GET_ROOM_LINK": "Link zum Raum erhalten",
-    "GET_INVITATION": "Einladung erhalten",
-    "GET_PUBLIC_ROOM_LINK_DIALOG": "Erhalten und teilen Sie den Link zu Ihrem Raum, jedermann kann beitreten :)",
-    "GET_PRIVATE_ROOM_CODE_DIALOG": "Teilen Sie Ihren Code mit anderen, damit diese Ihrem Raum beitreten können!",
+    "GET_ROOM_LINK": "Raum-Link holen",
+    "GET_INVITATION": "Einladung holen",
+    "GET_PUBLIC_ROOM_LINK_DIALOG": "Hole und teile deinen Raum-Link, jeder kann beitreten :)",
+    "GET_PRIVATE_ROOM_CODE_DIALOG": "Teile deinen Code, damit andere beitreten können!",
     "COPY_LINK": "Link kopieren",
     "COPY_CODE": "Code kopieren",
     "COPIED_TO_CLIPBOARD": "In Zwischenablage kopiert!",
     "SAVE_IMAGE": "Bild speichern",
-    "PLEASE_SUPPORT_CANVAS": "Bitte verwenden Sie einen Browser, der das Canvas-Element unterstützt",
+    "PLEASE_SUPPORT_CANVAS": "Bitte verwende einen Browser, der Canvas-Element unterstützt",
     "ERRORS": {
-      "NOT_FOUND_MISSING_CODE": "Raum nicht gefunden: Privater Code in der URL fehlt.",
+      "NOT_FOUND_MISSING_CODE": "Raum nicht gefunden: privater Code fehlt in der URL.",
       "INVALID_CODE": "Ungültiger Code, bitte versuche es erneut.",
-      "DISBANDED_DUE_TO_INACTIVITY": "Ihr Raum wurde aufgrund von Inaktivität gelöscht.",
-      "ROOM_IS_FULL": "Schade, der Raum ist voll.",
-      "ALREADY_JOINED": "Sie sind bereits in diesem Raum.",
-      "SIMULTANEOUS_ROOMS_LIMIT": "Sie können sich in bis zu {{SIMULTANEOUS_ROOMS_LIMIT}} Räumen gleichzeitig aufhalten.",
-      "CONNECTION_LOST_RECONNECTING": "Verbindung verloren. Wiederherstellung der Verbindung...",
-      "BACK_ONLINE": "Zurück im Netz!",
-      "BACK_ONLINE_DISBANDED": "Zurück im Netz. Ihr Raum wurde gelöscht, da er leer war."
+      "DISBANDED_DUE_TO_INACTIVITY": "Dein Raum wurde wegen Inaktivität geschlossen.",
+      "ROOM_IS_FULL": "Sorry, der Raum ist voll.",
+      "ALREADY_JOINED": "Du bist bereits in diesem Raum.",
+      "SIMULTANEOUS_ROOMS_LIMIT": "Du kannst bis zu {{SIMULTANEOUS_ROOMS_LIMIT}} Räume gleichzeitig beitreten.",
+      "CONNECTION_LOST_RECONNECTING": "Verbindung verloren. Stelle wieder her...",
+      "BACK_ONLINE": "Wieder online!",
+      "BACK_ONLINE_DISBANDED": "Wieder online. Dein Raum wurde aufgelöst, weil er leer war."
     }
   },
   "NOTIFICATIONS": {
     "NEW_ROOM_MESSAGE": {
-      "TITLE": "Neue Nachricht in Ihrem Raum!",
-      "BODY": "Was könnte das denn sein?"
+      "TITLE": "Neue Nachricht in deinem Raum!",
+      "BODY": "Was könnte es sein?"
     },
     "USER_ENTERING": {
-      "TITLE": "Jemand betrat den Raum!",
-      "BODY": "Sag {{userEntering}} Hallo"
+      "TITLE": "Jemand ist eingetreten!",
+      "BODY": "Sag Hallo zu {{userEntering}}"
     },
     "USER_LEAVING": {
       "TITLE": "Jemand hat den Raum verlassen",
-      "BODY": "Auf wiedersehen, {{userLeaving}}"
+      "BODY": "Auf Wiedersehen, {{userLeaving}}"
     }
   },
   "IMAGE_ALTS": {
-    "PLAY_STORE_ICON": "Play Store-Icon",
-    "USER_ICON": "Benutzer-Icon",
-    "DOWNLOAD_ARROW_ICON": "Download-Pfeil-Icon",
-    "TOP_ARROW_BUTTON": "Obere Pfeil-Taste",
-    "DOWN_ARROW_BUTTON": "Abwärtspfeil-Taste",
-    "PENCIL_BUTTON": "Bleistift-Taste",
-    "ERASER_BUTTON": "Radiergummi-Taste",
-    "THICK_STROKE_BUTTON": "Dicke Striche-Taste",
-    "THIN_STROKE_BUTTON": "Dünne Striche-Taste",
-    "ALPHANUMERIC_BUTTON": "Alphanumerische Taste",
-    "ACCENTS_BUTTON": "Akzente-Taste",
-    "SYMBOLS_BUTTON": "Symbole-Taste",
-    "SMILEYS_BUTTON": "Emojis-Taste",
-    "CLOSE_BUTTON": "Schließen-Taste",
-    "SEND_MESSAGE_BUTTON": "Nachricht senden Taste",
-    "COPY_LAST_MESSAGE_BUTTON": "Letzte Nachricht kopieren Taste",
-    "CLEAR_CANVAS_BUTTON": "Leinwand löschen Taste"
+    "PLAY_STORE_ICON": "Play-Store-Symbol",
+    "USER_ICON": "Benutzer-Symbol",
+    "DOWNLOAD_ARROW_ICON": "Download-Pfeil-Symbol",
+    "TOP_ARROW_BUTTON": "Pfeil-nach-oben-Button",
+    "DOWN_ARROW_BUTTON": "Pfeil-nach-unten-Button",
+    "PENCIL_BUTTON": "Bleistift-Button",
+    "ERASER_BUTTON": "Radiergummi-Button",
+    "THICK_STROKE_BUTTON": "Dicker Strich-Button",
+    "THIN_STROKE_BUTTON": "Dünner Strich-Button",
+    "ALPHANUMERIC_BUTTON": "Alphanumerisch-Button",
+    "ACCENTS_BUTTON": "Akzent-Button",
+    "SYMBOLS_BUTTON": "Symbole-Button",
+    "SMILEYS_BUTTON": "Smileys-Button",
+    "CLOSE_BUTTON": "Schließen-Button",
+    "SEND_MESSAGE_BUTTON": "Nachricht senden-Button",
+    "COPY_LAST_MESSAGE_BUTTON": "Letzte Nachricht kopieren-Button",
+    "CLEAR_CANVAS_BUTTON": "Canvas löschen-Button"
   }
 }

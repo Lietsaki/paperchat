@@ -1,0 +1,131 @@
+{
+  "COMMON": {
+    "SAVE": "Enregistrer",
+    "ACCEPT": "Accepter",
+    "CANCEL": "Annuler",
+    "RETRY": "Réessayer",
+    "CODE": "Code",
+    "LOADING": "Chargement…",
+    "GO_HOME": "Retour à l’accueil",
+    "ERROR": "Erreur",
+    "ERRORS": {
+      "GENERIC": "Une erreur est survenue. Veuillez réessayer plus tard.",
+      "THERE_WAS": "Une erreur est survenue.",
+      "ROOM_NOT_FOUND": "Salon introuvable.",
+      "ROOM_NOT_FOUND_MAYBE_DISBANDED": "Salon introuvable. Il a peut-être été dissous.",
+      "DAILY_ROOMS_LIMIT": "Vous pouvez créer jusqu’à {{DAILY_ROOMS_LIMIT}} salons par jour. Réessayez demain."
+    }
+  },
+  "HOME": {
+    "PAGE_TITLE": "Un successeur spirituel en ligne de Pictochat",
+    "META_DESCRIPTION": "Dessinez en temps réel avec vos amis ou des gens au hasard dans une version en ligne de Pictochat",
+    "SEARCH_ROOMS": "Rechercher des salons",
+    "CREATE_ROOM": "Créer un salon",
+    "JOIN_WITH_CODE": "Rejoindre via un code",
+    "USERNAME": "Nom d’utilisateur",
+    "PRIVACY": "Confidentialité",
+    "PRIVACY_POLICY": "Politique de confidentialité",
+    "CREDITS": "Crédits",
+    "TOGGLE_AUDIO": "Basculer audio",
+    "SWITCH_LANGUAGE": "Changer de langue"
+  },
+  "SEARCH_ROOMS_SCREEN": {
+    "PAGE_TITLE": "Trouver des salons",
+    "META_DESCRIPTION": "Trouvez des salons en ligne pour discuter et dessiner en temps réel, successeur de Pictochat.",
+    "SECTION_TITLE": "Choisissez un salon pour le rejoindre",
+    "CHAT_ROOM": "Salon de chat",
+    "SEARCHING": "Recherche de salons…",
+    "ERROR_TRY_AGAIN": "Une erreur est survenue. Réessayer?",
+    "NO_ROOMS": "Aucun salon trouvé.",
+    "CREATE_ROOM": "Créer un salon",
+    "SEARCH_AGAIN": "Rechercher à nouveau"
+  },
+  "CREATE_ROOM_SCREEN": {
+    "PAGE_TITLE": "Créer un salon",
+    "META_DESCRIPTION": "Créez votre propre salon pour discuter et dessiner en temps réel.",
+    "SECTION_TITLE": "Quel type de salon souhaitez-vous créer?",
+    "CREATING_YOUR_PUBLIC_ROOM": "Création de votre salon public",
+    "CREATING_YOUR_PRIVATE_ROOM": "Création de votre salon privé",
+    "PUBLIC": {
+      "TITLE": "Public",
+      "DESCRIPTION": "Votre salon sera visible et tout le monde pourra rejoindre."
+    },
+    "PRIVATE": {
+      "TITLE": "Privé",
+      "DESCRIPTION": "Salon caché. Les utilisateurs rejoignent via un code."
+    },
+    "OFFLINE": {
+      "TITLE": "Hors ligne",
+      "DESCRIPTION": "Dessinez et amusez-vous sans connexion."
+    }
+  },
+  "JOIN_WITH_CODE_SCREEN": {
+    "PAGE_TITLE": "Rejoindre avec un code",
+    "META_DESCRIPTION": "Rejoignez un salon privé avec un code pour discuter et dessiner en ligne.",
+    "SECTION_TITLE": "Rejoignez un salon privé avec un code",
+    "JOINING_ROOM": "Connexion au salon…",
+    "JOIN": "Rejoindre",
+    "ERRORS": {
+      "INVALID_CODE_CHARACTERS": "Le code doit comporter {{PRIVATE_CODE_LENGTH}} caractères"
+    }
+  },
+  "ROOM": {
+    "NOW_ENTERING": "Entrée en cours",
+    "NOW_LEAVING": "Sortie en cours",
+    "LEAVE_ROOM": "Quitter le salon?",
+    "USERS": "Utilisateurs du salon",
+    "GET_ROOM_LINK": "Obtenir le lien du salon",
+    "GET_INVITATION": "Obtenir l’invitation",
+    "GET_PUBLIC_ROOM_LINK_DIALOG": "Obtenez et partagez le lien de votre salon, tout le monde peut rejoindre :)",
+    "GET_PRIVATE_ROOM_CODE_DIALOG": "Partagez votre code pour que d’autres puissent rejoindre!",
+    "COPY_LINK": "Copier le lien",
+    "COPY_CODE": "Copier le code",
+    "COPIED_TO_CLIPBOARD": "Copié dans le presse-papiers!",
+    "SAVE_IMAGE": "Enregistrer l’image",
+    "PLEASE_SUPPORT_CANVAS": "Veuillez utiliser un navigateur supportant l’élément canvas",
+    "ERRORS": {
+      "NOT_FOUND_MISSING_CODE": "Salon introuvable: code privé manquant dans l’URL.",
+      "INVALID_CODE": "Code invalide, veuillez réessayer.",
+      "DISBANDED_DUE_TO_INACTIVITY": "Votre salon a été dissous en raison de l’inactivité.",
+      "ROOM_IS_FULL": "Désolé, le salon est complet.",
+      "ALREADY_JOINED": "Vous êtes déjà dans ce salon.",
+      "SIMULTANEOUS_ROOMS_LIMIT": "Vous pouvez être dans jusqu’à {{SIMULTANEOUS_ROOMS_LIMIT}} salons en même temps.",
+      "CONNECTION_LOST_RECONNECTING": "Connexion perdue. Reconnexion…",
+      "BACK_ONLINE": "De retour en ligne!",
+      "BACK_ONLINE_DISBANDED": "De retour en ligne. Votre salon a été dissous car il était vide."
+    }
+  },
+  "NOTIFICATIONS": {
+    "NEW_ROOM_MESSAGE": {
+      "TITLE": "Nouveau message dans votre salon!",
+      "BODY": "Qu’est-ce que c’est?"
+    },
+    "USER_ENTERING": {
+      "TITLE": "Quelqu’un est entré!",
+      "BODY": "Allez dire bonjour à {{userEntering}}"
+    },
+    "USER_LEAVING": {
+      "TITLE": "Quelqu’un a quitté le salon",
+      "BODY": "Au revoir, {{userLeaving}}"
+    }
+  },
+  "IMAGE_ALTS": {
+    "PLAY_STORE_ICON": "Icône du Play Store",
+    "USER_ICON": "Icône utilisateur",
+    "DOWNLOAD_ARROW_ICON": "Icône flèche de téléchargement",
+    "TOP_ARROW_BUTTON": "Bouton flèche vers le haut",
+    "DOWN_ARROW_BUTTON": "Bouton flèche vers le bas",
+    "PENCIL_BUTTON": "Bouton crayon",
+    "ERASER_BUTTON": "Bouton gomme",
+    "THICK_STROKE_BUTTON": "Bouton trait épais",
+    "THIN_STROKE_BUTTON": "Bouton trait fin",
+    "ALPHANUMERIC_BUTTON": "Bouton alphanumérique",
+    "ACCENTS_BUTTON": "Bouton accents",
+    "SYMBOLS_BUTTON": "Bouton symboles",
+    "SMILEYS_BUTTON": "Bouton émoticônes",
+    "CLOSE_BUTTON": "Bouton fermer",
+    "SEND_MESSAGE_BUTTON": "Bouton envoyer message",
+    "COPY_LAST_MESSAGE_BUTTON": "Bouton copier dernier message",
+    "CLEAR_CANVAS_BUTTON": "Bouton effacer le canvas"
+  }
+}

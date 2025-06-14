@@ -1,7 +1,7 @@
 import { I18nConfig, LocaleCode } from 'types/Multilang'
 
 const i18nConfig: I18nConfig = {
-  locales: ['en', 'es', 'cat', 'de', 'cn'],
+  locales: ['en', 'es', 'pt', 'fr', 'de', 'ja'],
   defaultLocale: 'en'
 }
 

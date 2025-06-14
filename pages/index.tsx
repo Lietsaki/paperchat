@@ -37,7 +37,7 @@ const {
   editing_username,
   back_to_corner,
   save_username_btn_container,
-  cn,
+  ja,
   sounds_btn,
   multilang_btn
 } = styles
@@ -142,7 +142,7 @@ const Home = () => {
       open: open || dialogData.open,
       largeDialog: true,
       text: <MultilangList selectedLang={langToSwitchTo} setSelectedLang={setLangToSwitchTo} />,
-      skipSmallCnText: locale === 'cn',
+      skipSmallJaText: true,
       showSpinner: false,
       leftBtnText: t('COMMON.CANCEL'),
       leftBtnFn: () => {
@@ -187,11 +187,11 @@ const Home = () => {
           <div className={privacy_and_credits}>
             <span>v{version}</span>
             <span> - </span>
-            <Link href="/privacy" className={`${locale === 'cn' ? cn : ''}`}>
+            <Link href="/privacy" className={`${locale === 'ja' ? ja : ''}`}>
               {t('HOME.PRIVACY')}
             </Link>
             <span> - </span>
-            <Link href="/credits" className={`${locale === 'cn' ? cn : ''}`}>
+            <Link href="/credits" className={`${locale === 'ja' ? ja : ''}`}>
               {t('HOME.CREDITS')}
             </Link>
           </div>
@@ -223,7 +223,7 @@ const Home = () => {
               />
 
               {editingUsername ? (
-                <div className={`${save_username_btn_container} ${locale === 'cn' ? cn : ''}`}>
+                <div className={`${save_username_btn_container} ${locale === 'ja' ? ja : ''}`}>
                   <Button onClick={saveUsername} text={t('COMMON.SAVE')} />
                 </div>
               ) : null}

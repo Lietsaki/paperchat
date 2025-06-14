@@ -14,8 +14,8 @@ const {
   privacy_title,
   de,
   es,
-  cat,
-  cn,
+  pt,
+  ja,
   bottom,
   privacy,
   privacy_content,
@@ -31,8 +31,8 @@ const Credits = () => {
   const localeClasses: { [key: string]: string } = {
     de,
     es,
-    cat,
-    cn
+    pt,
+    ja
   }
 
   return (
@@ -82,21 +82,9 @@ const Credits = () => {
                 </a>
               </li>
               <li>Paperchat was released on November 13th, 2022.</li>
-            </ul>
-
-            <h3>
-              <a
-                href="https://www.linkedin.com/in/aoife-duffy-1bab2a235/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Aoife Duffy
-              </a>{' '}
-              - Localization and translation
-            </h3>
-            <ul>
               <li>
-                Español, Català, <span className={cn}>中文</span>, Deutsch.
+                Some translations, such as Portuguese, French, German and Japanese were obtained
+                through an automated translator, so they might not be perfect.
               </li>
             </ul>
 

@@ -29,13 +29,13 @@
       }
 
       &.privacy_title {
-        &.cn {
+        &.ja {
           letter-spacing: 2px;
         }
 
         &.de,
         &.es,
-        &.cat {
+        &.pt {
           font-size: 45px;
         }
       }
@@ -50,7 +50,7 @@
     @include phones {
       span.title_text.privacy_title {
         &.es,
-        &.cat {
+        &.pt {
           font-size: 40px;
         }
 
@@ -130,7 +130,7 @@
     justify-content: flex-end;
     gap: 5px;
 
-    .cn {
+    .ja {
       font-size: 12px;
       letter-spacing: 1px;
 
@@ -343,7 +343,7 @@
         font-size: 15px;
       }
 
-      span.cn {
+      span.ja {
         font-size: 12px;
       }
 
@@ -429,7 +429,7 @@
         }
       }
 
-      &.cn button {
+      &.ja button {
         font-size: 18px;
 
         @include phones {
