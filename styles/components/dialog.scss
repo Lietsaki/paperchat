@@ -250,6 +250,7 @@
 
       &.ja {
         font-size: 20px;
+        margin-top: 5px;
       }
 
       &.pt.selected_lang::before {
@@ -292,6 +293,10 @@
     .title {
       font-size: 20px;
       margin: 5px 0 12px 0;
+
+      &.ja {
+        font-size: 18px;
+      }
     }
 
     ul {
