@@ -15,9 +15,11 @@ import MultilangList from 'components/MultilangList'
 import Button from 'components/Button'
 import UsernameInput from 'components/UsernameInput'
 import { isUsernameValid, playSound } from 'helpers/helperFunctions'
-import { DialogOptions } from 'types/Dialog'
+import { BASE_DIALOG, DialogProps } from 'types/Dialog'
 import { LocaleCode } from 'types/Multilang'
-import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
+import { baseDialogData, Dialog } from 'components/Dialog'
+import { App } from '@capacitor/app'
+import emitter from 'helpers/MittEmitter'
 
 const {
   top,
@@ -55,7 +57,7 @@ const Home = () => {
   const [usernameInputValue, setUsernameInputValue] = useState('')
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
 
-  const [dialogData, setDialogData] = useState<DialogOptions>(baseDialogData)
+  const [dialogData, setDialogData] = useState<DialogProps>(baseDialogData)
   const [langToSwitchTo, setLangToSwitchTo] = useState<LocaleCode>(locale as LocaleCode)
 
   const PLAY_STORE_LINK = 'https://play.google.com/store/apps/details?id=net.paperchat.app'
@@ -106,6 +108,19 @@ const Home = () => {
   useEffect(() => {
     setUsernameInputValue(username)
   }, [username])
+
+  useEffect(() => {
+    if (editingUsername) {
+      App.addListener('backButton', () => finishEditingUsername())
+    } else if (dialogData.dialogName === BASE_DIALOG) {
+      App.addListener('backButton', () => App.exitApp())
+    }
+
+    return () => {
+      App.removeAllListeners()
+      emitter.emit('removedAllCapacitorListeners', '')
+    }
+  }, [editingUsername, dialogData])
 
   const goToFindRooms = () => {
     document.querySelector(`.${btn_search_rooms}`)?.classList.add(pressed)
@@ -235,7 +250,7 @@ const Home = () => {
           </div>
 
           {editingUsernameModalCover()}
-          {shouldDisplayDialog(dialogData)}
+          <Dialog {...dialogData} />
         </div>
       </div>
     </div>

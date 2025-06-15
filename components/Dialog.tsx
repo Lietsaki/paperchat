@@ -1,13 +1,16 @@
 import Spinner from './Spinner'
 import Button from './Button'
-import { DialogOptions, DialogProps } from 'types/Dialog'
+import { DialogProps } from 'types/Dialog'
 import { useState, useEffect } from 'react'
 import { store } from 'store/store'
 import { App } from '@capacitor/app'
 import emitter from 'helpers/MittEmitter'
 import useTranslation from 'i18n/useTranslation'
 
+const baseDialogData: DialogProps = { text: '', open: false, showSpinner: false }
+
 const Dialog = ({
+  open,
   showSpinner,
   text,
   largeDialog,
@@ -27,6 +30,17 @@ const Dialog = ({
 }: DialogProps) => {
   const { locale } = useTranslation()
   const [audio, setAudio] = useState<null | HTMLAudioElement>(null)
+  const [actuallyOpen, setActuallyOpen] = useState(open)
+
+  useEffect(() => {
+    if (!actuallyOpen && open) {
+      setActuallyOpen(true)
+    }
+
+    if (actuallyOpen && !open) {
+      setActuallyOpen(false)
+    }
+  }, [actuallyOpen, open])
 
   useEffect(() => {
     if (showSpinner && !store.getState().user.muteSounds && document.hidden === false) {
@@ -129,32 +143,23 @@ const Dialog = ({
     }
   }
 
-  return (
-    <div className={`dialog_layer_1 go_up ${largeDialog ? 'large_dialog' : ''} ${locale}`}>
-      <div className="dialog_layer_2">
-        <div className="dialog_content">
-          <div className="spinner-area-left">{showSpinner ? <Spinner /> : null}</div>
-          <div className={`text ${getJaTextClass()}`}>{text}</div>
-          <div className="spinner-area-right">{showSpinner ? <Spinner /> : null}</div>
+  if (!actuallyOpen) return null
 
-          {getOptions()}
+  return (
+    <div className="dialog_container">
+      <div className={`dialog_layer_1 go_up ${largeDialog ? 'large_dialog' : ''} ${locale}`}>
+        <div className="dialog_layer_2">
+          <div className="dialog_content">
+            <div className="spinner-area-left">{showSpinner ? <Spinner /> : null}</div>
+            <div className={`text ${getJaTextClass()}`}>{text}</div>
+            <div className="spinner-area-right">{showSpinner ? <Spinner /> : null}</div>
+
+            {getOptions()}
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-const baseDialogData: DialogOptions = { text: '', open: false, showSpinner: false }
-
-const shouldDisplayDialog = (dialogData: DialogOptions) => {
-  const { open, ...restOfProps } = dialogData
-  if (!open) return
-
-  return (
-    <div className="dialog_container">
-      <Dialog {...restOfProps} />
-    </div>
-  )
-}
-
-export { Dialog, baseDialogData, shouldDisplayDialog }
+export { Dialog, baseDialogData }

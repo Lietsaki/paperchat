@@ -2,27 +2,9 @@ import { JSX } from 'react'
 
 type DialogDebouncedActionNames = 'roomSearch' | 'retryRoomSearch' | 'retryJoinPrivateRoomAttempt'
 
-type DialogOptions = {
-  open: boolean
-  text: string | JSX.Element
-  largeDialog?: boolean
-  skipSmallJaText?: boolean
-  showSpinner: boolean
-
-  leftBtnText?: string
-  leftBtnFn?: () => void
-  hideOnLeftBtn?: boolean
-
-  rightBtnText?: string
-  rightBtnFn?: () => void
-  hideOnRightBtn?: boolean
-
-  rightBtnDebounce?: number
-  rightBtnName?: DialogDebouncedActionNames
-  rightBtnDebounceMounted?: boolean
-}
-
 type DialogProps = {
+  open: boolean
+  dialogName?: string
   text: string | JSX.Element
   showSpinner?: boolean
   largeDialog?: boolean
@@ -41,4 +23,8 @@ type DialogProps = {
   rightBtnDebounceMounted?: boolean
 }
 
-export type { DialogOptions, DialogProps, DialogDebouncedActionNames }
+const LANGUAGES_DIALOG = 'languages_dialog'
+const BASE_DIALOG = 'base_dialog'
+
+export type { DialogProps, DialogDebouncedActionNames }
+export { LANGUAGES_DIALOG, BASE_DIALOG }

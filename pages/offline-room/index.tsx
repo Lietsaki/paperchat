@@ -30,9 +30,9 @@ import emitter from 'helpers/MittEmitter'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser, setUsername } from 'store/slices/userSlice'
 import { usernameMaxLength } from 'store/initializer'
-import { DialogOptions } from 'types/Dialog'
+import { DialogProps } from 'types/Dialog'
 import { LocaleCode } from 'types/Multilang'
-import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
+import { baseDialogData, Dialog } from 'components/Dialog'
 import Button from 'components/Button'
 import UsernameInput from 'components/UsernameInput'
 import getRandomUsername from 'helpers/username-generator/usernameGenerator'
@@ -97,7 +97,7 @@ const Room = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
 
-  const [dialogData, setDialogData] = useState<DialogOptions>(baseDialogData)
+  const [dialogData, setDialogData] = useState<DialogProps>(baseDialogData)
   const [langToSwitchTo, setLangToSwitchTo] = useState<LocaleCode>(locale)
 
   const [mustSetUsername, setMustSetUsername] = useState(false)
@@ -598,7 +598,7 @@ const Room = () => {
           </div>
 
           {editingUsernameModalCover()}
-          {shouldDisplayDialog(dialogData)}
+          <Dialog {...dialogData} />
         </div>
       </div>
     </div>

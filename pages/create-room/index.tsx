@@ -5,8 +5,8 @@ import { useRouter } from 'next/router'
 import page_styles from 'styles/create-room/create-room.module.scss'
 import { useState, useEffect } from 'react'
 import { createRoom, SIMULTANEOUS_ROOMS_LIMIT, DAILY_ROOMS_LIMIT } from 'firebase-config/realtimeDB'
-import { DialogOptions } from 'types/Dialog'
-import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
+import { DialogProps } from 'types/Dialog'
+import { baseDialogData, Dialog } from 'components/Dialog'
 import { playSound } from 'helpers/helperFunctions'
 import { initializeUsername } from 'store/initializer'
 import useTranslation from 'i18n/useTranslation'
@@ -46,7 +46,7 @@ const CreateRoom = () => {
   const { t, locale } = useTranslation()
   const getTitleText = () => `Paperchat - ${t('CREATE_ROOM_SCREEN.PAGE_TITLE')}`
 
-  const [dialogData, setDialogData] = useState<DialogOptions>(baseDialogData)
+  const [dialogData, setDialogData] = useState<DialogProps>(baseDialogData)
 
   useEffect(() => {
     initializeUsername()
@@ -248,7 +248,7 @@ const CreateRoom = () => {
             </div>
           </div>
 
-          {shouldDisplayDialog(dialogData)}
+          <Dialog {...dialogData} />
         </div>
       </div>
     </div>

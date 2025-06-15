@@ -6,8 +6,8 @@ import Button from 'components/Button'
 import { PRIVATE_CODE_LENGTH, requestJoinPrivateRoom } from 'firebase-config/realtimeDB'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { DialogOptions } from 'types/Dialog'
-import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
+import { DialogProps } from 'types/Dialog'
+import { baseDialogData, Dialog } from 'components/Dialog'
 import { playSound } from 'helpers/helperFunctions'
 import useTranslation from 'i18n/useTranslation'
 import Head from 'next/head'
@@ -34,7 +34,7 @@ const JoinWithACode = () => {
   const { t, locale } = useTranslation()
   const getTitleText = () => `Paperchat - ${t('JOIN_WITH_CODE_SCREEN.PAGE_TITLE')}`
 
-  const [dialogData, setDialogData] = useState<DialogOptions>(baseDialogData)
+  const [dialogData, setDialogData] = useState<DialogProps>(baseDialogData)
 
   const join = async (code: string) => {
     if (!code || !code.trim()) return
@@ -138,7 +138,7 @@ const JoinWithACode = () => {
             </div>
           </div>
 
-          {shouldDisplayDialog(dialogData)}
+          <Dialog {...dialogData} />
         </div>
       </div>
     </div>

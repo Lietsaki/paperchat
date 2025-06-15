@@ -5,8 +5,8 @@ import Button from 'components/Button'
 import { Room } from 'types/Room'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
-import { DialogOptions } from 'types/Dialog'
-import { baseDialogData, shouldDisplayDialog } from 'components/Dialog'
+import { DialogProps } from 'types/Dialog'
+import { baseDialogData, Dialog } from 'components/Dialog'
 import {
   searchForRooms,
   createRoom,
@@ -39,7 +39,7 @@ const FindRooms = () => {
   const getTitleText = () => `Paperchat - ${t('SEARCH_ROOMS_SCREEN.PAGE_TITLE')}`
 
   const [rooms, setRooms] = useState<Room[]>([])
-  const [dialogData, setDialogData] = useState<DialogOptions>(baseDialogData)
+  const [dialogData, setDialogData] = useState<DialogProps>(baseDialogData)
 
   useEffect(() => {
     searchRooms()
@@ -231,7 +231,7 @@ const FindRooms = () => {
             {renderRightBtn()}
           </div>
 
-          {shouldDisplayDialog(dialogData)}
+          <Dialog {...dialogData} />
         </div>
       </div>
     </div>
