@@ -15,7 +15,7 @@ import MultilangList from 'components/MultilangList'
 import Button from 'components/Button'
 import UsernameInput from 'components/UsernameInput'
 import { isUsernameValid, playSound } from 'helpers/helperFunctions'
-import { BASE_DIALOG, DialogProps } from 'types/Dialog'
+import { DialogProps, LANGUAGES_DIALOG } from 'types/Dialog'
 import { LocaleCode } from 'types/Multilang'
 import { baseDialogData, Dialog } from 'components/Dialog'
 import { App } from '@capacitor/app'
@@ -58,7 +58,7 @@ const Home = () => {
   const [usernameBeingEdited, setUsernameBeingEdited] = useState('')
 
   const [dialogData, setDialogData] = useState<DialogProps>(baseDialogData)
-  const [langToSwitchTo, setLangToSwitchTo] = useState<LocaleCode>(locale as LocaleCode)
+  const [langToSwitchTo, setLangToSwitchTo] = useState<LocaleCode>(locale)
 
   const PLAY_STORE_LINK = 'https://play.google.com/store/apps/details?id=net.paperchat.app'
 
@@ -112,7 +112,16 @@ const Home = () => {
   useEffect(() => {
     if (editingUsername) {
       App.addListener('backButton', () => finishEditingUsername())
-    } else if (dialogData.dialogName === BASE_DIALOG) {
+    } else if (dialogData.dialogName === LANGUAGES_DIALOG) {
+      App.addListener('backButton', () => {
+        document.querySelector('.dialog_layer_1')?.classList.add('go_down')
+
+        setTimeout(() => {
+          setDialogData(baseDialogData)
+          setLangToSwitchTo(locale)
+        }, 400)
+      })
+    } else {
       App.addListener('backButton', () => App.exitApp())
     }
 
@@ -154,6 +163,7 @@ const Home = () => {
 
   const updateLanguageDialogData = (open?: boolean) => {
     setDialogData({
+      dialogName: LANGUAGES_DIALOG,
       open: open || dialogData.open,
       largeDialog: true,
       text: <MultilangList selectedLang={langToSwitchTo} setSelectedLang={setLangToSwitchTo} />,
@@ -162,6 +172,7 @@ const Home = () => {
       leftBtnText: t('COMMON.CANCEL'),
       leftBtnFn: () => {
         setDialogData(baseDialogData)
+        setLangToSwitchTo(locale)
       },
       rightBtnText: t('COMMON.ACCEPT'),
       rightBtnFn: () => {
@@ -176,10 +187,6 @@ const Home = () => {
   useEffect(() => {
     updateLanguageDialogData()
   }, [langToSwitchTo])
-
-  useEffect(() => {
-    setLangToSwitchTo(locale)
-  }, [locale])
 
   return (
     <div className="main">

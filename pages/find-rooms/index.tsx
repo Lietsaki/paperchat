@@ -63,12 +63,13 @@ const FindRooms = () => {
       open: true,
       text: t('SEARCH_ROOMS_SCREEN.ERROR_TRY_AGAIN'),
       showSpinner: false,
+
       rightBtnText: t('COMMON.ACCEPT'),
       rightBtnFn: () => searchRooms(),
+      hideOnRightBtn: false,
 
       leftBtnText: t('COMMON.GO_HOME'),
-      leftBtnFn: () => router.push('/'),
-      hideOnRightBtn: false
+      leftBtnFn: () => router.push('/')
     })
   }
 
@@ -77,6 +78,7 @@ const FindRooms = () => {
       open: true,
       text: t('SEARCH_ROOMS_SCREEN.NO_ROOMS'),
       showSpinner: false,
+
       rightBtnText: t('COMMON.RETRY'),
       rightBtnFn: () => searchRooms(),
       hideOnRightBtn: false,

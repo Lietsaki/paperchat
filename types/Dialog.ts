@@ -24,7 +24,9 @@ type DialogProps = {
 }
 
 const LANGUAGES_DIALOG = 'languages_dialog'
-const BASE_DIALOG = 'base_dialog'
+const SHARE_LINK_DIALOG = 'share_link_dialog'
+const USER_LIST_DIALOG = 'user_list_dialog'
+const EXIT_ROOM_DIALOG = 'exit_room_dialog'
 
 export type { DialogProps, DialogDebouncedActionNames }
-export { LANGUAGES_DIALOG, BASE_DIALOG }
+export { LANGUAGES_DIALOG, SHARE_LINK_DIALOG, USER_LIST_DIALOG, EXIT_ROOM_DIALOG }

@@ -30,7 +30,7 @@ import emitter from 'helpers/MittEmitter'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUser, setUsername } from 'store/slices/userSlice'
 import { usernameMaxLength } from 'store/initializer'
-import { DialogProps } from 'types/Dialog'
+import { DialogProps, EXIT_ROOM_DIALOG, LANGUAGES_DIALOG } from 'types/Dialog'
 import { LocaleCode } from 'types/Multilang'
 import { baseDialogData, Dialog } from 'components/Dialog'
 import Button from 'components/Button'
@@ -127,13 +127,6 @@ const Room = () => {
       dispatch(setUsername(savedUsername.substring(0, usernameMaxLength).trim()))
       initializeRoom(savedUsername)
     }
-
-    App.addListener('backButton', () => showAskExitRoomDialog())
-
-    return () => {
-      App.removeAllListeners()
-      emitter.emit('removedAllCapacitorListeners', '')
-    }
   }, [])
 
   useEffect(() => createActiveColorClass(roomColor), [roomColor])
@@ -146,6 +139,26 @@ const Room = () => {
       emitter.off('canvasData')
     }
   }, [roomContent])
+
+  useEffect(() => {
+    if (dialogData.dialogName === EXIT_ROOM_DIALOG || dialogData.dialogName === LANGUAGES_DIALOG) {
+      App.addListener('backButton', () => {
+        document.querySelector('.dialog_layer_1')?.classList.add('go_down')
+
+        setTimeout(() => {
+          setDialogData(baseDialogData)
+          setLangToSwitchTo(locale)
+        }, 400)
+      })
+    } else if (dialogData === baseDialogData) {
+      App.addListener('backButton', () => showAskExitRoomDialog())
+    }
+
+    return () => {
+      App.removeAllListeners()
+      emitter.emit('removedAllCapacitorListeners', '')
+    }
+  }, [dialogData])
 
   const initializeRoom = (username: string) => {
     setRoomContent([
@@ -290,6 +303,7 @@ const Room = () => {
     playSound('cancel', 0.5)
 
     setDialogData({
+      dialogName: EXIT_ROOM_DIALOG,
       open: true,
       text: t('ROOM.LEAVE_ROOM'),
       showSpinner: false,
@@ -400,6 +414,7 @@ const Room = () => {
 
   const updateLanguageDialogData = (open?: boolean) => {
     setDialogData({
+      dialogName: LANGUAGES_DIALOG,
       open: open || dialogData.open,
       largeDialog: true,
       text: <MultilangList selectedLang={langToSwitchTo} setSelectedLang={setLangToSwitchTo} />,
@@ -408,6 +423,7 @@ const Room = () => {
       leftBtnText: t('COMMON.CANCEL'),
       leftBtnFn: () => {
         setDialogData(baseDialogData)
+        setLangToSwitchTo(locale)
       },
       rightBtnText: t('COMMON.ACCEPT'),
       rightBtnFn: () => {
@@ -422,10 +438,6 @@ const Room = () => {
   useEffect(() => {
     updateLanguageDialogData()
   }, [langToSwitchTo])
-
-  useEffect(() => {
-    setLangToSwitchTo(locale)
-  }, [locale])
 
   return (
     <div className="main">

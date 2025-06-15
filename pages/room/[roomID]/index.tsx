@@ -43,7 +43,13 @@ import {
   updateRoomMessages
 } from 'firebase-config/realtimeDB'
 import { usernameMaxLength } from 'store/initializer'
-import { DialogProps } from 'types/Dialog'
+import {
+  DialogProps,
+  EXIT_ROOM_DIALOG,
+  LANGUAGES_DIALOG,
+  SHARE_LINK_DIALOG,
+  USER_LIST_DIALOG
+} from 'types/Dialog'
 import { LocaleCode } from 'types/Multilang'
 import { baseDialogData, Dialog } from 'components/Dialog'
 import Button from 'components/Button'
@@ -191,10 +197,7 @@ const Room = () => {
   // and receive its first messages snapshot.
   useEffect(() => {
     if (loadedRoom === true) {
-      setTimeout(() => {
-        scrollContent()
-        App.addListener('backButton', () => showAskExitRoomDialog())
-      }, 300)
+      setTimeout(() => scrollContent(), 300)
       playEnteredSound()
       setDialogData(baseDialogData)
     }
@@ -204,6 +207,7 @@ const Room = () => {
   useEffect(() => {
     if (viewingUsers) {
       setDialogData({
+        dialogName: USER_LIST_DIALOG,
         open: true,
         largeDialog: true,
         text: getUserList(),
@@ -227,7 +231,22 @@ const Room = () => {
   }, [msgDebounceTime])
 
   useEffect(() => {
-    if (dialogData === baseDialogData && !lostConnection) {
+    if (
+      dialogData.dialogName === EXIT_ROOM_DIALOG ||
+      dialogData.dialogName === LANGUAGES_DIALOG ||
+      dialogData.dialogName === SHARE_LINK_DIALOG ||
+      dialogData.dialogName === USER_LIST_DIALOG
+    ) {
+      App.addListener('backButton', () => {
+        document.querySelector('.dialog_layer_1')?.classList.add('go_down')
+
+        setTimeout(() => {
+          setDialogData(baseDialogData)
+          setLangToSwitchTo(locale)
+          setViewingUsers(false)
+        }, 400)
+      })
+    } else if (dialogData === baseDialogData && !lostConnection) {
       App.addListener('backButton', () => showAskExitRoomDialog())
     }
 
@@ -633,6 +652,7 @@ const Room = () => {
     playSound('cancel', 0.5)
 
     setDialogData({
+      dialogName: EXIT_ROOM_DIALOG,
       open: true,
       text: t('ROOM.LEAVE_ROOM'),
       showSpinner: false,
@@ -701,6 +721,7 @@ const Room = () => {
   const showUsersDialog = () => {
     setViewingUsers(true)
     setDialogData({
+      dialogName: USER_LIST_DIALOG,
       open: true,
       largeDialog: true,
       text: getUserList(),
@@ -716,6 +737,7 @@ const Room = () => {
 
   const showRoomLinkDialog = () => {
     setDialogData({
+      dialogName: USER_LIST_DIALOG,
       open: true,
       text: t('ROOM.GET_PUBLIC_ROOM_LINK_DIALOG'),
       showSpinner: false,
@@ -834,6 +856,7 @@ const Room = () => {
 
   const updateLanguageDialogData = (open?: boolean) => {
     setDialogData({
+      dialogName: LANGUAGES_DIALOG,
       open: open || dialogData.open,
       largeDialog: true,
       text: <MultilangList selectedLang={langToSwitchTo} setSelectedLang={setLangToSwitchTo} />,
@@ -842,6 +865,7 @@ const Room = () => {
       leftBtnText: t('COMMON.CANCEL'),
       leftBtnFn: () => {
         setDialogData(baseDialogData)
+        setLangToSwitchTo(locale)
       },
       rightBtnText: t('COMMON.ACCEPT'),
       rightBtnFn: () => {
@@ -856,10 +880,6 @@ const Room = () => {
   useEffect(() => {
     updateLanguageDialogData()
   }, [langToSwitchTo])
-
-  useEffect(() => {
-    setLangToSwitchTo(locale)
-  }, [locale])
 
   return (
     <div className="main">
