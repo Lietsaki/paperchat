@@ -3,6 +3,7 @@ import useTranslation from 'i18n/useTranslation'
 import Button from 'components/Button'
 import { PRIVATE_CODE_LENGTH } from 'firebase-config/realtimeDB'
 import styles from 'styles/join-room/join-room.module.scss'
+import { Capacitor } from '@capacitor/core'
 const { input_area, join_area } = styles
 
 type JoinRoomInputProps = {
@@ -33,6 +34,25 @@ const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
     setCode(e.target.value.trim().toUpperCase())
   }
 
+  const handleFocus = () => {
+    if (Capacitor.isNativePlatform()) {
+      document.documentElement.classList.remove('no-scroll-y')
+    }
+
+    inputRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    })
+  }
+
+  const handleBlur = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+
+    if (Capacitor.isNativePlatform()) {
+      document.documentElement.classList.add('no-scroll-y')
+    }
+  }
+
   return (
     <div className={join_area}>
       <div>
@@ -47,6 +67,8 @@ const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
               placeholder="ABC12"
               maxLength={PRIVATE_CODE_LENGTH}
               autoComplete="off"
+              onFocus={handleFocus}
+              onBlur={handleBlur}
             ></input>
           </div>
 

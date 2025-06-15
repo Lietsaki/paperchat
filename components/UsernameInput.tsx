@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, BaseSyntheticEvent } from 'react'
 import useTranslation from 'i18n/useTranslation'
 import { usernameMinLength, usernameMaxLength } from '../store/initializer'
+import { Capacitor } from '@capacitor/core'
 
 type UsernameInputProps = {
   editing: boolean
@@ -33,6 +34,25 @@ const UsernameInput = ({ editing, receivedValue, setUsernameBeingEdited }: Usern
     return editing ? 'make_complete_rectangle' : ''
   }
 
+  const handleFocus = () => {
+    if (Capacitor.isNativePlatform()) {
+      document.documentElement.classList.remove('no-scroll-y')
+    }
+
+    inputRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    })
+  }
+
+  const handleBlur = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+
+    if (Capacitor.isNativePlatform()) {
+      document.documentElement.classList.add('no-scroll-y')
+    }
+  }
+
   return (
     <div className={`input_container ${shouldBeCompleteRectangle()} ${locale}`}>
       <div className="title">{t('HOME.USERNAME')}</div>
@@ -45,6 +65,8 @@ const UsernameInput = ({ editing, receivedValue, setUsernameBeingEdited }: Usern
         maxLength={usernameMaxLength}
         minLength={usernameMinLength}
         autoComplete="off"
+        onFocus={handleFocus}
+        onBlur={handleBlur}
       ></input>
     </div>
   )
