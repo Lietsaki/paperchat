@@ -244,7 +244,7 @@ const Room = () => {
           setDialogData(baseDialogData)
           setLangToSwitchTo(locale)
           setViewingUsers(false)
-        }, 400)
+        }, 450)
       })
     } else if (dialogData === baseDialogData && !lostConnection) {
       App.addListener('backButton', () => showAskExitRoomDialog())
@@ -763,7 +763,7 @@ const Room = () => {
 
         setTimeout(() => {
           document.querySelector('.dialog_layer_1')?.classList.add('go_down')
-          setTimeout(() => setDialogData(baseDialogData), 400)
+          setTimeout(() => setDialogData(baseDialogData), 450)
         }, 2000)
       }
     })

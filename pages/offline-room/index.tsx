@@ -148,7 +148,7 @@ const Room = () => {
         setTimeout(() => {
           setDialogData(baseDialogData)
           setLangToSwitchTo(locale)
-        }, 400)
+        }, 450)
       })
     } else if (dialogData === baseDialogData) {
       App.addListener('backButton', () => showAskExitRoomDialog())

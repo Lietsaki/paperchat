@@ -119,7 +119,7 @@ const Home = () => {
         setTimeout(() => {
           setDialogData(baseDialogData)
           setLangToSwitchTo(locale)
-        }, 400)
+        }, 450)
       })
     } else {
       App.addListener('backButton', () => App.exitApp())

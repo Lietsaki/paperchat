@@ -30,17 +30,6 @@ const Dialog = ({
 }: DialogProps) => {
   const { locale } = useTranslation()
   const [audio, setAudio] = useState<null | HTMLAudioElement>(null)
-  const [actuallyOpen, setActuallyOpen] = useState(open)
-
-  useEffect(() => {
-    if (!actuallyOpen && open) {
-      setActuallyOpen(true)
-    }
-
-    if (actuallyOpen && !open) {
-      setActuallyOpen(false)
-    }
-  }, [actuallyOpen, open])
 
   useEffect(() => {
     if (showSpinner && !store.getState().user.muteSounds && document.hidden === false) {
@@ -82,7 +71,7 @@ const Dialog = ({
     if (!leftBtnFn) return
     if (hideOnLeftBtn) {
       document.querySelector('.dialog_layer_1')?.classList.add('go_down')
-      return setTimeout(() => leftBtnFn(), 400)
+      return setTimeout(() => leftBtnFn(), 450)
     }
     leftBtnFn()
   }
@@ -91,7 +80,7 @@ const Dialog = ({
     if (!rightBtnFn) return
     if (hideOnRightBtn) {
       document.querySelector('.dialog_layer_1')?.classList.add('go_down')
-      return setTimeout(() => rightBtnFn(), 400)
+      return setTimeout(() => rightBtnFn(), 450)
     }
     rightBtnFn()
   }
@@ -143,7 +132,7 @@ const Dialog = ({
     }
   }
 
-  if (!actuallyOpen) return null
+  if (!open) return null
 
   return (
     <div className="dialog_container">

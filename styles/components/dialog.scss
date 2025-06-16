@@ -318,8 +318,12 @@
 }
 
 .go_down {
-  animation: goDown 0.3s linear;
-  transform: translateY(260px);
+  transform: translateY(330px);
+  transition: all 0.4s linear;
+
+  @include phones {
+    transform: translateY(260px);
+  }
 }
 
 @keyframes goUp {
@@ -328,13 +332,5 @@
   }
   to {
     transform: translateY(0px);
-  }
-}
-@keyframes goDown {
-  from {
-    transform: translateY(0px);
-  }
-  to {
-    transform: translateY(230px);
   }
 }
