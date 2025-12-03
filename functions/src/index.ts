@@ -68,7 +68,10 @@ exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(
 
     for (const roomKey of roomKeys) {
       const room = publicRoomsMessagesObj[roomKey]
-      const lastMessage = room.messages[room.messages.length - 1]
+      const roomMessages = Object.values(room.messages || {})
+      roomMessages.sort((a, b) => a.serverTs - b.serverTs)
+
+      const lastMessage = roomMessages[roomMessages.length - 1]
 
       if (lastMessage.serverTs < halfAnHourAgo) {
         publicRoomsToDelete.push(roomKey)
@@ -85,7 +88,10 @@ exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(
 
     for (const roomKey of roomKeys) {
       const room = privateRoomsMessagesObj[roomKey]
-      const lastMessage = room.messages[room.messages.length - 1]
+      const roomMessages = Object.values(room.messages || {})
+      roomMessages.sort((a, b) => a.serverTs - b.serverTs)
+
+      const lastMessage = roomMessages[roomMessages.length - 1]
 
       if (lastMessage.serverTs < halfAnHourAgo) {
         privateRoomsToDelete.push(roomKey)
@@ -130,22 +136,28 @@ exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(
 
     for (const userKey of userKeys) {
       const user = usersObj[userKey] as OnlineUser
+      const userPublicRoomKeys = Object.keys(user.publicRooms || {})
+      const userPrivateRoomKeys = Object.keys(user.privateRooms || {})
 
       if (user.publicRooms) {
-        user.publicRooms = user.publicRooms.filter((roomKey) => {
-          return publicRoomsMessagesObj[roomKey] && !publicRoomsToDelete.includes(roomKey)
-        })
+        for (const key of userPublicRoomKeys) {
+          if (publicRoomsMessagesObj[key] && publicRoomsToDelete.includes(key)) {
+            delete user.publicRooms[key]
+          }
+        }
       }
 
       if (user.privateRooms) {
-        user.privateRooms = user.privateRooms.filter((roomKey) => {
-          return privateRoomsMessagesObj[roomKey] && !privateRoomsToDelete.includes(roomKey)
-        })
+        for (const key of userPrivateRoomKeys) {
+          if (privateRoomsMessagesObj[key] && privateRoomsToDelete.includes(key)) {
+            delete user.privateRooms[key]
+          }
+        }
       }
 
       if (
-        (!user.publicRooms || !user.publicRooms.length) &&
-        (!user.privateRooms || !user.privateRooms.length)
+        (!user.publicRooms || !Object.keys(user.publicRooms || {}).length) &&
+        (!user.privateRooms || !Object.keys(user.privateRooms || {}).length)
       ) {
         usersObj[userKey] = null
       }

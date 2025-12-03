@@ -152,7 +152,7 @@ const FindRooms = () => {
             <RoomItem
               key={room.id}
               code={room.code}
-              usersNumber={room.usersNumber}
+              usersNumber={Object.keys(room.users || {}).length}
               onClick={() => goToRoom(room.id!)}
             />
           )

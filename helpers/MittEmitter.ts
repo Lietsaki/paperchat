@@ -12,7 +12,9 @@ type Events = {
   receivedFirebaseMessages: FirebaseMessage[]
   lostConnection: string
   backOnline: string
+  roomUsersUpdate: string[]
   disbandedRoom: string
+  fullRoom: string
   otherError: string
   canvasToCopy: string
   removedAllCapacitorListeners: string

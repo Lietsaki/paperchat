@@ -10,12 +10,14 @@ type JoinRoomInputProps = {
   handleCodeSubmit: (code: string) => void
 }
 
+const BTN_ID = 'joinRoomBtn'
+const JOIN_ROOM_DEBOUNCE = 10
+
 const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
   const { t, locale } = useTranslation()
   const [code, setCode] = useState('')
   const [latestDebounce, setLatestDebounce] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
-  const btnID = 'joinRoomBtn'
 
   useEffect(() => {
     inputRef.current!.focus()
@@ -25,7 +27,7 @@ const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
 
   const handleCodeSubmitWithCheck = (e: React.FormEvent, code: string) => {
     e.preventDefault()
-    const btn = document.getElementById(btnID) as HTMLButtonElement
+    const btn = document.getElementById(BTN_ID) as HTMLButtonElement
     btn.click()
   }
 
@@ -76,9 +78,13 @@ const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
             text={t('JOIN_WITH_CODE_SCREEN.JOIN')}
             onClick={() => handleCodeSubmit(code)}
             name="retryJoinPrivateRoomAttempt"
-            debounce={latestDebounce || (code && code.length === PRIVATE_CODE_LENGTH) ? 30 : 0}
+            debounce={
+              latestDebounce || (code && code.length === PRIVATE_CODE_LENGTH)
+                ? JOIN_ROOM_DEBOUNCE
+                : 0
+            }
             debounceMounted={!!latestDebounce}
-            id={btnID}
+            id={BTN_ID}
           />
         </form>
       </div>

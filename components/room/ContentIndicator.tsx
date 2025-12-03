@@ -33,6 +33,8 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
   const [overflowed2NewestIndicator, setOverflowed2NewestIndicator] = useState('')
   const [finishedFirstRender, setFinishedFirstRender] = useState(false)
 
+  const prevFirstKeyRef = useRef<string | null>(null)
+
   const middleIndicatorsRef = useRef<HTMLDivElement>(null)
   const indicatorsContainerRef = useRef<HTMLDivElement>(null)
   const indicatorsRef = useRef<ContentIndicators>(undefined)
@@ -60,6 +62,14 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
         let newIndicators = { ...indicatorsRef.current }
         const newIndKeys = Object.keys(newIndicators)
         let latestVisibleId = ''
+
+        const contentIds = roomContent.map((item) => item.id)
+
+        for (const key of Object.keys(newIndicators)) {
+          if (!contentIds.includes(key)) {
+            delete newIndicators[key]
+          }
+        }
 
         for (const entry of entries) {
           const { id } = entry.target
@@ -116,27 +126,27 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     const indicators = { ...indicatorsToHandle }
     const indicatorKeys = Object.keys(indicators)
 
-    // If a new item has not been added after the first render completed, return.
+    const oldestKeyChanged = prevFirstKeyRef.current && prevFirstKeyRef.current !== indicatorKeys[0]
+    prevFirstKeyRef.current = indicatorKeys[0]
+
+    // If a new item has not been added/changed after the first render completed, return.
+    // We might overflow without reaching the threshold to delete the oldest messages,
+    // so that's why we also need to check for latestOverflowedLength.
     if (
       latestOverflowedLength &&
       indicatorKeys.length === latestOverflowedLength &&
-      finishedFirstRender
+      finishedFirstRender &&
+      !oldestKeyChanged
     ) {
       return indicators
     }
 
-    const mustAssignOverflowed1ToOldestIndicator =
-      !indicators[indicatorKeys[0]].isVisible &&
-      !overflowed1OldestIndicator &&
-      !overflowed1NewestIndicator
+    const mustAssignOverflowed1ToOldestIndicator = !overflowed1OldestIndicator
 
     const mustAssignOverflowed2ToOldestIndicator =
-      !indicators[indicatorKeys[0]].isVisible &&
-      !indicators[indicatorKeys[1]].isVisible &&
-      overflowed1OldestIndicator &&
-      !indicators[indicatorKeys[1]].isOverflowedIndicator1
+      overflowed1OldestIndicator && !overflowed2OldestIndicator
 
-    const mustReassignNewestIndicators = overflowed2NewestIndicator
+    const mustReassignIndicators = overflowed2NewestIndicator
 
     if (mustAssignOverflowed1ToOldestIndicator) {
       indicators[indicatorKeys[0]].isOverflowedIndicator1 = true
@@ -156,13 +166,16 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
       setOverflowed2NewestIndicator(indicatorKeys[indicatorKeys.length - 1])
     }
 
-    if (mustReassignNewestIndicators) {
+    if (mustReassignIndicators) {
       setLatestOverflowedLength(indicatorKeys.length)
+
+      setOverflowed2OldestIndicator(indicatorKeys[0])
+      setOverflowed1OldestIndicator(indicatorKeys[1])
       setOverflowed1NewestIndicator(indicatorKeys[indicatorKeys.length - 2])
       setOverflowed2NewestIndicator(indicatorKeys[indicatorKeys.length - 1])
+
       indicators[indicatorKeys[indicatorKeys.length - 3]].isOverflowedIndicator1 = false
       indicators[indicatorKeys[indicatorKeys.length - 2]].isOverflowedIndicator2 = false
-
       indicators[indicatorKeys[0]].isOverflowedIndicator2 = true
       indicators[indicatorKeys[1]].isOverflowedIndicator1 = true
     }
@@ -182,7 +195,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     indicators[indicatorId] = { isVisible: true }
 
     if (viewingOldIndicator1) {
-      if (overflowed2NewestIndicator) {
+      if (indicators[overflowed2NewestIndicator]) {
         indicators[overflowed2OldestIndicator].isOverflowedIndicator1 = true
         indicators[overflowed2OldestIndicator].isOverflowedIndicator2 = false
 
@@ -193,10 +206,10 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
       }
     }
 
-    if (viewingNewIndicator1) {
+    if (viewingNewIndicator1 && indicators[overflowed1OldestIndicator]) {
       indicators[overflowed1OldestIndicator].isOverflowedIndicator1 = true
 
-      if (overflowed2OldestIndicator && overflowed2NewestIndicator) {
+      if (indicators[overflowed2OldestIndicator] && indicators[overflowed2NewestIndicator]) {
         indicators[overflowed2NewestIndicator].isOverflowedIndicator2 = false
         indicators[overflowed2NewestIndicator].isOverflowedIndicator1 = true
 
@@ -205,13 +218,21 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
       }
     }
 
-    if (viewingNewIndicator2) {
+    if (
+      viewingNewIndicator2 &&
+      indicators[overflowed1OldestIndicator] &&
+      indicators[overflowed2OldestIndicator]
+    ) {
       indicators[overflowed1OldestIndicator].isOverflowedIndicator1 = true
       indicators[overflowed2OldestIndicator].isOverflowedIndicator1 = false
       indicators[overflowed2OldestIndicator].isOverflowedIndicator2 = true
     }
 
-    if (viewingOldIndicator2) {
+    if (
+      viewingOldIndicator2 &&
+      indicators[overflowed1NewestIndicator] &&
+      indicators[overflowed2NewestIndicator]
+    ) {
       indicators[overflowed1NewestIndicator].isOverflowedIndicator1 = true
       indicators[overflowed2NewestIndicator].isOverflowedIndicator1 = false
       indicators[overflowed2NewestIndicator].isOverflowedIndicator2 = true
@@ -236,7 +257,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     overflowed2NewestIndicator
   ])
 
-  // finishedFirstRender will be used to check for overflowed indicators when joining room
+  // finishedFirstRender will be used to check for overflowed indicators when joining a room
   // that potentially has many messages. Here we consider that the first scroll ends in up to 500ms.
   useEffect(() => {
     if (roomContent.length > 2) {

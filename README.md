@@ -55,21 +55,21 @@ One default export that simply initializes the app.
 
 // realtimeDB.ts
 export {
-USERS_LIMIT,
-SIMULTANEOUS_ROOMS_LIMIT,
-PRIVATE_CODE_LENGTH,
-DAILY_ROOMS_LIMIT,
-createRoom,
-joinRoom,
-sendMessageToRoom,
-getRoomMessages,
-searchForRooms,
-requestJoinPrivateRoom,
-leaveRoom,
-getCurrentRoomData,
-getCurrentUserID,
-listenForDisconnectAndMessages,
-updateRoomMessages
+  USERS_LIMIT,
+  SIMULTANEOUS_ROOMS_LIMIT,
+  PRIVATE_CODE_LENGTH,
+  DAILY_ROOMS_LIMIT,
+  MESSAGE_HISTORY_LIMIT,
+  createRoom,
+  joinRoom,
+  sendMessageToRoom,
+  searchForRooms,
+  requestJoinPrivateRoom,
+  leaveRoom,
+  getCurrentRoomData,
+  getCurrentUserID,
+  listenForDisconnectAndMessages,
+  getNewMessageId
 }
 
 // storage.ts

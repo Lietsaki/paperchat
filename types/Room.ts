@@ -8,6 +8,7 @@ type RoomContent = {
   author: string
   id: string
   serverTs: number
+  platform: string
 }
 
 type ContentIndicators = {
@@ -24,14 +25,19 @@ type CanvasData = { dataUrl: string; height: number; width: number }
 type OnlineUser = {
   username: string
   createdOn: number
-  publicRooms?: string[]
-  privateRooms?: string[]
+  publicRooms?: { [key: string]: boolean }
+  privateRooms?: { [key: string]: boolean }
+}
+
+type RoomUser = {
+  id: string
+  username: string
+  joinedAt: number
 }
 
 type Room = {
   code: string
-  users: string[]
-  usersNumber: number
+  users?: { [key: string]: RoomUser }
   createdOn: number
   privateCode?: string
   id?: string
@@ -41,13 +47,14 @@ type FirebaseMessage = {
   imageURL?: string
   color?: string
   author: string
-  userEntering?: string
-  userLeaving?: string
+  userEntering?: string | null
+  userLeaving?: string | null
   id: string
   serverTs: number
+  platform: string
 }
 
-type RoomMessages = { createdOn: number; messages: FirebaseMessage[] }
+type RoomMessages = { createdOn: number; messages: { [key: string]: FirebaseMessage } }
 type RoomMessagesObj = { [key: string]: RoomMessages }
 
 type QueryResult<T> = {
@@ -60,6 +67,7 @@ export type {
   CanvasData,
   OnlineUser,
   Room,
+  RoomUser,
   FirebaseMessage,
   RoomMessages,
   RoomMessagesObj,

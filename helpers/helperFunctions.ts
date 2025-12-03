@@ -200,7 +200,7 @@ const getImageData = (url: string) => {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     let img = new Image()
     img.onload = () => resolve(img)
-    img.onerror = () => reject()
+    img.onerror = (err) => reject(err)
     img.src = url
   })
 }

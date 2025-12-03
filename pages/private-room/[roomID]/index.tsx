@@ -22,7 +22,6 @@ import {
   getRandomColor,
   getHighestAndLowestPoints,
   playSound,
-  getSimpleId,
   calculateAspectRatioFit,
   isUsernameValid
 } from 'helpers/helperFunctions'
@@ -34,13 +33,14 @@ import { selectUser, setUsername } from 'store/slices/userSlice'
 import {
   SIMULTANEOUS_ROOMS_LIMIT,
   USERS_LIMIT,
+  MESSAGE_HISTORY_LIMIT,
   getCurrentRoomData,
   joinRoom,
   sendMessageToRoom,
   leaveRoom,
   getCurrentUserID,
   listenForDisconnectAndMessages,
-  updateRoomMessages
+  getNewMessageId
 } from 'firebase-config/realtimeDB'
 import { usernameMaxLength } from 'store/initializer'
 import {
@@ -102,17 +102,24 @@ const {
   letter
 } = page_styles
 
-const Room = () => {
+const PrivateRoom = () => {
   const router = useRouter()
   const { t, locale, changeLocale } = useTranslation()
   const user = useSelector(selectUser)
   const [shouldShowCanvas, setShouldShowCanvas] = useState(true)
   const [roomUsers, setRoomUsers] = useState<string[]>([])
+
   const [usingPencil, setUsingPencil] = useState(true)
   const [usingThickStroke, setUsingThickStroke] = useState(true)
   const [currentKeyboard, setCurrentKeyboard] = useState<KeyboardType>('Alphanumeric')
   const [roomContent, setRoomContent] = useState<RoomContent[]>([
-    { paperchatOctagon: true, id: '1', serverTs: 1, author: getCurrentUserID()! }
+    {
+      paperchatOctagon: true,
+      id: '1',
+      serverTs: 1,
+      author: getCurrentUserID()!,
+      platform: Capacitor.getPlatform()
+    }
   ])
   const [roomColor] = useState(getRandomColor())
   const [adjacentMessages, setAdjacentMessages] = useState({ up: '', down: '' })
@@ -160,15 +167,19 @@ const Room = () => {
     emitter.on('lostConnection', showLostConnectionDialog)
     emitter.on('backOnline', showBackOnlineDialog)
     emitter.on('disbandedRoom', showBackOnlineDisbandedDialog)
+    emitter.on('roomUsersUpdate', updateRoomUsers)
     emitter.on('otherError', showErrorDialog)
     emitter.on('disbandedInactive', showDisbandedInactiveRoomDialog)
+    emitter.on('fullRoom', showFullRoomDialog)
 
     return () => {
       emitter.off('lostConnection')
       emitter.off('backOnline')
       emitter.off('disbandedRoom')
+      emitter.off('roomUsersUpdate')
       emitter.off('otherError')
       emitter.off('disbandedInactive')
+      emitter.off('fullRoom')
       App.removeAllListeners()
       emitter.emit('removedAllCapacitorListeners', '')
     }
@@ -299,76 +310,41 @@ const Room = () => {
     }
   }
 
+  const updateRoomUsers = (roomUsers: string[]) => {
+    setRoomUsers(roomUsers)
+  }
+
   const scrollContent = () => {
     const container = document.getElementById('messages-container')
     container?.scroll({ top: container!.scrollHeight, behavior: 'smooth' })
   }
 
   const receiveFirebaseMessages = async (receivedMessages: FirebaseMessage[]) => {
-    const idsToSkip: { [key: string]: boolean } = {}
     const parsedMessages = await Promise.all(
       receivedMessages.map((message) => parseToRoomContent(message))
     )
-
-    // Set room users
-    const leaveEnterMessages = parsedMessages.filter(
-      (msg) => (msg.userEntering || msg.userLeaving) && msg.author
-    )
-    const users: { [key: string]: string } = {}
-    for (const msg of leaveEnterMessages) {
-      if (msg.userEntering) {
-        const userEnteringMsgs = roomContent.filter(
-          (item) => item.userEntering && item.author === msg.author && item.id !== msg.id
-        )
-        const userLeavingMsgs = roomContent.filter(
-          (item) => item.userLeaving && item.author === msg.author
-        )
-
-        // If a duplicated userEntering message is received, consider only the most recent one.
-        if (userEnteringMsgs.length > userLeavingMsgs.length) {
-          const lastEnteringMsg = userEnteringMsgs[userEnteringMsgs.length - 1]
-          idsToSkip[lastEnteringMsg.id] = true
-        }
-
-        if (!users[msg.author!]) users[msg.author!] = msg.userEntering
-      } else if (msg.userLeaving) {
-        delete users[msg.author!]
-      }
-    }
 
     if (roomContent.length === 1 && parsedMessages.length) {
       setLoadedRoom(true)
     }
 
-    // Check for deleted messages (users who disconnected and came back online overwrite
-    // the messages sent while they were offline with their 'Now leaving' message)
-    const missingMessages = roomContent.filter((msg) => {
-      if (msg.paperchatOctagon) return false
-      return !parsedMessages.find((item) => item.id === msg.id)
-    })
-
-    if (missingMessages.length) {
-      for (const missingMsg of missingMessages) {
-        const i = roomContent.findIndex((item) => item.id === missingMsg.id)
-        parsedMessages.splice(i + 1, 0, missingMsg)
-      }
-      parsedMessages.sort((a, b) => a.serverTs - b.serverTs)
-    }
-
     const updatedContent: { [key: string]: RoomContent } = {}
+
     for (const msg of roomContent) {
-      if (!idsToSkip[msg.id]) updatedContent[msg.id] = msg
+      updatedContent[msg.id] = msg
     }
     for (const msg of parsedMessages) {
-      if (!idsToSkip[msg.id]) updatedContent[msg.id] = msg
+      updatedContent[msg.id] = msg
     }
 
     const updatedContentArr = Object.values(updatedContent)
     updatedContentArr.sort((a, b) => a.serverTs - b.serverTs)
+    updatedContentArr.splice(0, updatedContentArr.length - MESSAGE_HISTORY_LIMIT)
     setRoomContent(updatedContentArr)
-    setRoomUsers(Object.values(users))
 
     const latestMessage = updatedContentArr[updatedContentArr.length - 1]
+
+    // ==================== Notify users ==================== //
 
     if (loadedRoom && latestMessage.author !== getCurrentUserID()) {
       if (latestMessage.imageURL) {
@@ -391,36 +367,12 @@ const Room = () => {
         }
       }
     }
-
-    if (missingMessages.length) {
-      try {
-        updateRoomMessages(parseToFirebaseMessages(Object.values(updatedContent)))
-      } catch (error) {
-        console.log(error)
-      }
-    }
-  }
-
-  const parseToFirebaseMessages = (messages: RoomContent[]): FirebaseMessage[] => {
-    return messages
-      .filter((item) => !item.paperchatOctagon)
-      .map((item) => {
-        return {
-          imageURL: item.imageURL || '',
-          color: item.color || '',
-          author: item.author!,
-          userEntering: item.userEntering || '',
-          userLeaving: item.userLeaving || '',
-          id: item.id,
-          serverTs: item.serverTs
-        }
-      })
   }
 
   const parseToRoomContent = async (message: FirebaseMessage) => {
-    const { imageURL, userEntering, userLeaving, color, serverTs, author } = message
+    const { id, imageURL, userEntering, userLeaving, color, serverTs, author, platform } = message
 
-    const roomMessage: RoomContent = { id: message.id, serverTs, author }
+    const roomMessage: RoomContent = { id, serverTs, author, platform }
     let messageHeight = 0
 
     if (userEntering || userLeaving) {
@@ -436,19 +388,23 @@ const Room = () => {
     }
 
     if (imageURL && color) {
-      roomMessage.imageURL = imageURL
-      roomMessage.color = color
-      const img = await getImageData(imageURL)
+      try {
+        roomMessage.imageURL = imageURL
+        roomMessage.color = color
+        const img = await getImageData(imageURL)
 
-      // Calculate how big the image will be when we put it in our messagesContainer
-      messageHeight = messagesContainerRef.current
-        ? calculateAspectRatioFit(
-            img.width,
-            img.height,
-            messagesContainerRef.current.clientWidth,
-            9999
-          ).height
-        : 40
+        // Calculate how big the image will be when we put it in our messagesContainer
+        messageHeight = messagesContainerRef.current
+          ? calculateAspectRatioFit(
+              img.width,
+              img.height,
+              messagesContainerRef.current.clientWidth,
+              9999
+            ).height
+          : 40
+      } catch (error) {
+        console.error('Error loading image ', error)
+      }
     }
 
     roomMessage.animate = messagesContainerRef.current
@@ -479,8 +435,8 @@ const Room = () => {
       )
     }
 
-    const id = getSimpleId()
-    setRoomContent([
+    const id = getNewMessageId()
+    const updatedRoomContent = [
       ...roomContent,
       {
         imageURL: dataUrl,
@@ -488,9 +444,12 @@ const Room = () => {
         id,
         animate: !messagesWillTriggerScroll,
         color: roomColor,
-        author: getCurrentUserID()!
+        author: getCurrentUserID()!,
+        platform: Capacitor.getPlatform()
       }
-    ])
+    ].slice(-MESSAGE_HISTORY_LIMIT)
+
+    setRoomContent(updatedRoomContent)
     sendMessageToRoom(dataUrl, id, roomColor)
     setMsgDebounceTime(MSG_DEB_TIME)
   }
@@ -614,6 +573,8 @@ const Room = () => {
   }
 
   const showFullRoomDialog = () => {
+    setRoomUsers(Array(USERS_LIMIT).fill(''))
+
     setDialogData({
       open: true,
       text: t('ROOM.ERRORS.ROOM_IS_FULL'),
@@ -1128,4 +1089,4 @@ const Room = () => {
   )
 }
 
-export default Room
+export default PrivateRoom

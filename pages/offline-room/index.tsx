@@ -37,6 +37,7 @@ import Button from 'components/Button'
 import UsernameInput from 'components/UsernameInput'
 import getRandomUsername from 'helpers/username-generator/usernameGenerator'
 import { App } from '@capacitor/app'
+import { Capacitor } from '@capacitor/core'
 
 const {
   username_form,
@@ -90,7 +91,13 @@ const Room = () => {
   const [usingThickStroke, setUsingThickStroke] = useState(true)
   const [currentKeyboard, setCurrentKeyboard] = useState<KeyboardType>('Alphanumeric')
   const [roomContent, setRoomContent] = useState<RoomContent[]>([
-    { paperchatOctagon: true, id: 'paperchat_octagon', serverTs: 1, author: userLocalID }
+    {
+      paperchatOctagon: true,
+      id: 'paperchat_octagon',
+      serverTs: 1,
+      author: userLocalID,
+      platform: Capacitor.getPlatform()
+    }
   ])
   const [roomColor] = useState(getRandomColor())
   const [adjacentMessages, setAdjacentMessages] = useState({ up: '', down: '' })
@@ -163,7 +170,14 @@ const Room = () => {
   const initializeRoom = (username: string) => {
     setRoomContent([
       ...roomContent,
-      { animate: true, id: getSimpleId(), userEntering: username, serverTs: 1, author: userLocalID }
+      {
+        animate: true,
+        id: getSimpleId(),
+        userEntering: username,
+        serverTs: Date.now(),
+        author: userLocalID,
+        platform: Capacitor.getPlatform()
+      }
     ])
 
     playEnteredSound()
@@ -204,7 +218,8 @@ const Room = () => {
         author: userLocalID,
         animate: !messagesWillTriggerScroll,
         color: roomColor,
-        serverTs: Date.now()
+        serverTs: Date.now(),
+        platform: Capacitor.getPlatform()
       }
     ])
   }
