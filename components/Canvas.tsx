@@ -33,9 +33,10 @@ interface TextData {
   keyHeight?: number
 }
 
-const soundTriggeringDistance = 25
-const averageLetterHeight = 15
-const prudentialStrokeWait = 300
+const SOUND_TRIGGERING_DISTANCE = 25
+const AVERAGE_LETTER_HEIGHT = 15
+const PRUDENTIAL_STROKE_WAIT = 300
+const DRAWING_COOLDOWN = 8
 
 const Canvas = ({
   usingThickStroke,
@@ -51,6 +52,7 @@ const Canvas = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const firstLineYRef = useRef(0)
   const usernameRectPixelBorderSize = useRef(0)
+  const lastDrawingTime = useRef(0)
 
   // DRAWING STATE
   const [pos, setPos] = useState<PositionObj>({ x: 0, y: 0 })
@@ -169,7 +171,7 @@ const Canvas = ({
 
       const wouldKeysBeWithinUsername = isWithinUsername({
         x: newLineStartX,
-        y: nextKeyPos.y - averageLetterHeight
+        y: nextKeyPos.y - AVERAGE_LETTER_HEIGHT
       })
       if (wouldKeysBeWithinUsername) nextKeyPos.x = getStartingX()
     }
@@ -206,7 +208,7 @@ const Canvas = ({
 
       const wouldKeysBeWithinUsername = isWithinUsername({
         x: newLineStartX,
-        y: nextKeyPos.y - averageLetterHeight
+        y: nextKeyPos.y - AVERAGE_LETTER_HEIGHT
       })
       if (wouldKeysBeWithinUsername) nextKeyPos.x = getStartingX()
     }
@@ -219,7 +221,7 @@ const Canvas = ({
     const nextKeyPos = { x: newLineStartX, y: getNextYDivision(keyPos.y) }
     const wouldKeysBeWithinUsername = isWithinUsername({
       x: newLineStartX,
-      y: nextKeyPos.y - averageLetterHeight
+      y: nextKeyPos.y - AVERAGE_LETTER_HEIGHT
     })
 
     if (wouldKeysBeWithinUsername) nextKeyPos.x = getStartingX()
@@ -382,7 +384,12 @@ const Canvas = ({
     e.preventDefault()
     if (draggingKey) return
     const pointerIsMakingContact = e.buttons === 1
+
+    const now = performance.now()
+    if (now - lastDrawingTime.current < DRAWING_COOLDOWN) return
+
     if (!ctx || !pointerIsMakingContact || isWithinUsername(pos)) return setPos(getPosition(e))
+    lastDrawingTime.current = now
 
     ctx.beginPath()
     ctx.globalCompositeOperation = usingPencil ? 'source-over' : 'destination-out'
@@ -408,7 +415,7 @@ const Canvas = ({
     const firstStroke = timespanStrokes[0]
     const lastStroke = timespanStrokes[timespanStrokes.length - 1]
 
-    if (latestFiredStrokeSound && lastStroke.ts < latestFiredStrokeSound + prudentialStrokeWait) {
+    if (latestFiredStrokeSound && lastStroke.ts < latestFiredStrokeSound + PRUDENTIAL_STROKE_WAIT) {
       return
     }
 
@@ -418,7 +425,7 @@ const Canvas = ({
     const distanceToUse = xDiff > yDiff ? xDiff : yDiff
 
     // Prevent sounds from accidentally firing twice (or thrice) in a row
-    if (distanceToUse >= soundTriggeringDistance) {
+    if (distanceToUse >= SOUND_TRIGGERING_DISTANCE) {
       setLatestFiredStrokeSound(lastStroke.ts)
       let volume = usingThickStroke ? 0.3 : 0.15
 
