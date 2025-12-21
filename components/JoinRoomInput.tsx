@@ -4,6 +4,7 @@ import Button from 'components/Button'
 import { PRIVATE_CODE_LENGTH } from 'firebase-config/realtimeDB'
 import styles from 'styles/join-room/join-room.module.scss'
 import { Capacitor } from '@capacitor/core'
+import { containsNonLatinChars } from 'helpers/helperFunctions'
 const { input_area, join_area } = styles
 
 type JoinRoomInputProps = {
@@ -55,11 +56,18 @@ const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
     }
   }
 
+  const shouldUseSmallFont = () => {
+    if (!code) return ''
+    return containsNonLatinChars(code) ? 'small_font' : ''
+  }
+
   return (
     <div className={join_area}>
       <div>
         <form className={input_area} onSubmit={(e) => handleCodeSubmitWithCheck(e, code)}>
-          <div className={`input_container simple_width make_complete_rectangle ${locale}`}>
+          <div
+            className={`input_container simple_width make_complete_rectangle ${locale} ${shouldUseSmallFont()}`}
+          >
             <div className="title extra_pad_left">{t('COMMON.CODE')}</div>
             <input
               ref={inputRef}

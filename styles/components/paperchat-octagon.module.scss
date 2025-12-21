@@ -173,12 +173,20 @@
       }
 
       @include phones {
-        font-size: 15px;
+        font-size: 14px;
       }
 
       @include tiny-phones {
-        font-size: 15px;
+        font-size: 10px;
       }
+    }
+  }
+
+  &:not(.ja) .small_username_text {
+    font-size: 20px;
+
+    @include phones {
+      font-size: 16px;
     }
   }
 

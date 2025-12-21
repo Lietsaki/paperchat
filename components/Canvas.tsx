@@ -10,7 +10,8 @@ import {
   getLighterHslaShade,
   loadImage,
   playSound,
-  keepOnlyShadesOfGray
+  keepOnlyShadesOfGray,
+  containsNonLatinChars
 } from 'helpers/helperFunctions'
 
 const { canvas_outline, canvas_content, usernameRectangle } = styles
@@ -32,6 +33,12 @@ interface TextData {
   keyWidth?: number
   keyHeight?: number
 }
+
+// COLOR DATA
+const canvasBgColor = '#FDFDFD'
+const canvasBgColorArr = [253, 253, 253]
+const strokeColor = '#111'
+const strokeRGBArray = [17, 17, 17]
 
 const SOUND_TRIGGERING_DISTANCE = 25
 const AVERAGE_LETTER_HEIGHT = 15
@@ -65,11 +72,6 @@ const Canvas = ({
   const [consecutiveStrokes, setConsecutiveStrokes] = useState<HistoryStroke[]>([])
   const [latestFiredStrokeSound, setLatestFiredStrokeSound] = useState(0)
 
-  // COLOR DATA
-  const canvasBgColor = '#FDFDFD'
-  const canvasBgColorArr = [253, 253, 253]
-  const strokeColor = '#111'
-  const strokeRGBArray = [17, 17, 17]
   const smallDevice = typeof window !== 'undefined' ? window.screen.width < 800 : false
   const smallerDevice = smallDevice && window.screen.width < 550
   const newLineStartX = smallerDevice ? 15 : 8
@@ -128,7 +130,13 @@ const Canvas = ({
 
   const resetPosition = () => setPos({ x: 0, y: 0 })
 
-  const getFontSize = () => getPercentage(canvasRef.current!.width > 295 ? 88 : 94, divisionsHeight)
+  const getFontSize = (text?: string) => {
+    if (text && containsNonLatinChars(text)) {
+      return getPercentage(76, divisionsHeight)
+    }
+
+    return getPercentage(88, divisionsHeight)
+  }
 
   const posOverflowsX = (pos: PositionObj) => pos.x >= getPercentage(98, canvasRef.current!.width)
 
@@ -302,6 +310,26 @@ const Canvas = ({
     containerRef.current!.append(img)
   }
 
+  const trimTextToWidth = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number) => {
+    if (ctx.measureText(text).width <= maxWidth) {
+      return text
+    }
+
+    const ellipsis = ' …'
+    const ellipsisWidth = ctx.measureText(ellipsis).width
+
+    let trimmed = text
+
+    while (trimmed.length > 0) {
+      trimmed = trimmed.slice(0, -1)
+      if (ctx.measureText(trimmed).width + ellipsisWidth <= maxWidth) {
+        return trimmed + ellipsis
+      }
+    }
+
+    return ellipsis
+  }
+
   const drawUsernameRectangle = (
     ctx: CanvasRenderingContext2D,
     loadFont?: boolean,
@@ -351,15 +379,16 @@ const Canvas = ({
 
     const writeUsername = () => {
       if (!ctx || !canvasRef.current) return
-      ctxToUse.font = `${getFontSize()}px 'nds', roboto, sans-serif`
-      ctx.font = `${getFontSize()}px 'nds', roboto, sans-serif`
+      ctxToUse.font = `${getFontSize(username)}px 'nds', roboto, sans-serif`
+      ctx.font = `${getFontSize(username)}px 'nds', roboto, sans-serif`
 
       const firstLineY = getPercentage(80, divisionsHeight)
       let usernameX = 8
       if (smallDevice) usernameX = 10
       if (smallerDevice) usernameX = 18
 
-      ctxToUse.fillText(username, usernameX, firstLineY - 1.5)
+      const trimmedUsername = trimTextToWidth(ctxToUse, username, nameContainerWidth - usernameX)
+      ctxToUse.fillText(trimmedUsername, usernameX, firstLineY - 1.5)
       setKeyPos({ x: getStartingX(), y: firstLineY })
 
       firstLineYRef.current = firstLineY
@@ -519,13 +548,14 @@ const Canvas = ({
     const msgCtx = msgCanvas.getContext('2d')!
     const minHeight = divisionsHeight
     msgCanvas.width = ctx.canvas.width
+    msgCanvas.height = ctx.canvas.height
 
     const nameContainerPos = { x: nameContainerWidth, y: divisionsHeight }
-    const { highestPoint, lowestPoint, conflictingPoints } = getHighestAndLowestPoints(
-      ctx,
-      strokeRGBArray,
-      nameContainerPos
-    )
+    const {
+      highestPoint,
+      lowestPoint,
+      pointsBelowPos: pointsBelowUsername
+    } = getHighestAndLowestPoints(ctx, strokeRGBArray, nameContainerPos)
 
     clearCanvas(true, true)
 
@@ -533,34 +563,33 @@ const Canvas = ({
       const contentHeight = lowestPoint[1] - highestPoint[1]
       let sourceY = 0
       let destinationY = 0
-      const margin = 10
+      const marginL = getPercentage(9.5, ctx.canvas.height)
+      const marginM = getPercentage(7.5, ctx.canvas.height)
+      const marginS = getPercentage(5, ctx.canvas.height)
+      const marginXS = getPercentage(1, ctx.canvas.height)
 
-      const isNextToUsername =
+      const NEXT_TO_USERNAME =
         lowestPoint[0] > nameContainerWidth &&
         highestPoint[0] > nameContainerWidth &&
-        lowestPoint[1] < divisionsHeightWithMargin() &&
-        highestPoint[1] < divisionsHeightWithMargin()
+        lowestPoint[1] <= divisionsHeight &&
+        highestPoint[1] <= divisionsHeight
 
-      const hPointNextToUsername =
-        !isNextToUsername &&
+      const HIGHEST_POINT_NEXT_TO_USERNAME =
+        !NEXT_TO_USERNAME &&
         highestPoint[0] > nameContainerWidth &&
-        highestPoint[1] < divisionsHeightWithMargin()
+        highestPoint[1] <= divisionsHeight
 
-      const hPointUnderAndOutsideUsername =
-        highestPoint[0] > nameContainerWidth && highestPoint[1] > divisionsHeightWithMargin()
+      const HIGHEST_POINT_UNDER_AND_OUTSIDE_USERNAME =
+        highestPoint[0] >= nameContainerWidth && highestPoint[1] >= divisionsHeight
 
-      const hPointUnderAndWithinUsername =
-        highestPoint[0] < nameContainerWidth && highestPoint[1] > divisionsHeightWithMargin()
+      const HIGHEST_POINT_UNDER_AND_WITHIN_USERNAME =
+        highestPoint[0] < nameContainerWidth && highestPoint[1] >= divisionsHeight
 
-      if (isNextToUsername) {
+      if (NEXT_TO_USERNAME) {
         msgCanvas.height = minHeight
-      }
-
-      if (hPointNextToUsername) {
-        msgCanvas.height = lowestPoint[1] + margin + margin / 2
-      }
-
-      if (hPointUnderAndOutsideUsername && !conflictingPoints) {
+      } else if (HIGHEST_POINT_NEXT_TO_USERNAME) {
+        msgCanvas.height = lowestPoint[1] + marginM
+      } else if (HIGHEST_POINT_UNDER_AND_OUTSIDE_USERNAME && !pointsBelowUsername) {
         const contentSmallerThanMinHeight = contentHeight <= minHeight - 4
         const startOfDivision = getStartOfDivision(highestPoint[1])
         const endOfDivision = startOfDivision + divisionsHeight
@@ -573,22 +602,11 @@ const Canvas = ({
           msgCanvas.height = minHeight
           sourceY = startOfDivision
         } else {
-          // We need extra margin in this case, so multiply it by 2
-          msgCanvas.height = lowestPoint[1] + margin * 2 - (highestPoint[1] - margin * 2)
-          sourceY = highestPoint[1] - margin * 2
-
-          // Prevent the original username rectangle from appearing on top of the one we're gonna draw
-          if (sourceY < divisionsHeight) {
-            msgCanvas.height = lowestPoint[1] + margin - divisionsHeightWithMargin()
-            sourceY = divisionsHeightWithMargin()
-          }
+          msgCanvas.height = lowestPoint[1] + marginL - (highestPoint[1] - marginL)
+          sourceY = highestPoint[1] - marginL
         }
-      }
-
-      if (hPointUnderAndWithinUsername || (conflictingPoints && !hPointNextToUsername)) {
-        sourceY = highestPoint[1] - margin
+      } else if (HIGHEST_POINT_UNDER_AND_WITHIN_USERNAME || pointsBelowUsername) {
         destinationY = minHeight
-
         const contentSmallerThanMinHeight = contentHeight <= minHeight - 4
         const startOfDivision = getStartOfDivision(highestPoint[1])
         const endOfDivision = startOfDivision + divisionsHeight
@@ -599,8 +617,10 @@ const Canvas = ({
           lowestPoint[1] < endOfDivision
         ) {
           msgCanvas.height = minHeight * 2
+          sourceY = startOfDivision - marginXS
         } else {
-          msgCanvas.height = minHeight + (lowestPoint[1] + margin - (highestPoint[1] - margin))
+          msgCanvas.height = minHeight + (lowestPoint[1] + marginS - (highestPoint[1] - marginS))
+          sourceY = highestPoint[1] - marginS
         }
       }
 
@@ -622,16 +642,7 @@ const Canvas = ({
         msgCanvas.height
       )
 
-      // Make a username rectangle and put it on our main canvas; the one with the drawing.
-      // This will prevent usernames from overflowing (e.g. chinese characters), we can't draw
-      // the username directly onto our msgCtx because that one has the width of the entire canvas.
-      const msgUsernameCanvas = document.createElement('canvas')
-      const msgUsernameCtx = msgUsernameCanvas.getContext('2d')!
-      msgUsernameCanvas.width = nameContainerWidthWithExtraPixels()
-      msgUsernameCanvas.height = divisionsHeightWithMargin()
-
-      drawUsernameRectangle(msgUsernameCtx, false, false)
-      msgCtx.drawImage(msgUsernameCanvas, 0, 0)
+      drawUsernameRectangle(msgCtx, false, false)
 
       emitter.emit('canvasData', {
         dataUrl: msgCanvas.toDataURL(),

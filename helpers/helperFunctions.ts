@@ -76,40 +76,41 @@ const getHighestAndLowestPoints = (
   color: number[],
   belowThisPos?: PositionObj
 ) => {
-  const w = ctx.canvas.width
-  const h = ctx.canvas.height
-  const data = ctx.getImageData(0, 0, w, h) // get image data
+  const { width } = ctx.canvas
+  const { height } = ctx.canvas
+  const data = ctx.getImageData(0, 0, width, height) // get image data
   const buffer = data.data // and its pixel buffer
-  const len = buffer.length // cache length
-  let y = 0
-  let p = 0
-  let px = 0 // for iterating
 
-  let highestPoint = null
-  let lowestPoint = null
-  let conflictingPoints = false
+  let highestPoint: [number, number] | null = null
+  let lowestPoint: [number, number] | null = null
+  let pointsBelowPos = false
 
-  /// iterating x/y instead of forward to get position the easy way
-  for (; y < h; y++) {
-    /// common value for all x
-    p = y * 4 * w
+  for (let y = 0; y < height; y++) {
+    // Byte position where row y starts (each row has w pixels × 4 bytes)
+    const p = y * 4 * width
 
-    for (let x = 0; x < w; x++) {
-      /// next pixel (skipping 4 bytes as each pixel is RGBA bytes)
-      px = p + x * 4
+    for (let x = 0; x < width; x++) {
+      // Next pixel (skipping 4 bytes as each pixel is RGBA bytes)
+      const px = p + x * 4
 
-      /// if red component match check the others
-      if (buffer[px] === color[0]) {
-        if (buffer[px + 1] === color[1] && buffer[px + 2] === color[2]) {
-          if (!highestPoint) highestPoint = [x, y]
-          else lowestPoint = [x, y]
+      // Check if pixel matches the target color
+      if (buffer[px] === color[0] && buffer[px + 1] === color[1] && buffer[px + 2] === color[2]) {
+        if (!highestPoint || y < highestPoint[1]) {
+          highestPoint = [x, y]
+        }
 
-          if (belowThisPos && x < belowThisPos.x && y > belowThisPos.y) conflictingPoints = true
+        if (!lowestPoint || y > lowestPoint[1]) {
+          lowestPoint = [x, y]
+        }
+
+        if (belowThisPos && x < belowThisPos.x && y > belowThisPos.y) {
+          pointsBelowPos = true
         }
       }
     }
   }
-  return { highestPoint, lowestPoint, conflictingPoints }
+
+  return { highestPoint, lowestPoint, pointsBelowPos }
 }
 
 // Takes an array with an rgb color for the exception, in our case it'll be the white canvas background
@@ -236,6 +237,15 @@ const isUsernameValid = (username: string) => {
   return true
 }
 
+const containsNonLatinChars = (text: string) => {
+  for (const char of text) {
+    const code = char.codePointAt(0)!
+    // Everything above Latin Extended
+    if (code > 0x024f) return true
+  }
+  return false
+}
+
 const areDatesOnTheSameDay = (first: Date, second: Date) => {
   return (
     first.getFullYear() === second.getFullYear() &&
@@ -303,5 +313,6 @@ export {
   loadImage,
   calculateAspectRatioFit,
   isUsernameValid,
-  wait
+  wait,
+  containsNonLatinChars
 }

@@ -20,6 +20,7 @@ import { LocaleCode } from 'types/Multilang'
 import { baseDialogData, Dialog } from 'components/Dialog'
 import { App } from '@capacitor/app'
 import emitter from 'helpers/MittEmitter'
+import Head from 'next/head'
 
 const {
   top,
@@ -61,6 +62,7 @@ const Home = () => {
   const [langToSwitchTo, setLangToSwitchTo] = useState<LocaleCode>(locale)
 
   const PLAY_STORE_LINK = 'https://play.google.com/store/apps/details?id=net.paperchat.app'
+  const getTitleText = () => `Paperchat - ${t('HOME.PAGE_TITLE')}`
 
   const editUsername = () => {
     if (editingUsername) return
@@ -89,7 +91,7 @@ const Home = () => {
     finishEditingUsername()
   }
 
-  const handleFormSubmit = (e: FormEvent) => {
+  const handleUsernameSubmit = (e: FormEvent) => {
     e.preventDefault()
     saveUsername()
   }
@@ -190,6 +192,11 @@ const Home = () => {
 
   return (
     <div className="main">
+      <Head>
+        <title>{getTitleText()}</title>
+        <meta name="description" content={t('HOME.META_DESCRIPTION')} />
+      </Head>
+
       <div className="screens_section">
         <div className={`screen ${top}`}>
           <div className={title}>
@@ -237,7 +244,7 @@ const Home = () => {
           </div>
 
           <div onClick={editUsername} className={usernameAreaClasses}>
-            <form className={username_form} onSubmit={handleFormSubmit}>
+            <form className={username_form} onSubmit={handleUsernameSubmit}>
               <UsernameInput
                 editing={editingUsername}
                 receivedValue={usernameInputValue}

@@ -1,4 +1,5 @@
 import useTranslation from 'i18n/useTranslation'
+import { useEffect } from 'react'
 import { LocaleCode, LocaleDataObj } from 'types/Multilang'
 
 type MultilangListProps = {
@@ -12,6 +13,10 @@ const MultilangList = ({ selectedLang, setSelectedLang }: MultilangListProps) =>
   const selectLanguage = (selectedLocale: LocaleCode) => {
     setSelectedLang(selectedLocale)
   }
+
+  useEffect(() => {
+    setSelectedLang(locale)
+  }, [])
 
   const langs: LocaleDataObj[] = [
     { code: 'en', label: 'English' },
