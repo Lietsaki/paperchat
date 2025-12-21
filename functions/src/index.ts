@@ -1,50 +1,124 @@
-import * as functions from 'firebase-functions/v1'
-import * as admin from 'firebase-admin'
-import { RoomMessagesObj, OnlineUser } from '../../types/Room'
+import { onValueDeleted, onValueUpdated } from 'firebase-functions/database'
+import { onSchedule } from 'firebase-functions/scheduler'
+import admin from 'firebase-admin'
+import { OnlineUser, RoomMessages, RoomMessagesObj, Room } from '../../types/Room'
+const MESSAGE_HISTORY_LIMIT = 40
 
 admin.initializeApp()
 
-exports.deleteEmptyPublicRoomPictures = functions.database
-  .ref('/public_rooms/{roomID}')
-  .onDelete(async (snapshot, context) => {
-    const roomID: string = context.params.roomID
-    const bucket = admin.storage().bucket()
+export const deleteEmptyPublicRoomPictures = onValueDeleted('/public_rooms/{roomID}', (e) => {
+  const roomID: string = e.params.roomID
+  const bucket = admin.storage().bucket()
 
-    return bucket.deleteFiles(
-      {
-        prefix: `room_messages/${roomID}/`
-      },
-      (err) => {
-        if (err) {
-          console.log(err)
-        } else {
-          console.log(`Success: deleted /room_messages/${roomID}`)
-        }
+  return bucket.deleteFiles(
+    {
+      prefix: `room_messages/${roomID}/`
+    },
+    (err) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log(`Success: deleted /room_messages/${roomID}`)
       }
-    )
-  })
+    }
+  )
+})
 
-exports.deleteEmptyPrivateRoomPictures = functions.database
-  .ref('/private_rooms/{roomID}')
-  .onDelete(async (snapshot, context) => {
-    const roomID: string = context.params.roomID
-    const bucket = admin.storage().bucket()
+export const deleteEmptyPrivateRoomPictures = onValueDeleted('/private_rooms/{roomID}', (e) => {
+  const roomID: string = e.params.roomID
+  const bucket = admin.storage().bucket()
 
-    return bucket.deleteFiles(
-      {
-        prefix: `room_messages/${roomID}/`
-      },
-      (err) => {
-        if (err) {
-          console.log(err)
-        } else {
-          console.log(`Success: deleted /room_messages/${roomID}`)
-        }
+  return bucket.deleteFiles(
+    {
+      prefix: `room_messages/${roomID}/`
+    },
+    (err) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log(`Success: deleted /room_messages/${roomID}`)
       }
-    )
-  })
+    }
+  )
+})
 
-exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(async () => {
+export const trimPublicRoomMessages = onValueUpdated(
+  '/public_room_messages/{roomID}/messages',
+  (e) => {
+    if (!e.data.after.exists()) {
+      return null
+    }
+
+    const messagesObj: RoomMessages['messages'] = e.data.after.val()
+    const messagesArr = Object.values(messagesObj)
+    if (messagesArr.length <= MESSAGE_HISTORY_LIMIT) return null
+
+    const updatedMessages: RoomMessages['messages'] = {}
+
+    const roomMessagesArr = messagesArr
+      .sort((a, b) => a.serverTs - b.serverTs)
+      .slice(-MESSAGE_HISTORY_LIMIT)
+
+    for (const msg of roomMessagesArr) {
+      updatedMessages[msg.id] = msg
+    }
+
+    console.log(`[PUBLIC ROOM] Trimming messages of ${e.params.roomID}`)
+
+    return e.data.after.ref.set(updatedMessages)
+  }
+)
+
+export const trimPrivateRoomMessages = onValueUpdated(
+  '/private_room_messages/{roomID}/messages',
+  (e) => {
+    if (!e.data.after.exists()) {
+      return null
+    }
+
+    const messagesObj: RoomMessages['messages'] = e.data.after.val()
+    const messagesArr = Object.values(messagesObj)
+    if (messagesArr.length <= MESSAGE_HISTORY_LIMIT) return null
+
+    const updatedMessages: RoomMessages['messages'] = {}
+
+    const roomMessagesArr = messagesArr
+      .sort((a, b) => a.serverTs - b.serverTs)
+      .slice(-MESSAGE_HISTORY_LIMIT)
+
+    for (const msg of roomMessagesArr) {
+      updatedMessages[msg.id] = msg
+    }
+
+    console.log(`[PRIVATE ROOM] Trimming messages of ${e.params.roomID}`)
+
+    return e.data.after.ref.set(updatedMessages)
+  }
+)
+
+export const updatePublicRoomUsersNumber = onValueUpdated('/public_rooms/{roomID}', (e) => {
+  if (!e.data.after.exists()) return null
+
+  if (!e.data.after.child('users').exists()) {
+    return e.data.after.ref.child('usersNumber').set(0)
+  }
+
+  const usersObj: Room['users'] = e.data.after.child('users').val()
+  return e.data.after.ref.child('usersNumber').set(Object.keys(usersObj || {}).length)
+})
+
+export const updatePrivateRoomUsersNumber = onValueUpdated('/private_rooms/{roomID}', (e) => {
+  if (!e.data.after.exists()) return null
+
+  if (!e.data.after.child('users').exists()) {
+    return e.data.after.ref.child('usersNumber').set(0)
+  }
+
+  const usersObj: Room['users'] = e.data.after.child('users').val()
+  return e.data.after.ref.child('usersNumber').set(Object.keys(usersObj || {}).length)
+})
+
+export const emptyRoomsCleaner = onSchedule({ schedule: 'every 60 minutes' }, async () => {
   const db = admin.database()
   const publicRoomMessagesRef = db.ref('public_room_messages/')
   const privateRoomMessagesRef = db.ref('private_room_messages/')
@@ -54,6 +128,7 @@ exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(
   const halfAnHourAgo = Date.now() - 1800000
   const publicRoomsToDelete: string[] = []
   const privateRoomsToDelete: string[] = []
+  const usersToDelete: string[] = []
 
   let publicRoomsMessagesObj: RoomMessagesObj = {}
   let privateRoomsMessagesObj: RoomMessagesObj = {}
@@ -160,6 +235,7 @@ exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(
         (!user.privateRooms || !Object.keys(user.privateRooms || {}).length)
       ) {
         usersObj[userKey] = null
+        usersToDelete.push(userKey)
       }
     }
   })
@@ -182,5 +258,13 @@ exports.emptyRoomsCleaner = functions.pubsub.schedule('every 60 minutes').onRun(
     promises.push(dbRef.update(updateObj))
   }
 
-  return Promise.all([promises])
+  try {
+    await Promise.all([promises])
+    console.log(
+      `Cleaned ${publicRoomsToDelete.length} public rooms, ${privateRoomsToDelete.length} private rooms and ${usersToDelete.length} users.`
+    )
+  } catch (error) {
+    console.log('Error cleaning rooms!')
+    console.log(error)
+  }
 })
