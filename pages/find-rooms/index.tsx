@@ -13,7 +13,7 @@ import {
   SIMULTANEOUS_ROOMS_LIMIT,
   DAILY_ROOMS_LIMIT
 } from 'firebase-config/realtimeDB'
-import { playSound } from 'helpers/helperFunctions'
+import { playSound, wait } from 'helpers/helperFunctions'
 import useTranslation from 'i18n/useTranslation'
 import Head from 'next/head'
 
@@ -33,13 +33,15 @@ const {
   ja
 } = general_styles
 
+const SEARCH_TIMEOUT = 4000
+
 const FindRooms = () => {
   const router = useRouter()
   const { t, locale } = useTranslation()
-  const getTitleText = () => `Paperchat - ${t('SEARCH_ROOMS_SCREEN.PAGE_TITLE')}`
 
   const [rooms, setRooms] = useState<Room[]>([])
   const [dialogData, setDialogData] = useState<DialogProps>(baseDialogData)
+  const getTitleText = () => `Paperchat - ${t('SEARCH_ROOMS_SCREEN.PAGE_TITLE')}`
 
   useEffect(() => {
     searchRooms()
@@ -47,14 +49,21 @@ const FindRooms = () => {
 
   const searchRooms = async () => {
     setDialogData({ text: t('SEARCH_ROOMS_SCREEN.SEARCHING'), open: true, showSpinner: true })
-    const rooms = await searchForRooms()
-    if (rooms === 'error') return showSearchErrorDialog()
 
-    setRooms(rooms)
-    if (!rooms.length) {
-      showNoRoomsDialog()
-    } else {
-      setDialogData(baseDialogData)
+    try {
+      const rooms = await Promise.race([searchForRooms(), wait(SEARCH_TIMEOUT)])
+      if (rooms === 'timeout') return showSearchTimeoutDialog()
+      if (rooms === 'error') return showSearchErrorDialog()
+      setRooms(rooms)
+
+      if (!rooms.length) {
+        showNoRoomsDialog()
+      } else {
+        setDialogData(baseDialogData)
+      }
+    } catch (error) {
+      console.error(error)
+      return showSearchErrorDialog()
     }
   }
 
@@ -65,6 +74,21 @@ const FindRooms = () => {
       showSpinner: false,
 
       rightBtnText: t('COMMON.ACCEPT'),
+      rightBtnFn: () => searchRooms(),
+      hideOnRightBtn: false,
+
+      leftBtnText: t('COMMON.GO_HOME'),
+      leftBtnFn: () => router.push('/')
+    })
+  }
+
+  const showSearchTimeoutDialog = () => {
+    setDialogData({
+      open: true,
+      text: t('COMMON.ERRORS.TIMEOUT_TRY_AGAIN'),
+      showSpinner: false,
+
+      rightBtnText: t('COMMON.RETRY'),
       rightBtnFn: () => searchRooms(),
       hideOnRightBtn: false,
 
@@ -135,13 +159,20 @@ const FindRooms = () => {
       text: t('CREATE_ROOM_SCREEN.CREATING_YOUR_PUBLIC_ROOM'),
       showSpinner: true
     })
-    const roomID = await createRoom(false)
-    if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
-    if (roomID === 'already-joined') return showAlreadyJoinedDialog()
-    if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
-    if (roomID === 'error') return showCreateRoomErrorDialog()
-    setDialogData(baseDialogData)
-    router.push(`room/${roomID}`)
+
+    try {
+      const roomID = await createRoom(false)
+      if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
+      if (roomID === 'already-joined') return showAlreadyJoinedDialog()
+      if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
+      if (roomID === 'error') return showCreateRoomErrorDialog()
+
+      setDialogData(baseDialogData)
+      router.push(`room/${roomID}`)
+    } catch (error) {
+      console.error(error)
+      return showSearchErrorDialog()
+    }
   }
 
   const renderRooms = () => {

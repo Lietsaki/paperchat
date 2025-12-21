@@ -32,24 +32,29 @@ const { midsection } = page_styles
 const JoinWithACode = () => {
   const router = useRouter()
   const { t, locale } = useTranslation()
-  const getTitleText = () => `Paperchat - ${t('JOIN_WITH_CODE_SCREEN.PAGE_TITLE')}`
 
   const [dialogData, setDialogData] = useState<DialogProps>(baseDialogData)
+  const getTitleText = () => `Paperchat - ${t('JOIN_WITH_CODE_SCREEN.PAGE_TITLE')}`
 
   const join = async (code: string) => {
     if (!code || !code.trim()) return
     if (code.trim().length !== PRIVATE_CODE_LENGTH) return showCodeLengthDialog()
     showLoadingDialog()
 
-    const roomIDAndCode = await requestJoinPrivateRoom(code)
-    if (roomIDAndCode === 'error') return showErrorDialog()
-    if (roomIDAndCode === 'not-found') return showNotFoundDialog()
+    try {
+      const roomIDAndCode = await requestJoinPrivateRoom(code)
+      if (roomIDAndCode === 'error') return showErrorDialog()
+      if (roomIDAndCode === 'not-found') return showNotFoundDialog()
 
-    setDialogData(baseDialogData)
-    setTimeout(() => {
-      localStorage.setItem('retryJoinPrivateRoomAttempt', '0')
-    }, 1500)
-    router.push(`private-room/${roomIDAndCode}`)
+      setDialogData(baseDialogData)
+      setTimeout(() => {
+        localStorage.setItem('retryJoinPrivateRoomAttempt', '0')
+      }, 1500)
+      router.push(`private-room/${roomIDAndCode}`)
+    } catch (error) {
+      console.error(error)
+      showErrorDialog()
+    }
   }
 
   const showCodeLengthDialog = () => {

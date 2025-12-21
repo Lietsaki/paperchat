@@ -13,7 +13,8 @@
       "THERE_WAS": "エラーが発生しました。",
       "ROOM_NOT_FOUND": "ルームが見つかりません。",
       "ROOM_NOT_FOUND_MAYBE_DISBANDED": "ルームが見つかりません。解散された可能性があります。",
-      "DAILY_ROOMS_LIMIT": "1日に最大{{DAILY_ROOMS_LIMIT}}件のルームを作成できます。明日再度お試しください。"
+      "DAILY_ROOMS_LIMIT": "1日に最大{{DAILY_ROOMS_LIMIT}}件のルームを作成できます。明日再度お試しください。",
+      "TIMEOUT_TRY_AGAIN": "接続がタイムアウトしました。再試行しますか？"
     }
   },
   "HOME": {

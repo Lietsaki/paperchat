@@ -13,7 +13,8 @@
       "THERE_WAS": "There was an error.",
       "ROOM_NOT_FOUND": "Room not found.",
       "ROOM_NOT_FOUND_MAYBE_DISBANDED": "Room not found. Maybe it was disbanded.",
-      "DAILY_ROOMS_LIMIT": "You can create up to {{DAILY_ROOMS_LIMIT}} rooms per day. Try again tomorrow."
+      "DAILY_ROOMS_LIMIT": "You can create up to {{DAILY_ROOMS_LIMIT}} rooms per day. Try again tomorrow.",
+      "TIMEOUT_TRY_AGAIN": "Connection timeout. Try again?"
     }
   },
   "HOME": {

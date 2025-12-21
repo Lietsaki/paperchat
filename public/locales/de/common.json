@@ -13,7 +13,8 @@
       "THERE_WAS": "Ein Fehler ist aufgetreten.",
       "ROOM_NOT_FOUND": "Raum nicht gefunden.",
       "ROOM_NOT_FOUND_MAYBE_DISBANDED": "Raum nicht gefunden. Vielleicht wurde er aufgelöst.",
-      "DAILY_ROOMS_LIMIT": "Du kannst bis zu {{DAILY_ROOMS_LIMIT}} Räume pro Tag erstellen. Versuche es morgen erneut."
+      "DAILY_ROOMS_LIMIT": "Du kannst bis zu {{DAILY_ROOMS_LIMIT}} Räume pro Tag erstellen. Versuche es morgen erneut.",
+      "TIMEOUT_TRY_AGAIN": "Verbindungszeitüberschreitung. Erneut versuchen?"
     }
   },
   "HOME": {

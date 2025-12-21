@@ -15,6 +15,12 @@ const getRandomColor = () => {
   )}%, 1.0)`
 }
 
+const wait = (ms: number) => {
+  return new Promise<'timeout'>((resolve) => {
+    setTimeout(() => resolve('timeout'), ms)
+  })
+}
+
 const isFirefoxDesktop = () => {
   const ua = navigator.userAgent.toLowerCase()
   const isFirefox = ua.includes('firefox')
@@ -296,5 +302,6 @@ export {
   getLighterHslaShade,
   loadImage,
   calculateAspectRatioFit,
-  isUsernameValid
+  isUsernameValid,
+  wait
 }

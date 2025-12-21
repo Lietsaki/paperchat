@@ -13,7 +13,8 @@
       "THERE_WAS": "Une erreur est survenue.",
       "ROOM_NOT_FOUND": "Salon introuvable.",
       "ROOM_NOT_FOUND_MAYBE_DISBANDED": "Salon introuvable. Il a peut-être été dissous.",
-      "DAILY_ROOMS_LIMIT": "Vous pouvez créer jusqu’à {{DAILY_ROOMS_LIMIT}} salons par jour. Réessayez demain."
+      "DAILY_ROOMS_LIMIT": "Vous pouvez créer jusqu’à {{DAILY_ROOMS_LIMIT}} salons par jour. Réessayez demain.",
+      "TIMEOUT_TRY_AGAIN": "Délai de connexion expiré. Réessayer?"
     }
   },
   "HOME": {

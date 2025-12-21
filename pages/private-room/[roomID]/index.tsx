@@ -33,13 +33,13 @@ import { selectUser, setUsername } from 'store/slices/userSlice'
 import {
   SIMULTANEOUS_ROOMS_LIMIT,
   USERS_LIMIT,
-  MESSAGE_HISTORY_LIMIT,
   getCurrentRoomData,
   joinRoom,
   sendMessageToRoom,
   leaveRoom,
   getCurrentUserID,
   listenForDisconnectAndMessages,
+  MESSAGE_HISTORY_LIMIT,
   getNewMessageId
 } from 'firebase-config/realtimeDB'
 import { usernameMaxLength } from 'store/initializer'
@@ -102,6 +102,10 @@ const {
   letter
 } = page_styles
 
+const MSG_DEB_TIME = 5
+const ID_LENGTH = 5
+const STROKE_RGB_ARRAY = [17, 17, 17]
+
 const PrivateRoom = () => {
   const router = useRouter()
   const { t, locale, changeLocale } = useTranslation()
@@ -139,8 +143,6 @@ const PrivateRoom = () => {
   const [lostConnection, setLostConnection] = useState(false)
 
   const [msgDebounceTime, setMsgDebounceTime] = useState(0)
-  const strokeRGBArray = [17, 17, 17]
-  const MSG_DEB_TIME = 5
 
   const typeKey = (key: string) => emitter.emit('typeKey', key)
   const typeSpace = () => emitter.emit('typeSpace', '')
@@ -271,7 +273,6 @@ const PrivateRoom = () => {
     const currentRoom = getCurrentRoomData()
 
     if (!currentRoom.code) {
-      if (id.length !== 20) return showRoomNotFoundDialog()
       tryToJoinRoom(id)
     } else {
       try {
@@ -285,13 +286,11 @@ const PrivateRoom = () => {
   }
 
   const tryToJoinRoom = async (roomID: string) => {
-    if (!router.query.code) return showMissingCodeDialog()
-
-    if (typeof router.query.code !== 'string' || router.query.code.length !== 5) {
+    if (typeof router.query.roomID !== 'string' || router.query.roomID.length !== ID_LENGTH) {
       return showRoomInvalidCodeDialog()
     }
 
-    const res = await joinRoom(roomID, router.query.code)
+    const res = await joinRoom(roomID, true)
     const currentRoom = getCurrentRoomData()
 
     if (res === '404') return showRoomNotFoundDialog(true)
@@ -526,7 +525,7 @@ const PrivateRoom = () => {
     } else {
       const { highestPoint, lowestPoint } = getHighestAndLowestPoints(
         canvas.getContext('2d')!,
-        strokeRGBArray
+        STROKE_RGB_ARRAY
       )
       if (!highestPoint && !lowestPoint) playSound('btn-denied', 0.4)
       performClear(!!highestPoint && !!lowestPoint)
@@ -608,16 +607,6 @@ const PrivateRoom = () => {
     setDialogData({
       open: true,
       text: t('ROOM.ERRORS.INVALID_CODE'),
-      showSpinner: false,
-      rightBtnText: t('COMMON.GO_HOME'),
-      rightBtnFn: () => router.push('/')
-    })
-  }
-
-  const showMissingCodeDialog = () => {
-    setDialogData({
-      open: true,
-      text: t('ROOM.ERRORS.NOT_FOUND_MISSING_CODE'),
       showSpinner: false,
       rightBtnText: t('COMMON.GO_HOME'),
       rightBtnFn: () => router.push('/')
@@ -733,9 +722,9 @@ const PrivateRoom = () => {
       hideOnRightBtn: false,
       rightBtnFn: async () => {
         if (Capacitor.isNativePlatform()) {
-          await Clipboard.write({ string: router.query.code as string })
+          await Clipboard.write({ string: router.query.roomID as string })
         } else {
-          navigator.clipboard.writeText(router.query.code as string)
+          navigator.clipboard.writeText(router.query.roomID as string)
         }
 
         setDialogData({
@@ -755,7 +744,7 @@ const PrivateRoom = () => {
       leftBtnFn: async () => {
         const url =
           process.env.NODE_ENV === 'production'
-            ? `https://paperchat.net/private-room/${router.query.roomID}?code=${router.query.code}`
+            ? `https://paperchat.net/private-room/${router.query.roomID}`
             : window.location.href
 
         if (Capacitor.isNativePlatform()) {

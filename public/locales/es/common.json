@@ -13,7 +13,8 @@
       "THERE_WAS": "Ha ocurrido un error.",
       "ROOM_NOT_FOUND": "No encontramos la sala!",
       "ROOM_NOT_FOUND_MAYBE_DISBANDED": "No encontramos la sala. Tal vez fue disuelta.",
-      "DAILY_ROOMS_LIMIT": "Puedes crear hasta {{DAILY_ROOMS_LIMIT}} salas por día. Inténtalo mañana."
+      "DAILY_ROOMS_LIMIT": "Puedes crear hasta {{DAILY_ROOMS_LIMIT}} salas por día. Inténtalo mañana.",
+      "TIMEOUT_TRY_AGAIN": "La conexión ha tardado demasiado. ¿Quieres intentarlo de nuevo?"
     }
   },
   "HOME": {

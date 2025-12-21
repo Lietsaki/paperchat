@@ -44,9 +44,9 @@ const {
 const CreateRoom = () => {
   const router = useRouter()
   const { t, locale } = useTranslation()
-  const getTitleText = () => `Paperchat - ${t('CREATE_ROOM_SCREEN.PAGE_TITLE')}`
 
   const [dialogData, setDialogData] = useState<DialogProps>(baseDialogData)
+  const getTitleText = () => `Paperchat - ${t('CREATE_ROOM_SCREEN.PAGE_TITLE')}`
 
   useEffect(() => {
     initializeUsername()
@@ -59,13 +59,19 @@ const CreateRoom = () => {
       showSpinner: true
     })
 
-    const roomID = await createRoom(false)
-    if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
-    if (roomID === 'already-joined') return showAlreadyJoinedDialog()
-    if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
-    if (roomID === 'error') return showErrorDialog()
-    setDialogData(baseDialogData)
-    router.push(`room/${roomID}`)
+    try {
+      const roomID = await createRoom(false)
+      if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
+      if (roomID === 'already-joined') return showAlreadyJoinedDialog()
+      if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
+      if (roomID === 'error') return showErrorDialog()
+
+      setDialogData(baseDialogData)
+      router.push(`room/${roomID}`)
+    } catch (error) {
+      console.error(error)
+      showErrorDialog()
+    }
   }
 
   const createPrivateRoom = async () => {
@@ -74,14 +80,20 @@ const CreateRoom = () => {
       text: t('CREATE_ROOM_SCREEN.CREATING_YOUR_PRIVATE_ROOM'),
       showSpinner: true
     })
-    const roomURL = await createRoom(true)
-    if (roomURL === 'hit-creation-limit') return showCreationLimitDialog()
-    if (roomURL === 'already-joined') return showAlreadyJoinedDialog()
-    if (roomURL === 'hit-rooms-limit') return showRoomsLimitDialog()
-    if (roomURL === 'error') return showErrorDialog()
-    setDialogData(baseDialogData)
 
-    router.push(`private-room/${roomURL}`)
+    try {
+      const roomID = await createRoom(true)
+      if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
+      if (roomID === 'already-joined') return showAlreadyJoinedDialog()
+      if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
+      if (roomID === 'error') return showErrorDialog()
+
+      setDialogData(baseDialogData)
+      router.push(`private-room/${roomID}`)
+    } catch (error) {
+      console.error(error)
+      showErrorDialog()
+    }
   }
 
   const goToOfflineRoom = async () => {

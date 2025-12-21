@@ -102,6 +102,9 @@ const {
   letter
 } = page_styles
 
+const MSG_DEB_TIME = 5
+const STROKE_RGB_ARRAY = [17, 17, 17]
+
 const PublicRoom = () => {
   const router = useRouter()
   const { t, locale, changeLocale } = useTranslation()
@@ -139,8 +142,6 @@ const PublicRoom = () => {
   const [lostConnection, setLostConnection] = useState(false)
 
   const [msgDebounceTime, setMsgDebounceTime] = useState(0)
-  const strokeRGBArray = [17, 17, 17]
-  const MSG_DEB_TIME = 5
 
   const typeKey = (key: string) => emitter.emit('typeKey', key)
   const typeSpace = () => emitter.emit('typeSpace', '')
@@ -519,7 +520,7 @@ const PublicRoom = () => {
     } else {
       const { highestPoint, lowestPoint } = getHighestAndLowestPoints(
         canvas.getContext('2d')!,
-        strokeRGBArray
+        STROKE_RGB_ARRAY
       )
       if (!highestPoint && !lowestPoint) playSound('btn-denied', 0.4)
       performClear(!!highestPoint && !!lowestPoint)

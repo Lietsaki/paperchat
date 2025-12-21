@@ -24,7 +24,7 @@ type CanvasData = { dataUrl: string; height: number; width: number }
 // Types used in Firebase Realtime DB
 type OnlineUser = {
   username: string
-  createdOn: number
+  createdAt: number
   publicRooms?: { [key: string]: boolean }
   privateRooms?: { [key: string]: boolean }
 }
@@ -38,8 +38,8 @@ type RoomUser = {
 type Room = {
   code: string
   users?: { [key: string]: RoomUser }
-  createdOn: number
-  privateCode?: string
+  usersNumber: number
+  createdAt: number
   id?: string
 }
 
@@ -54,7 +54,7 @@ type FirebaseMessage = {
   platform: string
 }
 
-type RoomMessages = { createdOn: number; messages: { [key: string]: FirebaseMessage } }
+type RoomMessages = { createdAt: number; messages: { [key: string]: FirebaseMessage } }
 type RoomMessagesObj = { [key: string]: RoomMessages }
 
 type QueryResult<T> = {
