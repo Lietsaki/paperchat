@@ -5,13 +5,13 @@ import { willContainerBeOverflowed } from 'helpers/helperFunctions'
 
 const {
   content_indicator,
-  animate,
+  skip_animation,
   indicator,
   invisible,
   overflowed_1,
   overflowed_2,
   main_container,
-  indictor_container
+  indicator_container
 } = styles
 
 type AdjacentIndicators = { up: string; down: string }
@@ -25,7 +25,6 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
   const indicatorIdPrefix = 'i-'
   const [indicators, setIndicators] = useState<ContentIndicators>({})
   const [latestOverflowedLength, setLatestOverflowedLength] = useState(0)
-  const animatedIndicators = useRef<{ [key: string]: boolean }>({})
 
   const [overflowed2OldestIndicator, setOverflowed2OldestIndicator] = useState('')
   const [overflowed1OldestIndicator, setOverflowed1OldestIndicator] = useState('')
@@ -43,7 +42,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
 
   const oldestIndicators = [overflowed2OldestIndicator, overflowed1OldestIndicator]
   const newestIndicators = [overflowed1NewestIndicator, overflowed2NewestIndicator]
-  // Even when roomContent already comes sorted, we still have to sort the indicators to prevent inconsistencies
+
   const middleIndicatorKeys = Object.keys(indicators)
     .filter((key) => !oldestIndicators.includes(key) && !newestIndicators.includes(key))
     .sort((a, b) => {
@@ -65,7 +64,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
 
         const contentIds = roomContent.map((item) => item.id)
 
-        for (const key of Object.keys(newIndicators)) {
+        for (const key of newIndKeys) {
           if (!contentIds.includes(key)) {
             delete newIndicators[key]
           }
@@ -117,7 +116,7 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     )
 
     roomContent.map((item) => {
-      const el = document.getElementById(item.id + '')
+      const el = document.getElementById(item.id)
       if (el && observer) observer.observe(el)
     })
   }
@@ -207,14 +206,14 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     }
 
     if (viewingNewIndicator1 && indicators[overflowed1OldestIndicator]) {
-      indicators[overflowed1OldestIndicator].isOverflowedIndicator1 = true
-
       if (indicators[overflowed2OldestIndicator] && indicators[overflowed2NewestIndicator]) {
         indicators[overflowed2NewestIndicator].isOverflowedIndicator2 = false
         indicators[overflowed2NewestIndicator].isOverflowedIndicator1 = true
 
         indicators[overflowed1OldestIndicator].isOverflowedIndicator1 = false
         indicators[overflowed2OldestIndicator].isOverflowedIndicator1 = true
+      } else {
+        indicators[overflowed1OldestIndicator].isOverflowedIndicator1 = true
       }
     }
 
@@ -243,7 +242,6 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
 
   useEffect(() => {
     setupObserver()
-    setTimeout(() => scrollMiddleIndicators(), 50)
 
     return () => {
       observer?.disconnect()
@@ -287,11 +285,6 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
     setAdjacentMessages(adjacentIndicators)
   }, [indicators])
 
-  const scrollMiddleIndicators = () => {
-    const container = middleIndicatorsRef.current!
-    container.scroll({ top: container.scrollHeight, behavior: 'smooth' })
-  }
-
   const isIndicatorOverflowed = (indicator: Element) => {
     const contRect = middleIndicatorsRef.current!.getBoundingClientRect()
     const indRect = indicator.getBoundingClientRect()
@@ -309,22 +302,15 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
   }
 
   const renderIndicators = (indicatorKeys: string[]) => {
-    return indicatorKeys.map((id, i) => {
+    return indicatorKeys.map((id) => {
       const ind = indicators[id]
       if (!ind) return ''
-
-      // Set the previous indicator as already animated (because we just rendered it)
-      // Keeping track of the animated indicators prevents all indicators from being
-      // animated at the same time when calling setIndicators() in setupObserver()
-      if (indicatorKeys[i - 1]) {
-        animatedIndicators.current[indicatorKeys[i - 1]] = true
-      }
 
       return (
         <div
           key={id}
           id={indicatorIdPrefix + id}
-          className={`${indicator} ${animatedIndicators.current[id] ? '' : animate} ${
+          className={`${indicator} ${id.includes('paperchat_octagon') ? skip_animation : ''} ${
             ind.isVisible ? '' : invisible
           } ${ind.isOverflowedIndicator1 && !ind.isVisible ? overflowed_1 : ''} ${
             ind.isOverflowedIndicator2 && !ind.isVisible ? overflowed_2 : ''
@@ -336,14 +322,14 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
 
   return (
     <div className={content_indicator} ref={indicatorsContainerRef}>
-      <div className={indictor_container}> {renderIndicators(oldestIndicators)}</div>
+      <div className={indicator_container}> {renderIndicators(oldestIndicators)}</div>
       <div
         ref={middleIndicatorsRef}
-        className={`${indictor_container} ${overflowed2OldestIndicator ? main_container : ''}`}
+        className={`${indicator_container} ${overflowed2OldestIndicator ? main_container : ''}`}
       >
         {renderIndicators(middleIndicatorKeys)}
       </div>
-      <div className={indictor_container}> {renderIndicators(newestIndicators)}</div>
+      <div className={indicator_container}> {renderIndicators(newestIndicators)}</div>
     </div>
   )
 }
