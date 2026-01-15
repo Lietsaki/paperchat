@@ -41,8 +41,16 @@
       height: 23%;
       z-index: 1000;
 
-      @include landscape-tablet-up {
+      @media (resolution = 1dppx) and (max-width: 1400px) {
+        height: 24%;
+      }
+
+      @media (resolution >= 2dppx) {
         height: 22%;
+      }
+
+      @media (resolution >= 3dppx) {
+        height: 21.3%;
       }
     }
   }

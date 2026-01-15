@@ -73,8 +73,11 @@ const Canvas = ({
   const [latestFiredStrokeSound, setLatestFiredStrokeSound] = useState(0)
 
   const smallDevice = typeof window !== 'undefined' ? window.screen.width < 800 : false
-  const smallerDevice = smallDevice && window.screen.width < 550
-  const newLineStartX = smallerDevice ? 15 : 8
+
+  const getNewLineStartX = () => {
+    const dpr = Number((window.devicePixelRatio || 1).toFixed(2))
+    return 8 * Math.min(2.5, dpr)
+  }
 
   const getNextYDivision = (y: number) => {
     const safetyOffset = 1
@@ -144,7 +147,7 @@ const Canvas = ({
 
   // In drawUsernameRectangle we multiply by 2, do so by 3 here to account for the border's width itself
   const nameContainerWidthWithExtraPixels = () => {
-    const small_margin = 0.4
+    const small_margin = 0.4 * (window.devicePixelRatio || 1)
     return nameContainerWidth + usernameRectPixelBorderSize.current * 3 + small_margin
   }
 
@@ -154,7 +157,8 @@ const Canvas = ({
 
   // starting X refers to the end of the username rectangle, where the first line of user-generated text can begin
   const getStartingX = () => {
-    return nameContainerWidthWithExtraPixels() + usernameRectPixelBorderSize.current * 3
+    const margin = 6 * (window.devicePixelRatio || 1)
+    return nameContainerWidthWithExtraPixels() + margin
   }
 
   const handleTextInsert = (key: string, posToUse?: PositionObj) => {
@@ -167,18 +171,18 @@ const Canvas = ({
 
     const textMetrics = ctx.measureText(key)
     const nextKeyPos = { x: Math.round(keyPosition.x + textMetrics.width), y: keyPosition.y }
-    const marginRight = smallerDevice ? 12 : 0
+    const marginRight = 3 * (window.devicePixelRatio || 1)
     const nextKeyWillOverflowCanvas = posOverflowsX({
       x: nextKeyPos.x + marginRight,
       y: nextKeyPos.y
     })
 
     if (nextKeyWillOverflowCanvas) {
-      nextKeyPos.x = newLineStartX
+      nextKeyPos.x = getNewLineStartX()
       nextKeyPos.y = getNextYDivision(keyPosition.y)
 
       const wouldKeysBeWithinUsername = isWithinUsername({
-        x: newLineStartX,
+        x: getNewLineStartX(),
         y: nextKeyPos.y - AVERAGE_LETTER_HEIGHT
       })
       if (wouldKeysBeWithinUsername) nextKeyPos.x = getStartingX()
@@ -206,16 +210,16 @@ const Canvas = ({
 
   const typeSpace = () => {
     if (keyPos.y === -1) return
-    const spaceVal = smallerDevice ? 12 : 5
+    const spaceVal = 4 * Math.max(1.25, window.devicePixelRatio || 1)
     const nextKeyPos = { x: keyPos.x + spaceVal, y: keyPos.y }
     const nextKeyWillOverflowCanvas = posOverflowsX(nextKeyPos)
 
     if (nextKeyWillOverflowCanvas) {
-      nextKeyPos.x = newLineStartX
+      nextKeyPos.x = getNewLineStartX()
       nextKeyPos.y = getNextYDivision(keyPos.y)
 
       const wouldKeysBeWithinUsername = isWithinUsername({
-        x: newLineStartX,
+        x: getNewLineStartX(),
         y: nextKeyPos.y - AVERAGE_LETTER_HEIGHT
       })
       if (wouldKeysBeWithinUsername) nextKeyPos.x = getStartingX()
@@ -226,9 +230,9 @@ const Canvas = ({
   }
 
   const typeEnter = () => {
-    const nextKeyPos = { x: newLineStartX, y: getNextYDivision(keyPos.y) }
+    const nextKeyPos = { x: getNewLineStartX(), y: getNextYDivision(keyPos.y) }
     const wouldKeysBeWithinUsername = isWithinUsername({
-      x: newLineStartX,
+      x: getNewLineStartX(),
       y: nextKeyPos.y - AVERAGE_LETTER_HEIGHT
     })
 
@@ -273,7 +277,7 @@ const Canvas = ({
     if (!draggingKey || !ctx) return
 
     const { height, width } = canvasRef.current!
-    const offsetPos = dropPosOffset(getPosition(posToDropIn), width, height)
+    const offsetPos = dropPosOffset(getPosition(posToDropIn))
     const { x, y } = offsetPos
     const droppedOutsideCanvas = y >= height || 8 >= y || x >= width || 8 >= x
 
@@ -336,22 +340,24 @@ const Canvas = ({
     appendImgToCanvas?: boolean
   ) => {
     if (!ctx || !canvasRef.current) return
-    const usernameCanvas = document.createElement('canvas')
-    const usernameCtx = usernameCanvas.getContext('2d')!
-    const ctxToUse = appendImgToCanvas ? usernameCtx : ctx
+    let ctxToUse: CanvasRenderingContext2D
+    let usernameCanvas: HTMLCanvasElement
+    const dpr = window.devicePixelRatio || 1
 
     if (appendImgToCanvas) {
+      usernameCanvas = document.createElement('canvas')
+      ctxToUse = usernameCanvas.getContext('2d')!
       usernameCanvas.width = nameContainerWidthWithExtraPixels()
       usernameCanvas.height = divisionsHeightWithMargin()
     } else {
+      // Clear the username rectangle area before drawing.
+      // Don't use clearRect, we need the bg color.
+      ctxToUse = ctx
       ctxToUse.fillStyle = canvasBgColor
       ctxToUse.fillRect(0, 0, nameContainerWidth + 5, divisionsHeight + 5)
     }
 
-    const lineWidth =
-      (window.devicePixelRatio || 1) >= 2
-        ? window.devicePixelRatio * 1
-        : (window.devicePixelRatio || 1) * 1.5
+    const lineWidth = dpr >= 2 ? dpr * 1 : dpr * 1.5
 
     const pixelBorderSize = usernameRectPixelBorderSize.current
     ctxToUse.globalCompositeOperation = 'source-over'
@@ -383,9 +389,7 @@ const Canvas = ({
       ctx.font = `${getFontSize(username)}px 'nds', roboto, sans-serif`
 
       const firstLineY = getPercentage(80, divisionsHeight)
-      let usernameX = 8
-      if (smallDevice) usernameX = 10
-      if (smallerDevice) usernameX = 18
+      let usernameX = Math.max(8, 6 * (window.devicePixelRatio || 1))
 
       const trimmedUsername = trimTextToWidth(ctxToUse, username, nameContainerWidth - usernameX)
       ctxToUse.fillText(trimmedUsername, usernameX, firstLineY - 1.5)
@@ -697,6 +701,7 @@ const Canvas = ({
 
     document.querySelector('html')!.addEventListener('mouseup', handleMouseKeyDrop)
     document.querySelector('html')!.addEventListener('touchend', handleTouchKeyDrop)
+
     return () => {
       document.querySelector('html')!.removeEventListener('mouseup', handleMouseKeyDrop)
       document.querySelector('html')!.removeEventListener('touchend', handleTouchKeyDrop)

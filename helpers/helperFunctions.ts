@@ -21,12 +21,12 @@ const wait = (ms: number) => {
   })
 }
 
-const isFirefoxDesktop = () => {
+const getUserAgentData = () => {
   const ua = navigator.userAgent.toLowerCase()
   const isFirefox = ua.includes('firefox')
   const isMobile = /mobi|android|tablet|ipad|iphone/.test(ua)
 
-  return isFirefox && !isMobile
+  return { isFirefox, isMobile }
 }
 
 // Color is a string obtained from getRandomColor()
@@ -42,33 +42,57 @@ const getLighterHslaShade = (color: string) => {
 
 const getPercentage = (percentage: number, of: number) => Math.floor((percentage / 100) * of)
 
-const dropPosOffset = (dropPos: PositionObj, width: number, height: number) => {
-  const offsetAppliedPos = { ...dropPos }
-  const smallDevice = window.innerWidth < 500
+const dropPosOffset = (dropPos: PositionObj) => {
+  const dpr = Number((window.devicePixelRatio || 1).toFixed(2))
 
-  // Mid-large mobile phones
-  if (width > 1000 && height > 350) {
-    offsetAppliedPos.x -= getPercentage(3, width)
-    offsetAppliedPos.y += getPercentage(0.4, height)
+  let offsetX = -10
+  let offsetY = dpr === 1 ? 4 : 6
+  const isPhone = window.innerWidth < 500
+  const isPhoneLandscape = window.innerHeight < 500 && window.innerWidth > 500
+  const { isFirefox, isMobile } = getUserAgentData()
 
-    // Tablets and desktop
-  } else if (width > 600 && height > 168 && !smallDevice) {
-    const y = isFirefoxDesktop() ? 6 : 3
-    offsetAppliedPos.x -= getPercentage(2, width)
-    offsetAppliedPos.y += getPercentage(y, height)
+  if (isMobile) {
+    if (dpr > 3.5) {
+      offsetX = -9.5
+      offsetY = -0.8
 
-    // Small mobile phones
-  } else if (width > 600 && height > 200) {
-    offsetAppliedPos.x -= getPercentage(3, width)
-    offsetAppliedPos.y -= 0.5
+      if (isPhoneLandscape) {
+        offsetY = 5
+      }
+    } else if (dpr >= 3) {
+      offsetX = -9.5
+      offsetY = -0.3
 
-    // Extremely small devices / Fallback
-  } else {
-    offsetAppliedPos.x -= getPercentage(2.4, width)
-    offsetAppliedPos.y += 4
+      if (isPhoneLandscape) {
+        offsetY = 5
+      }
+    } else if (dpr >= 2) {
+      offsetX = -10
+      offsetY = 5
+
+      if (isPhone) {
+        offsetX = -9.6
+        offsetY = 0.6
+      }
+
+      if (isPhoneLandscape) {
+        offsetY = 4
+      }
+    }
   }
 
-  return offsetAppliedPos
+  if (isFirefox && !isMobile) {
+    if (window.innerHeight > 980) {
+      offsetY = 10
+    } else if (window.innerWidth < 1400 && window.innerHeight < 900) {
+      offsetY = 6
+    }
+  }
+
+  return {
+    x: dropPos.x + offsetX * dpr,
+    y: dropPos.y + offsetY * dpr
+  }
 }
 
 const getHighestAndLowestPoints = (

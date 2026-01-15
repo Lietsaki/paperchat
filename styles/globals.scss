@@ -6,6 +6,7 @@ body {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   padding-bottom: env(safe-area-inset-bottom);
   background-color: $app-bg;
+  scrollbar-gutter: stable;
 
   * {
     user-select: none;

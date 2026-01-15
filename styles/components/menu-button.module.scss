@@ -81,7 +81,7 @@
     height: 84%;
     margin-right: 7px;
     border: 2px solid $dark-gray;
-    filter: blur(0.4px);
+    padding: 1px 4px;
 
     // Remove one pixel from each border
     clip-path: polygon(
@@ -188,7 +188,7 @@
     height: 84%;
     margin-right: 7px;
     border: 2px solid $dark-gray;
-    filter: blur(0.4px);
+    padding: 1px 4px;
 
     // Remove one pixel from each border
     clip-path: polygon(
