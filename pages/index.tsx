@@ -27,8 +27,8 @@ const {
   title,
   icon,
   title_text,
-  attribution,
-  privacy_and_credits,
+  top_screen_bottom_left,
+  top_screen_bottom_right,
   bottom,
   play_store_btn,
   btn_search_rooms,
@@ -41,9 +41,22 @@ const {
   back_to_corner,
   save_username_btn_container,
   ja,
+  de,
+  es,
+  fr,
+  pt,
   sounds_btn,
   multilang_btn
 } = styles
+
+const localeClasses: { [key: string]: string } = {
+  en: '',
+  fr,
+  de,
+  es,
+  pt,
+  ja
+}
 
 const Home = () => {
   const router = useRouter()
@@ -200,10 +213,10 @@ const Home = () => {
       <div className="screens_section">
         <div className={`screen ${top}`}>
           <div className={title}>
-            <span className={icon}>☺</span> <span className={title_text}>paperchat</span>
+            <span className={icon}>☺</span> <h1 className={title_text}>paperchat</h1>
           </div>
 
-          <div className={attribution}>
+          <div className={`${top_screen_bottom_left} ${localeClasses[locale]}`}>
             <a href="https://www.linkedin.com/in/ricardo-sandez/" target="_blank" rel="noreferrer">
               Ricardo Sandez
             </a>
@@ -213,16 +226,14 @@ const Home = () => {
             </a>
           </div>
 
-          <div className={privacy_and_credits}>
+          <div className={`${top_screen_bottom_right} ${localeClasses[locale]}`}>
             <span>v{version}</span>
             <span> - </span>
-            <Link href="/privacy" className={`${locale === 'ja' ? ja : ''}`}>
-              {t('HOME.PRIVACY')}
-            </Link>
+            <Link href="/privacy">{t('HOME.PRIVACY')}</Link>
             <span> - </span>
-            <Link href="/credits" className={`${locale === 'ja' ? ja : ''}`}>
-              {t('HOME.CREDITS')}
-            </Link>
+            <Link href="/terms">{t('HOME.TERMS')}</Link>
+            <span> - </span>
+            <Link href="/credits">{t('HOME.CREDITS')}</Link>
           </div>
         </div>
 
@@ -249,10 +260,11 @@ const Home = () => {
                 editing={editingUsername}
                 receivedValue={usernameInputValue}
                 setUsernameBeingEdited={setUsernameBeingEdited}
+                onFocus={editUsername}
               />
 
               {editingUsername ? (
-                <div className={`${save_username_btn_container} ${locale === 'ja' ? ja : ''}`}>
+                <div className={`${save_username_btn_container} ${locale}`}>
                   <Button onClick={saveUsername} text={t('COMMON.SAVE')} />
                 </div>
               ) : null}

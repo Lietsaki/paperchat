@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { App, URLOpenListenerEvent } from '@capacitor/app'
 import emitter from 'helpers/MittEmitter'
+import { Browser } from '@capacitor/browser'
 
 const AppUrlListener = () => {
   const router = useRouter()
@@ -12,12 +13,19 @@ const AppUrlListener = () => {
         // Example url: https://paperchat.net/room/123 - slug: /room/123
         const slug = event.url.split('.net')[1]
         if (!slug) return router.push('/')
+
+        if (slug.startsWith('/blog')) {
+          const urlFromApp = `${event.url}${event.url.includes('?') ? '&' : '?'}fromApp=true`
+          return Browser.open({ url: urlFromApp })
+        }
+
         const simpleSlugs = [
           '/create-room',
           '/find-rooms',
           '/join-room',
           '/offline-room',
           '/privacy',
+          '/terms',
           '/credits'
         ]
         const simpleSlugMatch = simpleSlugs.find((simpleSlug) => slug.startsWith(simpleSlug))

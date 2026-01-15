@@ -6,20 +6,18 @@ import type { AppProps } from 'next/app'
 import { store } from 'store/store'
 import { Provider } from 'react-redux'
 import { I18nProvider } from 'i18n/I18nContext'
-import initializeFirebase from 'firebase-config/init'
+import { firebaseInit } from 'firebase-config/init'
 import Head from 'next/head'
 import AppUrlListener from 'components/AppUrlListener'
 import AppNotificationsCleaner from 'components/AppNotificationsCleaner'
 import { Capacitor } from '@capacitor/core'
 import { initializeLocalNotifications } from 'helpers/localNotifications'
+import { StatusBar, Style as StatusBarStyles } from '@capacitor/status-bar'
+import { useEffect } from 'react'
+import { wait } from 'helpers/helperFunctions'
 
 if (typeof window !== 'undefined') {
-  initializeFirebase()
-
-  if (Capacitor.isNativePlatform()) {
-    initializeLocalNotifications()
-    document.documentElement.classList.add('no-scroll-y')
-  }
+  firebaseInit()
 
   // Samsung's browser ignores color-scheme.
   if (navigator.userAgent.match(/samsung/i)) {
@@ -32,7 +30,26 @@ if (typeof window !== 'undefined') {
   }
 }
 
-function MyApp({ Component, pageProps }: AppProps) {
+const Paperchat = ({ Component, pageProps }: AppProps) => {
+  useEffect(() => {
+    const initCapacitor = async () => {
+      if (!Capacitor.isNativePlatform()) return
+
+      try {
+        await initializeLocalNotifications()
+
+        // Doesn't work without the timeout
+        await wait(2000)
+        await StatusBar.setStyle({ style: StatusBarStyles.Light })
+      } catch (error) {
+        console.log('[R] Error initializing Capacitor')
+        console.log(error)
+      }
+    }
+
+    initCapacitor()
+  }, [])
+
   return (
     <Provider store={store}>
       <I18nProvider>
@@ -116,4 +133,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   )
 }
 
-export default MyApp
+export default Paperchat

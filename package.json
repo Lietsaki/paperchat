@@ -15,11 +15,13 @@
   "dependencies": {
     "@capacitor/android": "^7.0.0",
     "@capacitor/app": "^7.0.0",
+    "@capacitor/browser": "^7.0.3",
     "@capacitor/clipboard": "^7.0.0",
     "@capacitor/core": "^7.0.0",
-    "@capacitor/keyboard": "^7.0.0",
+    "@capacitor/keyboard": "^7.0.4",
     "@capacitor/local-notifications": "^7.0.0",
     "@capacitor/splash-screen": "^7.0.3",
+    "@capacitor/status-bar": "^7.0.4",
     "@reduxjs/toolkit": "^1.8.5",
     "firebase": "^9.10.0",
     "howler": "^2.2.4",
@@ -35,7 +37,7 @@
     "@types/node": "18.0.3",
     "@types/react": "^18.0.10",
     "@types/react-dom": "^18.0.4",
-    "eslint": "8.19.0",
+    "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.24",
     "sass": "^1.53.0",
     "typescript": "5.4"

@@ -33,16 +33,22 @@ const Button = ({
     if (debounceMounted && debounce && name) {
       const latestDebounce = localStorage.getItem(name)
       setTime(Number(latestDebounce) ? Number(latestDebounce) : debounce)
+    } else if (!name) {
+      setTime(null)
     }
   }, [debounce])
 
   useEffect(() => {
     if (!time || !name) return
 
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setTime(time - 1)
       localStorage.setItem(name, time - 1 + '')
     }, 1000)
+
+    return () => {
+      clearTimeout(timeout)
+    }
   }, [time])
 
   const triggerBtn = () => {

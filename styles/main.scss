@@ -53,6 +53,12 @@ $scrollbar-color-dark: rgba(132, 132, 132, 0.6);
   }
 }
 
+@mixin landscape-phones {
+  @media (max-height: 600px) and (min-width: 500px) {
+    @content;
+  }
+}
+
 @mixin ipad-pro-11 {
   @media (min-width: 800px) and (max-width: 835px) and (min-height: 1050px) and (max-height: 1195px) {
     @content;
@@ -73,12 +79,6 @@ $scrollbar-color-dark: rgba(132, 132, 132, 0.6);
 
 @mixin large-monitor {
   @media (max-width: 1380px) {
-    @content;
-  }
-}
-
-@mixin unsually-short-height {
-  @media (max-height: 500px) {
     @content;
   }
 }

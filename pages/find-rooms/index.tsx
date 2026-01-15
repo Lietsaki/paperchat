@@ -153,6 +153,21 @@ const FindRooms = () => {
     })
   }
 
+  const showTimeoutDialog = () => {
+    setDialogData({
+      open: true,
+      text: t('COMMON.ERRORS.TIMEOUT_TRY_AGAIN'),
+      showSpinner: false,
+
+      rightBtnText: t('COMMON.RETRY'),
+      rightBtnFn: () => createPublicRoom(),
+      hideOnRightBtn: false,
+
+      leftBtnText: t('COMMON.GO_HOME'),
+      leftBtnFn: () => router.push('/')
+    })
+  }
+
   const createPublicRoom = async () => {
     setDialogData({
       open: true,
@@ -165,6 +180,7 @@ const FindRooms = () => {
       if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
       if (roomID === 'already-joined') return showAlreadyJoinedDialog()
       if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
+      if (roomID === 'timeout') return showTimeoutDialog()
       if (roomID === 'error') return showCreateRoomErrorDialog()
 
       setDialogData(baseDialogData)
@@ -208,7 +224,7 @@ const FindRooms = () => {
       <div className={bottom_btn_container}>
         <Button
           name="roomSearch"
-          debounce={30}
+          debounce={10}
           debounceMounted
           onClick={() => searchRooms()}
           text={t('SEARCH_ROOMS_SCREEN.SEARCH_AGAIN')}

@@ -10,30 +10,32 @@ const {
   title,
   title_text,
   lowercase,
-  privacy_and_credits,
+  top_screen_bottom_right,
   privacy_title,
   de,
   es,
   pt,
   ja,
   bottom,
-  privacy,
-  privacy_content,
+  long_text,
+  long_text_content,
   credits_content,
-  privacy_back_home_btn
+  long_text_back_home_btn
 } = styles
+
+const localeClasses: { [key: string]: string } = {
+  en: '',
+  fr: '',
+  de,
+  es,
+  pt,
+  ja
+}
 
 const Credits = () => {
   const router = useRouter()
   const { t, locale } = useTranslation()
   const getTitleText = () => `Paperchat - ${t('HOME.CREDITS')}`
-
-  const localeClasses: { [key: string]: string } = {
-    de,
-    es,
-    pt,
-    ja
-  }
 
   return (
     <div className="main">
@@ -58,13 +60,13 @@ const Credits = () => {
             </span>
           </div>
 
-          <div className={privacy_and_credits}>
+          <div className={top_screen_bottom_right}>
             <span>v{version}</span>
           </div>
         </div>
 
-        <div className={`screen ${bottom} ${privacy}`}>
-          <div className={`${privacy_content} scrollify scrollify-dark ${credits_content}`}>
+        <div className={`screen ${bottom} ${long_text}`}>
+          <div className={`${long_text_content} scrollify scrollify-dark ${credits_content}`}>
             <h3>
               <a
                 href="https://www.linkedin.com/in/ricardo-sandez/"
@@ -96,7 +98,7 @@ const Credits = () => {
             </p>
           </div>
 
-          <div className={privacy_back_home_btn}>
+          <div className={long_text_back_home_btn}>
             <Button onClick={() => router.push('/')} text={t('COMMON.GO_HOME')} />
           </div>
         </div>

@@ -6,6 +6,7 @@ import { store } from 'store/store'
 import { App } from '@capacitor/app'
 import emitter from 'helpers/MittEmitter'
 import useTranslation from 'i18n/useTranslation'
+import { Howl } from 'howler'
 
 const baseDialogData: DialogProps = { text: '', open: false, showSpinner: false }
 
@@ -29,43 +30,27 @@ const Dialog = ({
   rightBtnDebounceMounted
 }: DialogProps) => {
   const { locale } = useTranslation()
-  const [audio, setAudio] = useState<null | HTMLAudioElement>(null)
+  const [audio] = useState<Howl>(new Howl({ src: ['/sounds/loading.mp3'], loop: true }))
 
   useEffect(() => {
     if (showSpinner && !store.getState().user.muteSounds && document.hidden === false) {
-      setAudio(new Audio('/sounds/loading.mp3'))
-    } else {
-      audio?.pause()
-      setAudio(null)
-    }
-  }, [showSpinner])
-
-  useEffect(() => {
-    if (audio) {
-      audio.loop = true
       audio.play()
 
       // Stop the sound when the app is in the foreground, and play it back when the user returns
       // We have to do this in all places where a looping sound is played, that is, only here.
       App.addListener('appStateChange', ({ isActive }) => {
-        if (!isActive) {
-          audio.loop = false
-        } else {
-          audio.loop = true
-          audio.play()
-        }
+        isActive ? audio.play() : audio.pause()
       })
+    } else {
+      audio.pause()
     }
 
     return () => {
-      if (audio) {
-        audio.loop = false
-        audio.currentTime = 1
-        App.removeAllListeners()
-        emitter.emit('removedAllCapacitorListeners', '')
-      }
+      audio.pause()
+      App.removeAllListeners()
+      emitter.emit('removedAllCapacitorListeners', '')
     }
-  }, [audio])
+  }, [showSpinner])
 
   const triggerLeftBtn = () => {
     if (!leftBtnFn) return

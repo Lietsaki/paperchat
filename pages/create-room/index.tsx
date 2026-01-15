@@ -64,6 +64,7 @@ const CreateRoom = () => {
       if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
       if (roomID === 'already-joined') return showAlreadyJoinedDialog()
       if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
+      if (roomID === 'timeout') return showTimeoutDialog()
       if (roomID === 'error') return showErrorDialog()
 
       setDialogData(baseDialogData)
@@ -86,6 +87,7 @@ const CreateRoom = () => {
       if (roomID === 'hit-creation-limit') return showCreationLimitDialog()
       if (roomID === 'already-joined') return showAlreadyJoinedDialog()
       if (roomID === 'hit-rooms-limit') return showRoomsLimitDialog()
+      if (roomID === 'timeout') return showTimeoutDialog(true)
       if (roomID === 'error') return showErrorDialog()
 
       setDialogData(baseDialogData)
@@ -137,6 +139,21 @@ const CreateRoom = () => {
       showSpinner: false,
       rightBtnFn: () => setDialogData(baseDialogData),
       rightBtnText: t('COMMON.ACCEPT')
+    })
+  }
+
+  const showTimeoutDialog = (privateRoom?: boolean) => {
+    setDialogData({
+      open: true,
+      text: t('COMMON.ERRORS.TIMEOUT_TRY_AGAIN'),
+      showSpinner: false,
+
+      rightBtnText: t('COMMON.RETRY'),
+      rightBtnFn: () => (privateRoom ? createPrivateRoom() : createPublicRoom()),
+      hideOnRightBtn: false,
+
+      leftBtnText: t('COMMON.GO_HOME'),
+      leftBtnFn: () => router.push('/')
     })
   }
 

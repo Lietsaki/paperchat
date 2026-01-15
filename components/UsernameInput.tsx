@@ -1,15 +1,21 @@
 import React, { useRef, useEffect, useState, BaseSyntheticEvent } from 'react'
 import useTranslation from 'i18n/useTranslation'
 import { usernameMinLength, usernameMaxLength } from '../store/initializer'
-import { Capacitor } from '@capacitor/core'
+import { containsNonLatinChars } from 'helpers/helperFunctions'
 
 type UsernameInputProps = {
   editing: boolean
   receivedValue: string
   setUsernameBeingEdited: (val: string) => void
+  onFocus?: () => void
 }
 
-const UsernameInput = ({ editing, receivedValue, setUsernameBeingEdited }: UsernameInputProps) => {
+const UsernameInput = ({
+  editing,
+  receivedValue,
+  setUsernameBeingEdited,
+  onFocus
+}: UsernameInputProps) => {
   const { t, locale } = useTranslation()
   const inputRef = useRef<HTMLInputElement>(null)
   let [inputValue, setInputValue] = useState('')
@@ -34,27 +40,19 @@ const UsernameInput = ({ editing, receivedValue, setUsernameBeingEdited }: Usern
     return editing ? 'make_complete_rectangle' : ''
   }
 
-  const handleFocus = () => {
-    if (Capacitor.isNativePlatform()) {
-      document.documentElement.classList.remove('no-scroll-y')
-    }
-
-    inputRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center'
-    })
+  const shouldUseSmallFont = () => {
+    if (!inputValue) return ''
+    return containsNonLatinChars(inputValue) ? 'small_font' : ''
   }
 
-  const handleBlur = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-
-    if (Capacitor.isNativePlatform()) {
-      document.documentElement.classList.add('no-scroll-y')
-    }
+  const handleFocus = () => {
+    if (onFocus) onFocus()
   }
 
   return (
-    <div className={`input_container ${shouldBeCompleteRectangle()} ${locale}`}>
+    <div
+      className={`input_container ${shouldBeCompleteRectangle()} ${locale} ${shouldUseSmallFont()}`}
+    >
       <div className="title">{t('HOME.USERNAME')}</div>
       <input
         type="text"
@@ -66,7 +64,6 @@ const UsernameInput = ({ editing, receivedValue, setUsernameBeingEdited }: Usern
         minLength={usernameMinLength}
         autoComplete="off"
         onFocus={handleFocus}
-        onBlur={handleBlur}
       ></input>
     </div>
   )
