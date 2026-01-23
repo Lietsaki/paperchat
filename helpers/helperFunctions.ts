@@ -42,6 +42,8 @@ const getLighterHslaShade = (color: string) => {
 
 const getPercentage = (percentage: number, of: number) => Math.floor((percentage / 100) * of)
 
+const getPercentageRaw = (percentage: number, of: number) => (percentage / 100) * of
+
 const dropPosOffset = (dropPos: PositionObj) => {
   const dpr = Number((window.devicePixelRatio || 1).toFixed(2))
 
@@ -82,11 +84,7 @@ const dropPosOffset = (dropPos: PositionObj) => {
   }
 
   if (isFirefox && !isMobile) {
-    if (window.innerHeight > 980) {
-      offsetY = 10
-    } else if (window.innerWidth < 1400 && window.innerHeight < 900) {
-      offsetY = 6
-    }
+    offsetY = getPercentageRaw(1, window.innerHeight)
   }
 
   return {
