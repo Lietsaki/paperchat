@@ -13,9 +13,8 @@ const config: CapacitorConfig = {
       iconColor: '#ffffff',
       sound: 'send_message.wav'
     },
-    Keyboard: {
-      resize: 'body',
-      resizeOnFullScreen: true
+    SystemBars: {
+      insetsHandling: 'disable'
     }
   }
 }

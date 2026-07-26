@@ -211,15 +211,6 @@
     grid-template-rows: 12% 21% 22% 21% 24%;
   }
 
-  div[class^='home_btn_'] {
-    padding: 6px;
-    filter: blur(0.3px);
-
-    @include ipad-pro-11 {
-      filter: none;
-    }
-  }
-
   .play_store_btn {
     grid-row: 1 / 2;
     grid-column: 1 / 2;
@@ -266,6 +257,17 @@
 
     @include small-phones {
       height: 120%;
+    }
+  }
+
+  .btn_search_rooms,
+  .btn_create_room,
+  .btn_join {
+    padding: 6px;
+    filter: blur(0.3px);
+
+    @include ipad-pro-11 {
+      filter: none;
     }
   }
 

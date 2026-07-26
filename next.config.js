@@ -1,13 +1,13 @@
-const path = require('path')
-/** @type {import('next').NextConfig} */
+import path from 'path'
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
   reactStrictMode: false,
   sassOptions: {
-    includePaths: [path.join(__dirname, 'styles')],
-    prependData: `@import "main.scss";`
+    loadPaths: [path.join(import.meta.dirname, 'styles')],
+    prependData: `@use "main.scss" as *;`
   }
 }
 
-module.exports = nextConfig
+export default nextConfig
