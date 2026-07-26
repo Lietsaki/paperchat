@@ -225,7 +225,7 @@ const Room = () => {
   }
 
   const getRoomContent = () => {
-    return roomContent.map((item, i) => {
+    return roomContent.map((item) => {
       if (item.userEntering || item.userLeaving) {
         return (
           <UserInfoOctagon

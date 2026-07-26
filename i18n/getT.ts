@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getCurrentLocale } from './i18nHelpers'
 
 import en from '../public/locales/en/common.json'

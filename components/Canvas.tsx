@@ -389,7 +389,7 @@ const Canvas = ({
       ctx.font = `${getFontSize(username)}px 'nds', roboto, sans-serif`
 
       const firstLineY = getPercentage(80, divisionsHeight)
-      let usernameX = Math.max(8, 6 * (window.devicePixelRatio || 1))
+      const usernameX = Math.max(8, 6 * (window.devicePixelRatio || 1))
 
       const trimmedUsername = trimTextToWidth(ctxToUse, username, nameContainerWidth - usernameX)
       ctxToUse.fillText(trimmedUsername, usernameX, firstLineY - 1.5)
@@ -409,7 +409,7 @@ const Canvas = ({
       }
     }
 
-    if (loadFont) f.load().then((font) => writeUsername())
+    if (loadFont) f.load().then(() => writeUsername())
     else writeUsername()
   }
 

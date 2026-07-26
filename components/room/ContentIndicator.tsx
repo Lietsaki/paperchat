@@ -1,5 +1,5 @@
 import styles from 'styles/options-screen/options.module.scss'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { RoomContent, ContentIndicators } from 'types/Room'
 import { willContainerBeOverflowed } from 'helpers/helperFunctions'
 
@@ -37,23 +37,33 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
   const middleIndicatorsRef = useRef<HTMLDivElement>(null)
   const indicatorsContainerRef = useRef<HTMLDivElement>(null)
   const indicatorsRef = useRef<ContentIndicators>(undefined)
-  indicatorsRef.current = indicators
   let observer: IntersectionObserver | null = null
 
   const oldestIndicators = [overflowed2OldestIndicator, overflowed1OldestIndicator]
   const newestIndicators = [overflowed1NewestIndicator, overflowed2NewestIndicator]
 
-  const middleIndicatorKeys = Object.keys(indicators)
-    .filter((key) => !oldestIndicators.includes(key) && !newestIndicators.includes(key))
-    .sort((a, b) => {
-      const aItem: RoomContent | undefined = roomContent.find((item) => item.id === a)
-      const bItem: RoomContent | undefined = roomContent.find((item) => item.id === b)
+  const middleIndicatorKeys = useMemo(() => {
+    const contentById = new Map(roomContent.map((item) => [item.id, item]))
 
-      if (!aItem) return -1
-      if (!bItem) return 1
+    return Object.keys(indicators)
+      .filter((key) => !oldestIndicators.includes(key) && !newestIndicators.includes(key))
+      .sort((a, b) => {
+        const aItem = contentById.get(a)
+        const bItem = contentById.get(b)
 
-      return aItem.serverTs - bItem.serverTs
-    })
+        if (!aItem) return -1
+        if (!bItem) return 1
+
+        return aItem.serverTs - bItem.serverTs
+      })
+  }, [
+    indicators,
+    roomContent,
+    overflowed2OldestIndicator,
+    overflowed1OldestIndicator,
+    overflowed1NewestIndicator,
+    overflowed2NewestIndicator
+  ])
 
   const setupObserver = () => {
     observer = new IntersectionObserver(
@@ -239,6 +249,10 @@ const ContentIndicator = ({ roomContent, setAdjacentMessages }: ContentIndicator
 
     return indicators
   }
+
+  useEffect(() => {
+    indicatorsRef.current = indicators
+  }, [indicators])
 
   useEffect(() => {
     setupObserver()

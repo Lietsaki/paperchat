@@ -39,7 +39,7 @@ const Dialog = ({
       // Stop the sound when the app is in the foreground, and play it back when the user returns
       // We have to do this in all places where a looping sound is played, that is, only here.
       App.addListener('appStateChange', ({ isActive }) => {
-        isActive ? audio.play() : audio.pause()
+        return isActive ? audio.play() : audio.pause()
       })
     } else {
       audio.pause()

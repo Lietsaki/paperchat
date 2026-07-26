@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, BaseSyntheticEvent } from 'react'
+import { useRef, useEffect, useState, BaseSyntheticEvent } from 'react'
 import useTranslation from 'i18n/useTranslation'
 import { usernameMinLength, usernameMaxLength } from '../store/initializer'
 import { containsNonLatinChars } from 'helpers/helperFunctions'
@@ -18,7 +18,7 @@ const UsernameInput = ({
 }: UsernameInputProps) => {
   const { t, locale } = useTranslation()
   const inputRef = useRef<HTMLInputElement>(null)
-  let [inputValue, setInputValue] = useState('')
+  const [inputValue, setInputValue] = useState('')
 
   const handleChange = (e: BaseSyntheticEvent) => {
     if (e.target.value.length > usernameMaxLength) return

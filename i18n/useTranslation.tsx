@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from 'react'
 import { LocaleCode } from 'types/Multilang'
 import { useI18n } from './I18nContext'

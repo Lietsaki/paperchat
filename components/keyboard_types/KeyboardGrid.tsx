@@ -1,6 +1,6 @@
 import styles from 'styles/components/keyboard.module.scss'
 import { createFloatingKey, removeFloatingKey } from 'helpers/floatingKey'
-import { useState, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Keys, GridSpecialKeys } from 'types/Keyboard'
 import { EventPos } from 'types/Position'
 import { playSound } from 'helpers/helperFunctions'
@@ -18,8 +18,26 @@ type KeyboardGridProps = {
 const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: KeyboardGridProps) => {
   const [activeKey, setActiveKey] = useState('')
   const [draggingKey, setDragginKey] = useState('')
-  const draggingKeyRef = useRef('')
-  draggingKeyRef.current = draggingKey
+
+  useEffect(() => {
+    if (!activeKey) return
+
+    const handlePointerUp = () => {
+      if (!draggingKey) playSound('keyup', 0.1)
+      setActiveKey('')
+      setDragginKey('')
+      document.body.style.cursor = 'auto'
+      removeFloatingKey()
+    }
+
+    document.addEventListener('mouseup', handlePointerUp)
+    document.addEventListener('touchend', handlePointerUp)
+
+    return () => {
+      document.removeEventListener('mouseup', handlePointerUp)
+      document.removeEventListener('touchend', handlePointerUp)
+    }
+  }, [activeKey, draggingKey])
 
   const specialKeyMethods = {
     DEL: () => typeDel(),
@@ -34,11 +52,6 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: Keyboa
 
   const handlePointerDown = (key: string) => {
     setActiveKey(key)
-
-    // Listen for mouseup in the whole document, as the text will be dragged outside the key.
-    // Otherwise onMouseUp would only fire within the key, not when dragged into the canvas, for example.
-    document.addEventListener('mouseup', handlePointerUp)
-    document.addEventListener('touchend', handlePointerUp)
     document.body.style.cursor = 'grabbing'
     playSound('keydown', 0.1)
   }
@@ -54,16 +67,6 @@ const KeyboardGrid = ({ typeKey, typeSpace, typeEnter, typeDel, keySet }: Keyboa
 
   const handleTouchMove = (key: string, e: React.TouchEvent) => {
     handleKeyLeave(key, { touches: e.nativeEvent.touches })
-  }
-
-  const handlePointerUp = () => {
-    if (!draggingKeyRef.current) playSound('keyup', 0.1)
-    setActiveKey('')
-    setDragginKey('')
-    document.removeEventListener('mouseup', handlePointerUp)
-    document.removeEventListener('touchend', handlePointerUp)
-    document.body.style.cursor = 'auto'
-    removeFloatingKey()
   }
 
   const specialMethodKeydown = () => {

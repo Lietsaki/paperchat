@@ -227,7 +227,7 @@ const willContainerBeOverflowed = (
 
 const getImageData = (url: string) => {
   return new Promise<HTMLImageElement>((resolve, reject) => {
-    let img = new Image()
+    const img = new Image()
     img.onload = () => resolve(img)
     img.onerror = (err) => reject(err)
     img.src = url
@@ -282,7 +282,7 @@ const calculateAspectRatioFit = (
   maxWidth: number,
   maxHeight: number
 ) => {
-  var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight)
+  const ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight)
 
   return { width: Math.ceil(srcWidth * ratio), height: Math.ceil(srcHeight * ratio) }
 }

@@ -25,7 +25,7 @@ const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
     if (savedDebounce) setLatestDebounce(Number(savedDebounce))
   }, [])
 
-  const handleCodeSubmitWithCheck = (e: React.FormEvent, code: string) => {
+  const handleCodeSubmitWithCheck = (e: React.FormEvent) => {
     e.preventDefault()
     const btn = document.getElementById(BTN_ID) as HTMLButtonElement
     btn.click()
@@ -55,7 +55,7 @@ const JoinRoomInput = ({ handleCodeSubmit }: JoinRoomInputProps) => {
   return (
     <div className={join_area}>
       <div>
-        <form className={input_area} onSubmit={(e) => handleCodeSubmitWithCheck(e, code)}>
+        <form className={input_area} onSubmit={(e) => handleCodeSubmitWithCheck(e)}>
           <div
             className={`input_container simple_width make_complete_rectangle ${locale} ${shouldUseSmallFont()}`}
           >
