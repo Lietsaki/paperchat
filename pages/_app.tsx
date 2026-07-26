@@ -118,9 +118,9 @@ const Paperchat = ({ Component, pageProps }: AppProps) => {
           {/* FONTS */}
           <link
             rel="preload"
-            href="/fonts/nds.ttf"
+            href="/fonts/nds.woff2"
             as="font"
-            type="font/ttf"
+            type="font/woff2"
             crossOrigin="anonymous"
           ></link>
         </Head>

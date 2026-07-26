@@ -10,18 +10,19 @@
     "lint": "next lint"
   },
   "engines": {
-    "node": ">= 20.19.5"
+    "node": ">= 22.0.0"
   },
   "dependencies": {
-    "@capacitor/android": "^7.0.0",
-    "@capacitor/app": "^7.0.0",
-    "@capacitor/browser": "^7.0.3",
-    "@capacitor/clipboard": "^7.0.0",
-    "@capacitor/core": "^7.0.0",
-    "@capacitor/keyboard": "^7.0.4",
-    "@capacitor/local-notifications": "^7.0.0",
-    "@capacitor/splash-screen": "^7.0.3",
-    "@capacitor/status-bar": "^7.0.4",
+    "@capacitor-community/admob": "^8.0.0",
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/browser": "^8.0.0",
+    "@capacitor/clipboard": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/keyboard": "^8.0.0",
+    "@capacitor/local-notifications": "^8.0.0",
+    "@capacitor/splash-screen": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0",
     "@reduxjs/toolkit": "^1.8.5",
     "firebase": "^9.10.0",
     "howler": "^2.2.4",
@@ -32,14 +33,14 @@
     "react-redux": "^8.0.2"
   },
   "devDependencies": {
-    "@capacitor/cli": "^7.0.0",
+    "@capacitor/cli": "^8.0.0",
     "@types/howler": "^2.2.11",
-    "@types/node": "18.0.3",
+    "@types/node": "^24.10.1",
     "@types/react": "^18.0.10",
     "@types/react-dom": "^18.0.4",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.24",
     "sass": "^1.53.0",
-    "typescript": "5.4"
+    "typescript": "^5.9.3"
   }
 }

@@ -381,7 +381,7 @@ const Canvas = ({
     ctxToUse.fillStyle = roomColor
 
     // Write username making sure our font loaded first
-    const f = new FontFace('nds', 'url(/fonts/nds.ttf)')
+    const f = new FontFace('nds', 'url(/fonts/nds.woff2)')
 
     const writeUsername = () => {
       if (!ctx || !canvasRef.current) return
