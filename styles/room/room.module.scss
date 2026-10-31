@@ -15,9 +15,15 @@
     top: -1px;
     left: 1px;
     color: $clear-bg;
-    text-shadow: 2px 0 $content-visible, -2px 0 $content-visible, 0 2px $content-visible,
-      0 -2px $content-visible, 1px 1px $content-visible, -1px -1px $content-visible,
-      1px -1px $content-visible, -1px 1px $content-visible;
+    text-shadow:
+      2px 0 $content-visible,
+      -2px 0 $content-visible,
+      0 2px $content-visible,
+      0 -2px $content-visible,
+      1px 1px $content-visible,
+      -1px -1px $content-visible,
+      1px -1px $content-visible,
+      -1px 1px $content-visible;
 
     @include small-height-devices {
       font-size: 25px;

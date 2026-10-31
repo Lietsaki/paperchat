@@ -65,6 +65,12 @@ $scrollbar-color-dark: rgba(132, 132, 132, 0.6);
   }
 }
 
+@mixin standard-hd {
+  @media (min-width: 1536px) and (max-width: 1920px) and (max-height: 920px) {
+    @content;
+  }
+}
+
 @mixin small-height-devices {
   @media (min-width: 1200px) and (max-width: 1536px) and (max-height: 920px) {
     @content;

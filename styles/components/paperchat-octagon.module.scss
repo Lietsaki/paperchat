@@ -125,7 +125,8 @@
         }
 
         @include small-height-devices {
-          font-size: 22px;
+          font-size: 24px;
+          padding-bottom: 1px;
 
           .now_entering .room_code,
           .now_leaving .room_code {

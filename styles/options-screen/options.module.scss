@@ -30,8 +30,12 @@
       padding: 8px 0 25% 0;
       height: 310px;
 
+      @include standard-hd {
+        height: 295px;
+      }
+
       @include small-height-devices {
-        height: 252px;
+        height: 270px;
       }
 
       @include landscape-tablet-up {

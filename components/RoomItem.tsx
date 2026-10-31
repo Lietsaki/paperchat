@@ -24,7 +24,7 @@ type RoomItemProps = {
   onClick: () => void
 }
 
-const Button = ({ code, usersNumber, onClick }: RoomItemProps) => {
+const RoomItem = ({ code, usersNumber, onClick }: RoomItemProps) => {
   const { t } = useTranslation()
 
   return (
@@ -58,4 +58,4 @@ const Button = ({ code, usersNumber, onClick }: RoomItemProps) => {
   )
 }
 
-export default Button
+export default RoomItem

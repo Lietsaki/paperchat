@@ -1,46 +1,37 @@
-import { onValueDeleted, onValueUpdated } from 'firebase-functions/database'
+import { DataSnapshot, onValueDeleted, onValueUpdated } from 'firebase-functions/database'
 import { onSchedule } from 'firebase-functions/scheduler'
 import admin from 'firebase-admin'
-import { OnlineUser, RoomMessages, RoomMessagesObj, Room } from '../../types/Room'
-const MESSAGE_HISTORY_LIMIT = 40
+import { OnlineUser, RoomMessages, RoomMessagesObj, Room, RoomUser } from '../../types/Room'
+const MESSAGE_HISTORY_LIMIT = 60
 
 admin.initializeApp()
 
-export const deleteEmptyPublicRoomPictures = onValueDeleted('/public_rooms/{roomID}', (e) => {
+export const deleteEmptyPublicRoomPictures = onValueDeleted('/public_rooms/{roomID}', async (e) => {
   const roomID: string = e.params.roomID
   const bucket = admin.storage().bucket()
 
-  return bucket.deleteFiles(
-    {
-      prefix: `room_messages/${roomID}/`
-    },
-    (err) => {
-      if (err) {
-        console.log(err)
-      } else {
-        console.log(`Success: deleted /room_messages/${roomID}`)
-      }
-    }
-  )
+  try {
+    await bucket.deleteFiles({ prefix: `room_messages/${roomID}/` })
+    console.log(`Success: deleted /room_messages/${roomID}`)
+  } catch (error) {
+    console.log(error)
+  }
 })
 
-export const deleteEmptyPrivateRoomPictures = onValueDeleted('/private_rooms/{roomID}', (e) => {
-  const roomID: string = e.params.roomID
-  const bucket = admin.storage().bucket()
+export const deleteEmptyPrivateRoomPictures = onValueDeleted(
+  '/private_rooms/{roomID}',
+  async (e) => {
+    const roomID: string = e.params.roomID
+    const bucket = admin.storage().bucket()
 
-  return bucket.deleteFiles(
-    {
-      prefix: `room_messages/${roomID}/`
-    },
-    (err) => {
-      if (err) {
-        console.log(err)
-      } else {
-        console.log(`Success: deleted /room_messages/${roomID}`)
-      }
+    try {
+      await bucket.deleteFiles({ prefix: `room_messages/${roomID}/` })
+      console.log(`Success: deleted /room_messages/${roomID}`)
+    } catch (error) {
+      console.log(error)
     }
-  )
-})
+  }
+)
 
 export const trimPublicRoomMessages = onValueUpdated(
   '/public_room_messages/{roomID}/messages',
@@ -53,19 +44,17 @@ export const trimPublicRoomMessages = onValueUpdated(
     const messagesArr = Object.values(messagesObj)
     if (messagesArr.length <= MESSAGE_HISTORY_LIMIT) return null
 
-    const updatedMessages: RoomMessages['messages'] = {}
+    const messagesToDelete: { [key: string]: null } = {}
 
-    const roomMessagesArr = messagesArr
+    const oldMessagesArr = messagesArr
       .sort((a, b) => a.serverTs - b.serverTs)
-      .slice(-MESSAGE_HISTORY_LIMIT)
+      .slice(0, -MESSAGE_HISTORY_LIMIT)
 
-    for (const msg of roomMessagesArr) {
-      updatedMessages[msg.id] = msg
+    for (const msg of oldMessagesArr) {
+      messagesToDelete[msg.id] = null
     }
 
-    console.log(`[PUBLIC ROOM] Trimming messages of ${e.params.roomID}`)
-
-    return e.data.after.ref.set(updatedMessages)
+    return e.data.after.ref.update(messagesToDelete)
   }
 )
 
@@ -80,42 +69,84 @@ export const trimPrivateRoomMessages = onValueUpdated(
     const messagesArr = Object.values(messagesObj)
     if (messagesArr.length <= MESSAGE_HISTORY_LIMIT) return null
 
-    const updatedMessages: RoomMessages['messages'] = {}
+    const messagesToDelete: { [key: string]: null } = {}
 
-    const roomMessagesArr = messagesArr
+    const oldMessagesArr = messagesArr
       .sort((a, b) => a.serverTs - b.serverTs)
-      .slice(-MESSAGE_HISTORY_LIMIT)
+      .slice(0, -MESSAGE_HISTORY_LIMIT)
 
-    for (const msg of roomMessagesArr) {
-      updatedMessages[msg.id] = msg
+    for (const msg of oldMessagesArr) {
+      messagesToDelete[msg.id] = null
     }
 
-    console.log(`[PRIVATE ROOM] Trimming messages of ${e.params.roomID}`)
-
-    return e.data.after.ref.set(updatedMessages)
+    return e.data.after.ref.update(messagesToDelete)
   }
 )
 
-export const updatePublicRoomUsersNumber = onValueUpdated('/public_rooms/{roomID}', (e) => {
+const removeDisconnectedUsers = async (
+  roomBefore: DataSnapshot,
+  roomAfter: DataSnapshot,
+  roomMessagesPath: string
+) => {
+  const usersBefore: { [key: string]: RoomUser } = roomBefore.child('users').val() || {}
+  const usersAfter: { [key: string]: RoomUser } = roomAfter.child('users').val() || {}
+  const roomMessagesRef = admin.database().ref(roomMessagesPath)
+
+  for (const [userID, oldUser] of Object.entries(usersBefore)) {
+    if (!oldUser.connections || !usersAfter[userID] || usersAfter[userID].connections) continue
+
+    let mustRemoveUser = false
+
+    await roomAfter.ref.child(`users/${userID}`).transaction((currentUser: RoomUser | null) => {
+      mustRemoveUser = !!currentUser && !currentUser.connections
+      return mustRemoveUser ? null : currentUser
+    })
+
+    if (!mustRemoveUser) continue
+
+    const roomCreatedAtSnapshot = await roomMessagesRef.child('createdAt').once('value')
+    if (!roomCreatedAtSnapshot.exists()) continue
+
+    const leavingMessageRef = roomMessagesRef.child('messages').push()
+
+    await leavingMessageRef.set({
+      userLeaving: oldUser.username,
+      author: userID,
+      id: leavingMessageRef.key,
+      serverTs: admin.database.ServerValue.TIMESTAMP,
+      platform: Object.values(oldUser.connections)[0]
+    })
+  }
+}
+
+export const updatePublicRoomUsersNumber = onValueUpdated('/public_rooms/{roomID}', async (e) => {
   if (!e.data.after.exists()) return null
 
-  if (!e.data.after.child('users').exists()) {
-    return e.data.after.ref.child('usersNumber').set(0)
-  }
+  await removeDisconnectedUsers(
+    e.data.before,
+    e.data.after,
+    `public_room_messages/${e.params.roomID}`
+  )
 
-  const usersObj: Room['users'] = e.data.after.child('users').val()
-  return e.data.after.ref.child('usersNumber').set(Object.keys(usersObj || {}).length)
+  return e.data.after.ref.transaction((room: Room | null) => {
+    if (!room) return room
+    return { ...room, usersNumber: Object.keys(room.users || {}).length }
+  })
 })
 
-export const updatePrivateRoomUsersNumber = onValueUpdated('/private_rooms/{roomID}', (e) => {
+export const updatePrivateRoomUsersNumber = onValueUpdated('/private_rooms/{roomID}', async (e) => {
   if (!e.data.after.exists()) return null
 
-  if (!e.data.after.child('users').exists()) {
-    return e.data.after.ref.child('usersNumber').set(0)
-  }
+  await removeDisconnectedUsers(
+    e.data.before,
+    e.data.after,
+    `private_room_messages/${e.params.roomID}`
+  )
 
-  const usersObj: Room['users'] = e.data.after.child('users').val()
-  return e.data.after.ref.child('usersNumber').set(Object.keys(usersObj || {}).length)
+  return e.data.after.ref.transaction((room: Room | null) => {
+    if (!room) return room
+    return { ...room, usersNumber: Object.keys(room.users || {}).length }
+  })
 })
 
 export const emptyRoomsCleaner = onSchedule({ schedule: 'every 60 minutes' }, async () => {
@@ -126,119 +157,103 @@ export const emptyRoomsCleaner = onSchedule({ schedule: 'every 60 minutes' }, as
   const privateRoomsRef = db.ref('private_rooms/')
   const onlineUsersRef = db.ref('online_users/')
   const halfAnHourAgo = Date.now() - 1800000
-  const publicRoomsToDelete: string[] = []
-  const privateRoomsToDelete: string[] = []
-  const usersToDelete: string[] = []
-
-  let publicRoomsMessagesObj: RoomMessagesObj = {}
-  let privateRoomsMessagesObj: RoomMessagesObj = {}
-  let usersObj: { [key: string]: OnlineUser | null } = {}
+  const publicRoomsToDelete = new Set<string>()
+  const privateRoomsToDelete = new Set<string>()
+  const usersToDelete = new Set<string>()
+  const userRoomEntriesToDelete: string[] = []
 
   // Get all public room messages
-  await publicRoomMessagesRef.once('value', (snapshot) => {
-    if (!snapshot.exists()) return
+  const publicRoomsMessagesSnapshot = await publicRoomMessagesRef.once('value')
+  const publicRoomsMessagesObj: RoomMessagesObj = publicRoomsMessagesSnapshot.val() || {}
 
-    publicRoomsMessagesObj = snapshot.val()
-    const roomKeys = Object.keys(publicRoomsMessagesObj)
+  for (const roomKey of Object.keys(publicRoomsMessagesObj)) {
+    const room = publicRoomsMessagesObj[roomKey]
+    const roomMessages = Object.values(room.messages || {})
+    roomMessages.sort((a, b) => a.serverTs - b.serverTs)
 
-    for (const roomKey of roomKeys) {
-      const room = publicRoomsMessagesObj[roomKey]
-      const roomMessages = Object.values(room.messages || {})
-      roomMessages.sort((a, b) => a.serverTs - b.serverTs)
+    const lastMessage = roomMessages[roomMessages.length - 1]
 
-      const lastMessage = roomMessages[roomMessages.length - 1]
-
-      if (lastMessage.serverTs < halfAnHourAgo) {
-        publicRoomsToDelete.push(roomKey)
-      }
+    if (lastMessage.serverTs < halfAnHourAgo) {
+      publicRoomsToDelete.add(roomKey)
     }
-  })
+  }
 
   // Get all private room messages
-  await privateRoomMessagesRef.once('value', (snapshot) => {
-    if (!snapshot.exists()) return
+  const privateRoomsMessagesSnapshot = await privateRoomMessagesRef.once('value')
+  const privateRoomsMessagesObj: RoomMessagesObj = privateRoomsMessagesSnapshot.val() || {}
 
-    privateRoomsMessagesObj = snapshot.val()
-    const roomKeys = Object.keys(privateRoomsMessagesObj)
+  for (const roomKey of Object.keys(privateRoomsMessagesObj)) {
+    const room = privateRoomsMessagesObj[roomKey]
+    const roomMessages = Object.values(room.messages || {})
+    roomMessages.sort((a, b) => a.serverTs - b.serverTs)
 
-    for (const roomKey of roomKeys) {
-      const room = privateRoomsMessagesObj[roomKey]
-      const roomMessages = Object.values(room.messages || {})
-      roomMessages.sort((a, b) => a.serverTs - b.serverTs)
+    const lastMessage = roomMessages[roomMessages.length - 1]
 
-      const lastMessage = roomMessages[roomMessages.length - 1]
-
-      if (lastMessage.serverTs < halfAnHourAgo) {
-        privateRoomsToDelete.push(roomKey)
-      }
+    if (lastMessage.serverTs < halfAnHourAgo) {
+      privateRoomsToDelete.add(roomKey)
     }
-  })
+  }
 
   // Get all lingering public rooms
-  await publicRoomsRef.once('value', (snapshot) => {
-    if (!snapshot.exists()) return
+  const publicRoomsSnapshot = await publicRoomsRef.once('value')
+  const publicRoomsObj: { [key: string]: Room } = publicRoomsSnapshot.val() || {}
 
-    const publicRoomsObj = snapshot.val()
-    const roomKeys = Object.keys(publicRoomsObj)
-
-    for (const roomKey of roomKeys) {
-      if (!publicRoomsMessagesObj[roomKey]) {
-        publicRoomsToDelete.push(roomKey)
-      }
+  for (const roomKey of Object.keys(publicRoomsObj)) {
+    if (!publicRoomsMessagesObj[roomKey]) {
+      publicRoomsToDelete.add(roomKey)
     }
-  })
+  }
 
   // Get all lingering private rooms
-  await privateRoomsRef.once('value', (snapshot) => {
-    if (!snapshot.exists()) return
+  const privateRoomsSnapshot = await privateRoomsRef.once('value')
+  const privateRoomsObj: { [key: string]: Room } = privateRoomsSnapshot.val() || {}
 
-    const privateRoomsObj = snapshot.val()
-    const roomKeys = Object.keys(privateRoomsObj)
-
-    for (const roomKey of roomKeys) {
-      if (!privateRoomsMessagesObj[roomKey]) {
-        privateRoomsToDelete.push(roomKey)
-      }
+  for (const roomKey of Object.keys(privateRoomsObj)) {
+    if (!privateRoomsMessagesObj[roomKey]) {
+      privateRoomsToDelete.add(roomKey)
     }
-  })
+  }
 
   // Get all lingering users
-  await onlineUsersRef.once('value', (snapshot) => {
-    if (!snapshot.exists()) return
+  const usersSnapshot = await onlineUsersRef.once('value')
+  const usersObj: { [key: string]: OnlineUser } = usersSnapshot.val() || {}
 
-    usersObj = snapshot.val()
-    const userKeys = Object.keys(usersObj)
+  for (const userKey of Object.keys(usersObj)) {
+    const user = usersObj[userKey]
+    const userPublicRoomKeys = Object.keys(user.publicRooms || {})
+    const userPrivateRoomKeys = Object.keys(user.privateRooms || {})
 
-    for (const userKey of userKeys) {
-      const user = usersObj[userKey] as OnlineUser
-      const userPublicRoomKeys = Object.keys(user.publicRooms || {})
-      const userPrivateRoomKeys = Object.keys(user.privateRooms || {})
-
-      if (user.publicRooms) {
-        for (const key of userPublicRoomKeys) {
-          if (publicRoomsMessagesObj[key] && publicRoomsToDelete.includes(key)) {
-            delete user.publicRooms[key]
-          }
+    if (user.publicRooms) {
+      for (const key of userPublicRoomKeys) {
+        if (
+          !publicRoomsMessagesObj[key] ||
+          (publicRoomsMessagesObj[key] && publicRoomsToDelete.has(key))
+        ) {
+          delete user.publicRooms[key]
+          userRoomEntriesToDelete.push(`/online_users/${userKey}/publicRooms/${key}`)
         }
-      }
-
-      if (user.privateRooms) {
-        for (const key of userPrivateRoomKeys) {
-          if (privateRoomsMessagesObj[key] && privateRoomsToDelete.includes(key)) {
-            delete user.privateRooms[key]
-          }
-        }
-      }
-
-      if (
-        (!user.publicRooms || !Object.keys(user.publicRooms || {}).length) &&
-        (!user.privateRooms || !Object.keys(user.privateRooms || {}).length)
-      ) {
-        usersObj[userKey] = null
-        usersToDelete.push(userKey)
       }
     }
-  })
+
+    if (user.privateRooms) {
+      for (const key of userPrivateRoomKeys) {
+        if (
+          !privateRoomsMessagesObj[key] ||
+          (privateRoomsMessagesObj[key] && privateRoomsToDelete.has(key))
+        ) {
+          delete user.privateRooms[key]
+          userRoomEntriesToDelete.push(`/online_users/${userKey}/privateRooms/${key}`)
+        }
+      }
+    }
+
+    if (
+      (!user.publicRooms || !Object.keys(user.publicRooms || {}).length) &&
+      (!user.privateRooms || !Object.keys(user.privateRooms || {}).length)
+    ) {
+      usersToDelete.add(userKey)
+    }
+  }
 
   const dbRef = db.ref('/')
   const updateObj: { [key: string]: null } = {}
@@ -252,16 +267,30 @@ export const emptyRoomsCleaner = onSchedule({ schedule: 'every 60 minutes' }, as
     updateObj[`/private_rooms/${id}`] = null
   }
 
-  const promises = [onlineUsersRef.update(usersObj)]
-
-  if (Object.keys(updateObj).length) {
-    promises.push(dbRef.update(updateObj))
+  for (const path of userRoomEntriesToDelete) {
+    updateObj[path] = null
   }
 
   try {
-    await Promise.all([promises])
+    if (Object.keys(updateObj).length) await dbRef.update(updateObj)
+
+    // Delete users with no rooms after cleaning everything else
+    await Promise.all(
+      [...usersToDelete].map((userID) =>
+        onlineUsersRef.child(userID).transaction((user: OnlineUser | null) => {
+          if (!user) return user
+
+          const hasRooms =
+            Object.keys(user.publicRooms || {}).length ||
+            Object.keys(user.privateRooms || {}).length
+
+          return hasRooms ? user : null
+        })
+      )
+    )
+
     console.log(
-      `Cleaned ${publicRoomsToDelete.length} public rooms, ${privateRoomsToDelete.length} private rooms and ${usersToDelete.length} users.`
+      `Cleaned ${publicRoomsToDelete.size} public rooms, ${privateRoomsToDelete.size} private rooms and ${usersToDelete.size} users.`
     )
   } catch (error) {
     console.log('Error cleaning rooms!')

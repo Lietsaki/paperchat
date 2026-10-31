@@ -59,9 +59,18 @@ a {
   height: 100vh;
   justify-content: center;
 
+  @media (min-height: 1200px) {
+    height: 95vh;
+  }
+
+  @include standard-hd {
+    width: 520px;
+    min-height: unset;
+  }
+
   @include small-height-devices {
-    width: 450px;
-    min-height: 720px;
+    width: 480px;
+    min-height: 850px;
   }
 
   @include landscape-tablet-up {
@@ -82,10 +91,6 @@ a {
     @media (min-width: 700px) {
       margin: 4% 0;
     }
-  }
-
-  @include small-height-devices {
-    margin: 60px 0;
   }
 }
 

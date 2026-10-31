@@ -44,6 +44,7 @@ const SOUND_TRIGGERING_DISTANCE = 25
 const AVERAGE_LETTER_HEIGHT = 15
 const PRUDENTIAL_STROKE_WAIT = 300
 const DRAWING_COOLDOWN = 8
+const CONSECUTIVE_STROKE_LIMIT = 400
 
 const Canvas = ({
   usingThickStroke,
@@ -436,7 +437,11 @@ const Canvas = ({
     ctx.lineTo(newPos.x, newPos.y)
     ctx.stroke()
 
-    const updatedStrokes = [...consecutiveStrokes, { ...newPos, ts: Date.now() }]
+    const updatedStrokes = [
+      ...(consecutiveStrokes.length >= CONSECUTIVE_STROKE_LIMIT ? [] : consecutiveStrokes),
+      { ...newPos, ts: Date.now() }
+    ]
+
     setConsecutiveStrokes(updatedStrokes)
     checkLatestStrokes(updatedStrokes)
   }

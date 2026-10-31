@@ -25,14 +25,15 @@ type CanvasData = { dataUrl: string; height: number; width: number }
 type OnlineUser = {
   username: string
   createdAt: number
-  publicRooms?: { [key: string]: boolean }
-  privateRooms?: { [key: string]: boolean }
+  publicRooms?: { [key: string]: string }
+  privateRooms?: { [key: string]: string }
 }
 
 type RoomUser = {
   id: string
   username: string
   joinedAt: number
+  connections?: { [key: string]: string }
 }
 
 type Room = {

@@ -219,6 +219,7 @@
 
     button {
       @include flexcenter;
+      background-color: $key-bg;
       border: 2px solid #111;
       border-left: none;
       border-top: none;
